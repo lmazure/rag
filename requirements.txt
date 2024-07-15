@@ -11,7 +11,7 @@ langchain==0.1.6
 langchain-community==0.0.19
 langchain-core==0.1.23
 chromadb==0.3.29
-tiktoken
+#tiktoken
 unstructured
-unstructured[local-pdf]
-unstructured[local-inference]
+#unstructured[local-pdf]
+#unstructured[local-inference]

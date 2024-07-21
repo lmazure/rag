@@ -1,3 +1,6 @@
+This is a playground to discover RAG.  
+I started from a code sample copied from https://medium.com/rahasak/build-rag-application-using-a-llm-running-on-local-computer-with-gpt4all-and-langchain-13b4b8851db8 and I will play with it to understand this stuff.
+
 ```bash
 python -m venv .venv
 source .venv/scripts/activate

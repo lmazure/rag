@@ -1,50 +1,53 @@
 import json
-import os
-import re
+import sys
 from typing import List, Dict
+from gherkin.parser import Parser
+from gherkin.token_scanner import TokenScanner
 
 def extract_keywords(file_path: str) -> List[Dict[str, str]]:
     """
     Extract Gherkin keywords from a single feature file.
-    Returns a list of dictionaries containing keyword type and text.
+    Returns a list of dictionaries containing keyword type, text, and description.
     """
-    keywords = []
-    keyword_types = ['Given', 'When', 'Then', 'And', 'But']
-    
+    # Read the feature file
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-            
-            # Pattern to match Gherkin keywords
-            pattern = r'^\s*(' + '|'.join(keyword_types) + r')\s+(.+)$'
-            
-            for line in content.split('\n'):
-                match = re.match(pattern, line)
-                if match:
-                    keyword_type = match.group(1)
-                    keyword_text = match.group(2).strip()
-                    
-                    # Handle 'And' and 'But' by looking at previous keyword type
-                    if keyword_type in ['And', 'But']:
-                        if keywords:  # If we have a previous keyword
-                            keyword_type = keywords[-1]['type']
-                    
-                    keywords.append({
-                        'type': keyword_type,
-                        'keyword': keyword_text
-                    })
-    
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
     except Exception as e:
-        print(f"Error processing file {file_path}: {str(e)}")
+        print(f"Error reading file {file_path}: {str(e)}")
+        return []
+
+    # Parse the feature file
+    parser = Parser()
+    feature = parser.parse(TokenScanner(content))
     
+    # Process each feature (it can either be a scenario or a background, but we does care, we can retrieve the steps the same way)
+    keywords = []
+    for component in feature['feature']['children']:
+        lastKeywordType = None
+        for step in next(iter(component.values()))["steps"]:
+            step_type = step['keywordType']
+            if (step_type == 'Conjunction'):
+                if (lastKeywordType == None):
+                    print("Conjunction without previous keyword")
+                else:
+                    step_type = lastKeywordType
+            else:
+                lastKeywordType = step_type
+            keywords.append({
+                'type': step_type,
+                'keyword': step['text'].strip(),
+                'description': ''
+            })
+
     return keywords
 
 def sort_keywords(keywords: List[Dict[str, str]]) -> List[Dict[str, str]]:
     """
-    Sort keywords first by type (Given, When, Then) then alphabetically by keyword text.
+    Sort keywords first by type (Context, Action, Outcome), then alphabetically by keyword text.
     """
     # Define the order of keyword types
-    type_order = {'Given': 1, 'When': 2, 'Then': 3}
+    type_order = {'Context': 1, 'Action': 2, 'Outcome': 3}
     
     # Sort the keywords
     return sorted(
@@ -81,18 +84,17 @@ def process_feature_files(file_paths: List[str]) -> Dict:
 
 def main():
     # Get list of feature files from command line arguments
-    import sys
     if len(sys.argv) < 2:
-        print("Usage: python script.py feature_file1.feature feature_file2.feature ...")
+        print("Usage: python script.py keyword_list.json feature_file1.feature feature_file2.feature ...")
         sys.exit(1)
     
-    feature_files = sys.argv[1:]
+    feature_files = sys.argv[2:]
     
     # Process the files and get the keywords
     result = process_feature_files(feature_files)
     
     # Write the result to a JSON file
-    output_file = 'jenkins_keywords.json'
+    output_file = sys.argv[1]
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=2)
     

@@ -21,7 +21,7 @@ populate the database with the keywords stored in the `my_list.json` file.
 python queryDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
 ```
 
-## qudumpery the ChromaDB database
+## dump the ChromaDB database
 ```sh
 python dumpDatabase.py --db_path chromadb/database
 ```

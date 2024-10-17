@@ -54,7 +54,7 @@ def sort_keywords(keywords: List[Dict[str, str]]) -> List[Dict[str, str]]:
         keywords,
         key=lambda x: (
             type_order.get(x['type'], 999),  # First sort by type (using 999 for unknown types)
-            x['keyword'].lower()              # Then sort alphabetically (case-insensitive)
+            x['keyword'].lower()             # Then sort alphabetically (case-insensitive)
         )
     )
 

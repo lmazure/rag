@@ -1,2 +1,3 @@
 gherkin-official
 chromadb
+sentence_transformers

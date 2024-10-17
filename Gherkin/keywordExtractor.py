@@ -1,6 +1,8 @@
 import json
 import sys
 from typing import List, Dict
+import uuid
+
 from gherkin.parser import Parser
 from gherkin.token_scanner import TokenScanner
 
@@ -30,6 +32,7 @@ def extract_keywords(file_path: str) -> List[Dict[str, str]]:
             if (step_type == 'Conjunction'):
                 if (lastKeywordType == None):
                     print("Conjunction without previous keyword")
+                    sys.exit(1)
                 else:
                     step_type = lastKeywordType
             else:
@@ -37,7 +40,8 @@ def extract_keywords(file_path: str) -> List[Dict[str, str]]:
             keywords.append({
                 'type': step_type,
                 'keyword': step['text'].strip(),
-                'description': ''
+                'description': '',
+                'id': str(uuid.uuid4())
             })
 
     return keywords

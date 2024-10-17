@@ -26,9 +26,9 @@ def main():
     
     keywords = data['keywords']
     for i, item in enumerate(keywords):
-        collections[item['type']].upsert(documents=[item['keyword']], ids=[f"id{i:03d}-k"])
+        collections[item['type']].upsert(documents=[item['keyword']], ids=[f"{item['id']}-k"])
         if len(item['description']):
-            collections[item['type']].upsert(documents=[item['description']], ids=[f"id{i:03d}-d"])
+            collections[item['type']].upsert(documents=[item['description']], ids=[f"{item['id']}-d"])
 
 if __name__ == "__main__":
     main()

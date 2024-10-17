@@ -27,7 +27,6 @@ python dumpDatabase.py --db_path chromadb/database
 ```
 
 ## todo
-- add IDs
+- test unicity of keywords
 - parametrize model
-- script to dump all Chroma databases
 - management of incorrect feature files

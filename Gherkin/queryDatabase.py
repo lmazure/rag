@@ -31,7 +31,8 @@ def main():
 
     # Print results
     print(f"Top {args.nb_results} matches for '{args.keyword}' in {args.keyword_type} category:")
-    pprint.pprint(results, width=128)
+    for i in range(args.nb_results):
+        print(f"{results['ids'][0][i]}\t{results['documents'][0][i]}")
 
 if __name__ == "__main__":
     main()

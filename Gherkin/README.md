@@ -27,7 +27,6 @@ python dumpDatabase.py --db_path chromadb/database
 ```
 
 ## todo
-- manage description
 - add IDs
 - parametrize model
 - script to dump all Chroma databases

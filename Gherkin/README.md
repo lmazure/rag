@@ -16,13 +16,19 @@ python fillDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database my
 ```
 populate the database with the keywords stored in the `my_list.json` file.
 
-## query the CHromaDB database
+## query the ChromaDB database
 ```sh
 python queryDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
 ```
 
+## qudumpery the ChromaDB database
+```sh
+python dumpDatabase.py --db_path chromadb/database
+```
 
 ## todo
 - manage description
 - add IDs
+- parametrize model
+- script to dump all Chroma databases
 - management of incorrect feature files

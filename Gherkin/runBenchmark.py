@@ -17,7 +17,7 @@ def process_file(file_path, models, db_path, nb_results, keyword_type):
             
             for model in models:
                 model_results = extract_keywords(db_path, model, keyword_type, keyword, nb_results)
-                keyword_results[model] = { 'matches': model_results, 'success': expected_id in [result['id'] for result in model_results] }
+                keyword_results[model] = { 'matches': model_results, 'success': [result['id'] for result in model_results].index(expected_id) if expected_id in [result['id'] for result in model_results] else -1 }
             
             results[index] = {
                 'keyword': keyword,
@@ -28,7 +28,7 @@ def process_file(file_path, models, db_path, nb_results, keyword_type):
 
 
 
-def generate_html(results):
+def generate_html(file_path, results):
     # Get unique list of models
     all_models = set()
     for data in results.values():
@@ -40,8 +40,7 @@ def generate_html(results):
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Results</title>
+        <title>Benchmark results</title>
         <style>
             table { border-collapse: collapse; width: 100%; }
             th, td { border: 1px solid black; padding: 8px; text-align: left; }
@@ -79,8 +78,8 @@ def generate_html(results):
         for model in all_models:
             if model in data['results']:
                 model_results = data['results'][model]
-                matches = "<br>".join([f"{match['id']}: {html.escape(match['keyword'])}" for match in model_results['matches']])
-                success = "Yes" if model_results['success'] else "No"
+                matches = "<br>".join([f"{match['id']}: {html.escape(match['keyword'])} {'😊' if i == model_results['success'] else ''}" for i, match in enumerate(model_results['matches'])])
+                success = "✔️" if (model_results['success'] >= 0) else '❌️'
                 html_content += f'<td class="matches">{matches}</td><td>{success}</td>'
             else:
                 html_content += '<td>N/A</td><td>N/A</td>'
@@ -93,7 +92,7 @@ def generate_html(results):
     </html>
     """
 
-    with open('foo.html', 'w', encoding='utf-8') as f:
+    with open(file_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
 def main():
@@ -102,16 +101,17 @@ def main():
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")
     parser.add_argument("--nb_results", default=3, type=int, required=True, help="Number of matches to consider (default: 3)")
     parser.add_argument("--keyword_type", required=True, choices=["Context", "Action", "Outcome"], help="Type of keyword")
-    parser.add_argument("input_file", help="Path to the benchmark definition file")
+    parser.add_argument("benchmark_file", help="Path to the benchmark definition file")
+    parser.add_argument("report_file", help="Path to the HTML report file to generate")
 
     args = parser.parse_args()
     
     models = [model.strip() for model in args.models.split(',')]
     
-    results = process_file(args.input_file, models, args.db_path, args.nb_results, args.keyword_type)
+    results = process_file(args.benchmark_file, models, args.db_path, args.nb_results, args.keyword_type)
     
     # Generate HTML report
-    generate_html(results)
+    generate_html(args.report_file, results)
 
 if __name__ == "__main__":
     main()

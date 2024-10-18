@@ -19,7 +19,6 @@ def extract_keywords(db_path, model, keyword_type, keyword, nb_results):
         n_results=nb_results
     )
 
-    print(results)
     return [{"id": results['ids'][0][i], "keyword": results['documents'][0][i]} for i in range(len(results['ids'][0]))]
 
 def main():

@@ -1,12 +1,14 @@
 import argparse
 import csv
+import html
 from queryDatabase import extract_keywords
 
 def process_file(file_path, models, db_path, nb_results, keyword_type):
     results = {}
-    index = 0
+    index = 1
     
     with open(file_path, 'r') as file:
+        next(file)  # Skip header row
         reader = csv.reader(file, delimiter='\t')
         for row in reader:
             
@@ -24,13 +26,83 @@ def process_file(file_path, models, db_path, nb_results, keyword_type):
             index += 1
     return results
 
+
+
+def generate_html(results):
+    # Get unique list of models
+    all_models = set()
+    for data in results.values():
+        all_models.update(data['results'].keys())
+    all_models = sorted(all_models)
+
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Results</title>
+        <style>
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid black; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .model-header { text-align: center; }
+            .matches { max-width: 300px; overflow-wrap: break-word; }
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th rowspan="2">ID</th>
+                <th rowspan="2">Keyword</th>
+    """
+    
+    # Add model names as column headers
+    for model in all_models:
+        html_content += f'<th colspan="2" class="model-header">{html.escape(model)}</th>'
+    
+    html_content += "</tr><tr>"
+    
+    # Add subcolumn headers for each model
+    for _ in all_models:
+        html_content += "<th>Matches</th><th>Success</th>"
+    
+    html_content += "</tr>"
+
+    for id, data in results.items():
+        html_content += f"""
+        <tr>
+            <td>{id}</td>
+            <td>{html.escape(data['keyword'])}</td>
+        """
+        
+        for model in all_models:
+            if model in data['results']:
+                model_results = data['results'][model]
+                matches = "<br>".join([f"{match['id']}: {html.escape(match['keyword'])}" for match in model_results['matches']])
+                success = "Yes" if model_results['success'] else "No"
+                html_content += f'<td class="matches">{matches}</td><td>{success}</td>'
+            else:
+                html_content += '<td>N/A</td><td>N/A</td>'
+        
+        html_content += "</tr>"
+
+    html_content += """
+        </table>
+    </body>
+    </html>
+    """
+
+    with open('foo.html', 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
 def main():
     parser = argparse.ArgumentParser(description="Process keywords using multiple models and Chroma database.")
-    parser.add_argument("--models", required=True, help="Comma-separated list of model names")
+    parser.add_argument("--models", required=True, help="Comma-separated list of the names of the models to evaluate")
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")
-    parser.add_argument("--nb_results", default=3, type=int, required=True, help="Number of matches to return (default: 3)")
+    parser.add_argument("--nb_results", default=3, type=int, required=True, help="Number of matches to consider (default: 3)")
     parser.add_argument("--keyword_type", required=True, choices=["Context", "Action", "Outcome"], help="Type of keyword")
-    parser.add_argument("input_file", help="Path to the input file containing keywords and IDs")
+    parser.add_argument("input_file", help="Path to the benchmark definition file")
 
     args = parser.parse_args()
     
@@ -38,14 +110,8 @@ def main():
     
     results = process_file(args.input_file, models, args.db_path, args.nb_results, args.keyword_type)
     
-    # Print results
-    for id, data in results.items():
-        print(f"\nResults for ID: {id}, Keyword: {data['keyword']}")
-        for model, model_results in data['results'].items():
-            print(f"\n  Model: {model}")
-            for result in model_results['matches']:
-                print(f"    {result['id']}\t{result['keyword']}")
-            print(f"    Success: {model_results['success']}")
+    # Generate HTML report
+    generate_html(results)
 
 if __name__ == "__main__":
     main()

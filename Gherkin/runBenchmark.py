@@ -108,6 +108,7 @@ def main():
     
     models = [model.strip() for model in args.models.split(',')]
     
+    # Run benchmark
     results = process_file(args.benchmark_file, models, args.db_path, args.nb_results, args.keyword_type)
     
     # Generate HTML report

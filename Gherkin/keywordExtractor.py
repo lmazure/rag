@@ -89,20 +89,18 @@ def process_feature_files(file_paths: List[str]) -> Dict:
 def main():
     # Get list of feature files from command line arguments
     if len(sys.argv) < 2:
-        print("Usage: python script.py keyword_list.json feature_file1.feature feature_file2.feature ...")
+        print("Usage: python script.py feature_file1.feature feature_file2.feature ... keyword_list.json")
         sys.exit(1)
     
-    feature_files = sys.argv[2:]
-    
+    feature_files = sys.argv[1:-1]
+    output_file = sys.argv[-1]
+
     # Process the files and get the keywords
     result = process_feature_files(feature_files)
     
     # Write the result to a JSON file
-    output_file = sys.argv[1]
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=2)
-    
-    print(f"Keywords have been extracted and saved to {output_file}")
 
 if __name__ == "__main__":
     main()

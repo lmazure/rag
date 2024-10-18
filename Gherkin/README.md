@@ -1,3 +1,4 @@
+# Code
 
 ## Setup
 ```sh
@@ -6,7 +7,7 @@ pip install -r requirements.txt
 
 ## Extraction of the keywords appearing in some feature files
 ```sh
-python keywordExtractor.py my_list.json Gkerkin\ samples/*.feature
+python keywordExtractor.py Gkerkin\ samples/*.feature my_list.json
 ```
 will create `my_list.json` which is the list of all keywords appearing in the `samples/*.feature` files.
 
@@ -14,19 +15,32 @@ will create `my_list.json` which is the list of all keywords appearing in the `s
 ```sh
 python fillDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database my_list.json
 ```
-populate the database with the keywords stored in the `my_list.json` file.
+populates the database with the keywords stored in the `my_list.json` file.
 
-## query the ChromaDB database
+## Query the ChromaDB database
 ```sh
 python queryDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
 ```
 
-## dump the ChromaDB database
+## Dump the ChromaDB database
 ```sh
 python dumpDatabase.py --db_path chromadb/database
 ```
 
-## todo
+## Parameters
+| parameter        | meaning                                                   |
+| ---------------- | --------------------------------------------------------- |
+| `--model`        | name of the embedding model (see [below](#usable-models)) |
+| `--db_path`      | folder where is the ChromaDB database                     |
+| `--keyword_type` | `Context`, `Action`, or `Outcome`                         |
+| `--nb_results  ` | number of matches to return                               |
+
+# Usable models
+You can use the models listed [here](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html#original-models).
+
+# Todo
+
 - test unicity of keywords
-- parametrize model
 - management of incorrect feature files
+- management of the datatable column names
+- ☠ ⸘management of the parameters‽

@@ -34,6 +34,15 @@ python dumpDatabase.py --db_path chromadb/database
 rm -r chromadb/database
 ```
 
+## Do everything for comparing two (or more) models
+```sh
+pip install -r requirements.txt
+python fillDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database benchmark/keyword_samples.json
+python fillDatabase.py --model all-mpnet-base-v2 --db_path ./chromadb/database benchmark/keyword_samples.json
+python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 benchmark/bench_definition.tsv report.html
+rm -r chromadb/database
+```
+
 ## Parameters
 | parameter        | meaning                                                           |
 | ---------------- | ----------------------------------------------------------------- |

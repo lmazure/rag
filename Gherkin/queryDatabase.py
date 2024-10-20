@@ -19,7 +19,7 @@ def extract_keywords(db_path, model, keyword_type, keyword, nb_results):
         n_results=nb_results
     )
 
-    return [{"id": results['ids'][0][i], "keyword": results['documents'][0][i]} for i in range(len(results['ids'][0]))]
+    return [{"id": results['ids'][0][i][:-2], "keyword": results['documents'][0][i]} for i in range(len(results['ids'][0]))]
 
 def main():
     parser = argparse.ArgumentParser(description="Query Chroma database for keyword matches.")

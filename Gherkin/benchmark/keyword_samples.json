@@ -1,0 +1,796 @@
+{
+  "keywords": [
+    {
+      "type": "Context",
+      "keyword": "I am logged in",
+      "description": "Je suis connecté",
+      "id": "297bb844-5e48-49b2-8468-57573ccbf28f"
+    },
+    {
+      "type": "Context",
+      "keyword": "I am logged in as a customer",
+      "description": "Je suis connecté en tant que client",
+      "id": "0d178b4f-1e4d-442c-8d7c-fda2eaee6f55"
+    },
+    {
+      "type": "Context",
+      "keyword": "I am on a product page with multiple reviews",
+      "description": "Je suis sur une page de produit avec plusieurs avis",
+      "id": "4881b8fa-9142-4d47-8c51-6ea65ea3b55b"
+    },
+    {
+      "type": "Context",
+      "keyword": "I am on the checkout page",
+      "description": "Je suis sur la page de paiement",
+      "id": "c6fdc70d-91fa-4105-9085-5c0dc0aa830c"
+    },
+    {
+      "type": "Context",
+      "keyword": "I am on the home page",
+      "description": "Je suis sur la page d'accueil",
+      "id": "130d4069-b22c-4363-9845-3d39efa3476d"
+    },
+    {
+      "type": "Context",
+      "keyword": "I am on the product listing page",
+      "description": "Je suis sur la page de liste des produits",
+      "id": "0bd282a0-1a64-4c39-bc2f-189ca22ea3d2"
+    },
+    {
+      "type": "Context",
+      "keyword": "I am viewing a product priced at \"$199.99\"",
+      "description": "Je visualise un produit au prix de \"199,99 $\"",
+      "id": "0db2d7c5-6814-4f88-999e-b6d343dc6613"
+    },
+    {
+      "type": "Context",
+      "keyword": "I am viewing a product with ID \"PROD-001\"",
+      "description": "Je visualise un produit avec l'ID \"PROD-001\"",
+      "id": "abc78685-5319-4f53-99de-68ea67913c97"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have a gift card with code \"GC-12345-ABCDE\"",
+      "description": "J'ai une carte-cadeau avec le code \"GC-12345-ABCDE\"",
+      "id": "60c2bf7e-4fca-462f-8ba7-0efea39e0d8a"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have a saved payment method",
+      "description": "J'ai une méthode de paiement enregistrée",
+      "id": "82d884ce-78b0-4eb4-95f9-f57b0a61a602"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have a saved shipping address",
+      "description": "J'ai une adresse de livraison enregistrée",
+      "id": "cf9af2df-381b-4893-a970-d0e911890359"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have an eligible order for return",
+      "description": "J'ai une commande éligible au retour",
+      "id": "2b1c23b9-8845-41af-b263-adb6ede402c6"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have items in my cart",
+      "description": "J'ai des articles dans mon panier",
+      "id": "96bfb42a-d897-4e20-89ca-455a08be37da"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have items in my wishlist",
+      "description": "J'ai des articles dans ma liste de souhaits",
+      "id": "f71d1318-d525-4369-ada7-95a21c6c183e"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have placed an order with ID \"ORD-12345\"",
+      "description": "J'ai passé une commande avec l'ID \"ORD-12345\"",
+      "id": "904ac718-0f2b-484e-9ea2-af6c73afadd8"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have placed an order within the last 24 hours",
+      "description": "J'ai passé une commande au cours des dernières 24 heures",
+      "id": "18ae5588-5fec-472d-aece-af48bd32eafc"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have purchased product \"PROD-001\"",
+      "description": "J'ai acheté le produit \"PROD-001\"",
+      "id": "458d5adf-0856-47c3-8a54-3d305a6c1d56"
+    },
+    {
+      "type": "Context",
+      "keyword": "I have the following items in my cart:",
+      "description": "J'ai les articles suivants dans mon panier :",
+      "id": "28a8d9cf-c7d9-4d63-b7e3-fcc4b0ab2f90"
+    },
+    {
+      "type": "Context",
+      "keyword": "I navigate to the product review section",
+      "description": "Je navigue vers la section des avis sur le produit",
+      "id": "153e8648-3b49-465c-8bcd-ffcc095a95be"
+    },
+    {
+      "type": "Context",
+      "keyword": "my shopping cart is empty",
+      "description": "mon panier est vide",
+      "id": "595de6a3-2203-4d59-935b-fdd6f3d322c7"
+    },
+    {
+      "type": "Context",
+      "keyword": "the e-commerce website is accessible",
+      "description": "le site web de commerce électronique est accessible",
+      "id": "3c1d0e2b-98a5-4f6d-87f5-1b3d859439aa"
+    },
+    {
+      "type": "Context",
+      "keyword": "the following products are available:",
+      "description": "les produits suivants sont disponibles :",
+      "id": "be5e34b9-05ea-4ab7-9fe9-8cbe2ad95b4f"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has <Initial Quantity> \"<Product>\" in the cart",
+      "description": "l'utilisateur a <Initial Quantity> \"<Product>\" dans le panier",
+      "id": "309150be-a22f-43d0-ad8b-d0ca80b838c2"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has added \"<Product>\" to the cart",
+      "description": "l'utilisateur a ajouté \"<Product>\" au panier",
+      "id": "149d7c74-e7b3-47b7-a17d-449144db210b"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has items in the cart",
+      "description": "l'utilisateur a des articles dans le panier",
+      "id": "30092c83-6d66-4eb8-872a-46a2fdbd947b"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has the following items in the cart:",
+      "description": "l'utilisateur a les articles suivants dans le panier :",
+      "id": "6f09d689-84ce-41ab-9a1f-e857924ddc52"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user is logged in",
+      "description": "l'utilisateur est connecté",
+      "id": "832fb010-0cae-4700-8236-754a9b0902a5"
+    },
+    {
+      "type": "Action",
+      "keyword": "I accept the terms and conditions",
+      "description": "J'accepte les termes et conditions",
+      "id": "7573118d-b333-4cc5-8019-983d855b7eda"
+    },
+    {
+      "type": "Action",
+      "keyword": "I add a personal message",
+      "description": "J'ajoute un message personnel",
+      "id": "fe27cf29-bdac-49ee-b14f-825a78296ec1"
+    },
+    {
+      "type": "Action",
+      "keyword": "I apply the following filters:",
+      "description": "J'applique les filtres suivants :",
+      "id": "f7d54316-7ee3-44bc-b6a3-f90255004e81"
+    },
+    {
+      "type": "Action",
+      "keyword": "I choose \"Express Shipping\"",
+      "description": "Je choisis \"Livraison Express\"",
+      "id": "1cd3ee7f-8661-4411-ade2-4edc52a6c17c"
+    },
+    {
+      "type": "Action",
+      "keyword": "I choose \"Standard Shipping\"",
+      "description": "Je choisis \"Livraison Standard\"",
+      "id": "48447454-fb0c-4503-af20-a6db1c8d204c"
+    },
+    {
+      "type": "Action",
+      "keyword": "I click \"Add New Address\"",
+      "description": "Je clique sur \"Ajouter une nouvelle adresse\"",
+      "id": "74a817cd-641e-47bc-94ea-2b9e228a02de"
+    },
+    {
+      "type": "Action",
+      "keyword": "I click \"Add to Cart\"",
+      "description": "Je clique sur \"Ajouter au panier\"",
+      "id": "f417f78a-1645-40d4-89aa-3b0b781416f7"
+    },
+    {
+      "type": "Action",
+      "keyword": "I click \"Create Account\"",
+      "description": "Je clique sur \"Créer un compte\"",
+      "id": "d4bd3b69-df44-4f41-ad42-26776eb46a65"
+    },
+    {
+      "type": "Action",
+      "keyword": "I click \"Place Order\"",
+      "description": "Je clique sur \"Passer la commande\"",
+      "id": "fb256f35-dae3-4a82-b6e1-4cac4cfa75c3"
+    },
+    {
+      "type": "Action",
+      "keyword": "I click \"Share Wishlist\"",
+      "description": "Je clique sur \"Partager la liste de souhaits\"",
+      "id": "00edea53-6781-41fd-bf96-c86650e6c925"
+    },
+    {
+      "type": "Action",
+      "keyword": "I click on \"Register\"",
+      "description": "Je clique sur \"S'inscrire\"",
+      "id": "3ddf5f74-b85d-4609-bb12-89921d30d5be"
+    },
+    {
+      "type": "Action",
+      "keyword": "I click the \"Add to Wishlist\" button on a product",
+      "description": "Je clique sur le bouton \"Ajouter à la liste de souhaits\" d'un produit",
+      "id": "847e8905-7c16-4481-8596-77ff57e9a6e8"
+    },
+    {
+      "type": "Action",
+      "keyword": "I click the search button",
+      "description": "Je clique sur le bouton de recherche",
+      "id": "4ea92931-7518-4fbf-9aa9-713ac0af74ba"
+    },
+    {
+      "type": "Action",
+      "keyword": "I enter \"winter jacket\" in the search bar",
+      "description": "Je saisis \"veste d'hiver\" dans la barre de recherche",
+      "id": "6354be9a-f39e-44f1-ad3a-f2f7c025b0c6"
+    },
+    {
+      "type": "Action",
+      "keyword": "I enter an email address",
+      "description": "Je saisis une adresse e-mail",
+      "id": "ebda16a5-c712-4c1e-8967-eddfbcf469da"
+    },
+    {
+      "type": "Action",
+      "keyword": "I enter the following details:",
+      "description": "Je saisis les détails suivants :",
+      "id": "9b8e7bc3-30ed-4502-b7ad-af287966c6bc"
+    },
+    {
+      "type": "Action",
+      "keyword": "I enter the gift card code at checkout",
+      "description": "Je saisis le code de la carte-cadeau lors du paiement",
+      "id": "7f99d793-1ea9-43ba-9c03-a628290d534c"
+    },
+    {
+      "type": "Action",
+      "keyword": "I fill in the following address details:",
+      "description": "Je remplis les détails d'adresse suivants :",
+      "id": "7bdc06d4-c9c9-4867-b757-11df42ac4a12"
+    },
+    {
+      "type": "Action",
+      "keyword": "I fill in the following details:",
+      "description": "Je remplis les détails suivants :",
+      "id": "daf46df1-a44e-4f70-b4fc-bf54336213f5"
+    },
+    {
+      "type": "Action",
+      "keyword": "I fill in valid payment details",
+      "description": "Je remplis des détails de paiement valides",
+      "id": "f0548b66-776e-49d0-96db-28978f0676ab"
+    },
+    {
+      "type": "Action",
+      "keyword": "I filter reviews by:",
+      "description": "Je filtre les avis par :",
+      "id": "2ea5869f-b56d-4d92-9a7c-ba2022effbad"
+    },
+    {
+      "type": "Action",
+      "keyword": "I initiate a return request",
+      "description": "J'initie une demande de retour",
+      "id": "e20c9424-61ff-4158-bdb8-8f972e7ffea5"
+    },
+    {
+      "type": "Action",
+      "keyword": "I provide a reason for cancellation",
+      "description": "Je fournis une raison d'annulation",
+      "id": "10a60d7b-4c16-4817-8866-14d04c2d70c7"
+    },
+    {
+      "type": "Action",
+      "keyword": "I remove \"Classic Tee\" from my cart",
+      "description": "Je retire \"Classic Tee\" de mon panier",
+      "id": "cf78031c-76c8-476c-adac-2d7941ed674b"
+    },
+    {
+      "type": "Action",
+      "keyword": "I select \"Buy Gift Card\"",
+      "description": "Je sélectionne \"Acheter une carte cadeau\"",
+      "id": "6990403d-fd3f-4b52-9050-a57685a60265"
+    },
+    {
+      "type": "Action",
+      "keyword": "I select \"Cancel Order\"",
+      "description": "Je sélectionne \"Annuler la commande\"",
+      "id": "62869e0d-5de9-4f2a-a895-9e7de8cbac71"
+    },
+    {
+      "type": "Action",
+      "keyword": "I select color \"Black\"",
+      "description": "Je sélectionne la couleur \"Noir\"",
+      "id": "9f883cb7-e8e8-4c2e-8a88-38eff79f43f5"
+    },
+    {
+      "type": "Action",
+      "keyword": "I select color \"Blue\"",
+      "description": "Je sélectionne la couleur \"Bleu\"",
+      "id": "fc748c32-c24e-48b9-a089-368fef29416d"
+    },
+    {
+      "type": "Action",
+      "keyword": "I select my saved payment method",
+      "description": "Je sélectionne mon mode de paiement enregistré",
+      "id": "699f8124-492c-4edc-9776-05f54caba5f3"
+    },
+    {
+      "type": "Action",
+      "keyword": "I select my saved shipping address",
+      "description": "Je sélectionne mon adresse de livraison enregistrée",
+      "id": "3d1da4ca-5968-4454-81df-2d3898315d61"
+    },
+    {
+      "type": "Action",
+      "keyword": "I select size \"L\"",
+      "description": "Je sélectionne la taille \"L\"",
+      "id": "f8d83630-f414-4cfe-9588-7d2cd68c04bd"
+    },
+    {
+      "type": "Action",
+      "keyword": "I select size \"M\"",
+      "description": "Je sélectionne la taille \"M\"",
+      "id": "7821efd0-8ae8-44e2-a8eb-2a22818be699"
+    },
+    {
+      "type": "Action",
+      "keyword": "I select the following details:",
+      "description": "Je sélectionne les détails suivants :",
+      "id": "c52ac660-5f3a-4a79-955a-2a9568fadea7"
+    },
+    {
+      "type": "Action",
+      "keyword": "I set a price alert for \"$150.00\"",
+      "description": "Je définis une alerte de prix pour \"150,00 $\"",
+      "id": "3208236b-ebe8-449c-a683-70bd7dffc948"
+    },
+    {
+      "type": "Action",
+      "keyword": "I set quantity to 1",
+      "description": "Je définis la quantité à 1",
+      "id": "52298d71-77a7-4072-9445-46b5a80299a5"
+    },
+    {
+      "type": "Action",
+      "keyword": "I set quantity to 3",
+      "description": "Je définis la quantité à 3",
+      "id": "10c829bd-f24e-4b90-880d-9d4cc335ee95"
+    },
+    {
+      "type": "Action",
+      "keyword": "I submit a review with the following details:",
+      "description": "Je soumets un avis avec les détails suivants :",
+      "id": "72739465-0702-445b-99a6-c5ad47bcd51b"
+    },
+    {
+      "type": "Action",
+      "keyword": "I view my order details",
+      "description": "Je consulte les détails de ma commande",
+      "id": "291a7a80-1e00-4e0e-b8b3-76673e459e4f"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user adds 1 \"T-shirt\" to the cart",
+      "description": "l'utilisateur ajoute 1 \"T-shirt\" au panier",
+      "id": "64329716-5ef3-4cc9-ac63-a4912e788c0f"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user adds the following items to the cart:",
+      "description": "l'utilisateur ajoute les articles suivants au panier :",
+      "id": "e979ad91-63a9-4bca-a91b-740975398127"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user applies the discount code \"<Code>\"",
+      "description": "l'utilisateur applique le code de réduction \"<Code>\"",
+      "id": "5564a7a8-7097-47df-a49c-1349057e6975"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user checks the stock for \"Sneakers\"",
+      "description": "l'utilisateur vérifie le stock pour \"Baskets\"",
+      "id": "608afe73-ee1c-4ba4-8597-65b4fb66a59a"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user empties the cart",
+      "description": "l'utilisateur vide le panier",
+      "id": "25010538-bd6b-472a-934b-6833c699ee91"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user proceeds to checkout",
+      "description": "l'utilisateur procède au paiement",
+      "id": "6a3b9fae-a233-40b8-944a-568f6e27350d"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user removes 1 \"T-shirt\" from the cart",
+      "description": "l'utilisateur retire 1 \"T-shirt\" du panier",
+      "id": "19693072-c140-49d2-8909-3390e4a92c06"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user updates the quantity to <New Quantity>",
+      "description": "l'utilisateur met à jour la quantité à <Nouvelle Quantité>",
+      "id": "51e2bdf3-07b2-4634-ae3c-e3d448056e6f"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "\"Classic Tee\" should not be in my cart",
+      "description": "\"Classic Tee\" ne devrait pas être dans mon panier",
+      "id": "65575af3-057a-4d66-a0a5-13c2e7022b9d"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "a wishlist link should be sent to the specified email",
+      "description": "un lien vers la liste de souhaits devrait être envoyé à l'adresse e-mail spécifiée",
+      "id": "eab8b8be-caac-458b-b292-53c93323e680"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "any payment should be refunded",
+      "description": "tout paiement devrait être remboursé",
+      "id": "fc517f46-9482-478c-8bf9-aea233089ac9"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "any remaining balance should be saved to my account",
+      "description": "tout solde restant devrait être enregistré sur mon compte",
+      "id": "aa136449-8be2-4e68-bd55-742ad47dde8d"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "each product should contain the word \"jacket\" in its name or description",
+      "description": "chaque produit devrait contenir le mot \"veste\" dans son nom ou sa description",
+      "id": "3e6cf6e1-626b-4615-922c-049fbdf312da"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should be able to remove filters individually",
+      "description": "Je devrais pouvoir supprimer les filtres individuellement",
+      "id": "63d2a584-d341-4936-8e3f-513d2682dfbc"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should be logged in automatically",
+      "description": "Je devrais être connecté automatiquement",
+      "id": "04109531-1dce-4b3d-95b4-19ca59ac49de"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should be notified when the price drops to or below $150.00",
+      "description": "Je devrais être notifié lorsque le prix baisse à 150,00 $ ou moins",
+      "id": "163e1ead-2e5b-4959-bccc-82dd572ca2fa"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should have the option to use this address for future orders",
+      "description": "Je devrais avoir l'option d'utiliser cette adresse pour les commandes futures",
+      "id": "2bf5f9a9-dccf-46d4-bb16-824c383914f3"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should only see reviews matching my filters",
+      "description": "Je ne devrais voir que les avis correspondant à mes filtres",
+      "id": "39e63e1e-2be5-41ab-b30c-c51850db8f13"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should receive a cancellation confirmation email",
+      "description": "Je devrais recevoir un e-mail de confirmation d'annulation",
+      "id": "482d36e5-dd00-4587-96e0-61d60139a8c4"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should receive a confirmation",
+      "description": "Je devrais recevoir une confirmation",
+      "id": "38180780-8cd1-4427-9b1a-4dc24bbf8ea8"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should receive a confirmation email",
+      "description": "Je devrais recevoir un e-mail de confirmation",
+      "id": "e204df5e-704d-4740-8d41-bf3534a55a1a"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should receive a purchase confirmation",
+      "description": "Je devrais recevoir une confirmation d'achat",
+      "id": "f78dddf0-38df-484d-acc7-f76f6deaf222"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should receive a welcome email",
+      "description": "Je devrais recevoir un e-mail de bienvenue",
+      "id": "27ab863d-1566-4216-a5c2-59949fed2106"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should receive an order confirmation email",
+      "description": "Je devrais recevoir un e-mail de confirmation de commande",
+      "id": "234da01d-06d6-4d0c-8d4e-21f045434d66"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should receive return instructions",
+      "description": "Je devrais recevoir des instructions de retour",
+      "id": "09764777-1b5b-455f-9c5a-df7a7870c985"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should receive return shipping labels",
+      "description": "Je devrais recevoir des étiquettes d'expédition pour le retour",
+      "id": "d3438957-ccbe-4c3f-9391-ef0c3d8e9a77"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should see a confirmation message",
+      "description": "Je devrais voir un message de confirmation",
+      "id": "68f548cb-9cf4-4a9b-abde-0155ba85012e"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should see a confirmation message \"Item added to cart\"",
+      "description": "Je devrais voir un message de confirmation \"Article ajouté au panier\"",
+      "id": "4a4370d9-1821-4750-aeb0-e543cb771c27"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should see an order confirmation",
+      "description": "Je devrais voir une confirmation de commande",
+      "id": "23cda9af-692f-4b0f-a84e-05d207e4f548"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should see only products that match all selected criteria",
+      "description": "Je ne devrais voir que les produits correspondant à tous les critères sélectionnés",
+      "id": "7f03c785-af07-466a-ad77-f5bf266055b5"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should see products related to \"winter jacket\"",
+      "description": "Je devrais voir des produits liés à \"veste d'hiver\"",
+      "id": "a64a076f-0aff-436f-8c58-6bc8d7dbaff6"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should see the correct subtotal for 3 items",
+      "description": "Je devrais voir le sous-total correct pour 3 articles",
+      "id": "209876a8-ca87-4d42-9522-d58ce6e059bf"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should see the error message \"<errorMessage>\"",
+      "description": "Je devrais voir le message d'erreur \"<messageErreur>\"",
+      "id": "380f6e37-5bf5-4d2b-905b-e59c912e2faf"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should see the estimated delivery date",
+      "description": "Je devrais voir la date de livraison estimée",
+      "id": "dd574698-37e7-45e4-82c4-c646866cce99"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "I should see the shipping carrier and tracking number",
+      "description": "Je devrais voir le transporteur et le numéro de suivi",
+      "id": "929e02f9-e92e-4143-9d7e-085fcee89e97"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "my cart should be empty",
+      "description": "mon panier devrait être vide",
+      "id": "9cde069c-13d4-4400-963e-05d30ab8ebc8"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "my cart should contain 1 item",
+      "description": "mon panier devrait contenir 1 article",
+      "id": "26467335-a305-450c-abb8-229af8feda42"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "my cart should contain 3 items",
+      "description": "mon panier devrait contenir 3 articles",
+      "id": "7f1f702b-23ca-4ea4-9b62-f20f2a36e8bd"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "my review should be visible on the product page",
+      "description": "mon avis devrait être visible sur la page du produit",
+      "id": "4b84a344-b8a8-4149-9b33-4725563a0b57"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "prompt for shipping information",
+      "description": "demander les informations d'expédition",
+      "id": "beac263d-b94d-443f-b380-b8724238c763"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cart should be empty",
+      "description": "le panier devrait être vide",
+      "id": "143fb3ad-bf84-42f1-87c8-2dfd1e34c282"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cart should contain 1 item",
+      "description": "le panier devrait contenir 1 article",
+      "id": "5f1ead01-87d2-431c-b599-727f3ac6a9f4"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cart should contain 2 items",
+      "description": "le panier devrait contenir 2 articles",
+      "id": "986fcbdf-8bd6-49f2-a257-3227642d4dae"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cart should contain 3 items",
+      "description": "le panier devrait contenir 3 articles",
+      "id": "d61c11f2-38f1-48c8-beed-d9b203377e41"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cart should contain <New Quantity> \"<Product>\"",
+      "description": "le panier devrait contenir <Nouvelle Quantité> \"<Produit>\"",
+      "id": "85239953-48fa-4a96-a680-deb5e04d1a80"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cart total should be updated accordingly",
+      "description": "le total du panier devrait être mis à jour en conséquence",
+      "id": "674b197f-5230-41ee-b82d-c655f7a5267f"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cart total should be updated to 59.99",
+      "description": "le total du panier devrait être mis à jour à 59,99",
+      "id": "9b176b73-0afc-4cfc-8c28-0fbee8ddf788"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the gift card balance should be applied to my order",
+      "description": "le solde de la carte cadeau devrait être appliqué à ma commande",
+      "id": "17de51a1-47b1-4f8e-8367-57f5080345e1"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the gift card should be scheduled for delivery",
+      "description": "la carte cadeau devrait être programmée pour la livraison",
+      "id": "d2c64f6b-743d-4d70-b192-f5438e34708b"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the new address should be saved to my account",
+      "description": "la nouvelle adresse devrait être enregistrée dans mon compte",
+      "id": "802075a6-3265-4bdc-8961-9ff9016e24e0"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the order should appear in my order history",
+      "description": "la commande devrait apparaître dans mon historique de commandes",
+      "id": "4a4ead8f-dcaa-4d9b-812f-9a7da72086a2"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the order should be cancelled",
+      "description": "la commande devrait être annulée",
+      "id": "e15c7f08-607e-41f1-b115-a0267b6aa8b6"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the product count should update automatically",
+      "description": "le nombre de produits devrait se mettre à jour automatiquement",
+      "id": "cb2a0f52-882c-4b8d-8f08-7732030bc8c9"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the product should be added to my wishlist",
+      "description": "le produit devrait être ajouté à ma liste de souhaits",
+      "id": "e577c17c-bcda-4f4f-a096-99e0f2c8cf81"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the product's average rating should be updated",
+      "description": "la note moyenne du produit devrait être mise à jour",
+      "id": "880963c1-09ac-4cb2-8689-6d084afb5cc4"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the return should be tracked in my account",
+      "description": "le retour devrait être suivi dans mon compte",
+      "id": "8442df9f-95b9-461e-89b4-8bb200716d36"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the review count should update accordingly",
+      "description": "le nombre d'avis devrait être mis à jour en conséquence",
+      "id": "19e066e3-f058-4d2b-b8bd-21e0b3b26209"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the search results should show the number of items found",
+      "description": "les résultats de recherche devraient afficher le nombre d'articles trouvés",
+      "id": "c5933ce9-754a-46b0-97fa-a20e9a6e95d5"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the system should display \"25 items available\"",
+      "description": "le système devrait afficher \"25 articles disponibles\"",
+      "id": "667856e0-6477-44c2-ae97-19d171f2f78c"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the system should display the order summary",
+      "description": "le système devrait afficher le résumé de la commande",
+      "id": "ccbcb0e7-0ca0-4edb-ad77-1e6fab641dcc"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the total price should be \"<Final Price>\"",
+      "description": "le prix total devrait être \"<Prix Final>\"",
+      "id": "d7c12b72-3f16-494f-b87a-9c012688cdcf"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the total price should be $0.00",
+      "description": "le prix total devrait être de 0,00 $",
+      "id": "5fa51ac8-e2dd-4bbc-bc85-5009eaa4c76b"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the total price should be $19.99",
+      "description": "le prix total devrait être de 19,99 $",
+      "id": "c0a79ecf-279c-42b6-94aa-e01ea7cffddf"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the total price should be $69.98",
+      "description": "le prix total devrait être de 69,98 $",
+      "id": "9242d476-81a0-43d3-9e99-5a56e92c84e1"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the total price should be $89.97",
+      "description": "le prix total devrait être de 89,97 $",
+      "id": "544ed194-e6ef-49b4-bb9f-1a9107cc0ef6"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the total price should be <Total Price>",
+      "description": "le prix total devrait être <Prix Total>",
+      "id": "d8988c58-f772-43ee-8101-02240c579d1c"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the wishlist counter should increment",
+      "description": "le compteur de la liste de souhaits devrait s'incrémenter",
+      "id": "2338ad28-304d-4080-8dd2-ae6f3f9ca690"
+    }
+  ]
+}

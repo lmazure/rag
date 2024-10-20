@@ -1,5 +1,7 @@
 keyword type	looked-up string	expected keyword ID
-Outcome	I have a saved receiving address	bcddaf85-8a8a-47e6-baa7-8256f451e727-k
-Outcome	My address is saved	bcddaf85-8a8a-47e6-baa7-8256f451e727-k
-Outcome	My adres is saved	bcddaf85-8a8a-47e6-baa7-8256f451e727-k
+Outcome	I have a saved receiving address	802075a6-3265-4bdc-8961-9ff9016e24e0
+Outcome	My address is saved	802075a6-3265-4bdc-8961-9ff9016e24e0
+Outcome	My adres is saved	802075a6-3265-4bdc-8961-9ff9016e24e0
 Outcome	blabla	42
+Outcome	le prix total doit être <Montant Total>	d8988c58-f772-43ee-8101-02240c579d1c
+Context	I a logged in client	0d178b4f-1e4d-442c-8d7c-fda2eaee6f55

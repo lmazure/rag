@@ -3,7 +3,7 @@ import csv
 import html
 from queryDatabase import extract_keywords
 
-def process_file(file_path, models, db_path, nb_results, keyword_type):
+def process_file(file_path, models, db_path, nb_results):
     results = {}
     index = 1
     
@@ -12,16 +12,16 @@ def process_file(file_path, models, db_path, nb_results, keyword_type):
         reader = csv.reader(file, delimiter='\t')
         for row in reader:
             
-            keyword, expected_id = row
-            keyword_results = {}
+            keyword_type, keyword, expected_id = row
+            search_results = {}
             
             for model in models:
                 model_results = extract_keywords(db_path, model, keyword_type, keyword, nb_results)
-                keyword_results[model] = { 'matches': model_results, 'success': [result['id'] for result in model_results].index(expected_id) if expected_id in [result['id'] for result in model_results] else -1 }
+                search_results[model] = { 'matches': model_results, 'success': [result['id'] for result in model_results].index(expected_id) if expected_id in [result['id'] for result in model_results] else -1 }
             
             results[index] = {
                 'keyword': keyword,
-                'results': keyword_results
+                'results': search_results
             }
             index += 1
     return results
@@ -100,7 +100,6 @@ def main():
     parser.add_argument("--models", required=True, help="Comma-separated list of the names of the models to evaluate")
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")
     parser.add_argument("--nb_results", default=3, type=int, required=True, help="Number of matches to consider (default: 3)")
-    parser.add_argument("--keyword_type", required=True, choices=["Context", "Action", "Outcome"], help="Type of keyword")
     parser.add_argument("benchmark_file", help="Path to the benchmark definition file")
     parser.add_argument("report_file", help="Path to the HTML report file to generate")
 
@@ -109,7 +108,7 @@ def main():
     models = [model.strip() for model in args.models.split(',')]
     
     # Run benchmark
-    results = process_file(args.benchmark_file, models, args.db_path, args.nb_results, args.keyword_type)
+    results = process_file(args.benchmark_file, models, args.db_path, args.nb_results)
     
     # Generate HTML report
     generate_html(args.report_file, results)

@@ -18,7 +18,7 @@ python queryDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database -
 
 ## Run a benchmark
 ```sh
-python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --keyword_type "Outcome" --nb_results 3  benchmark/bench_definition.tsv report.html
+python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 benchmark/bench_definition.tsv report.html
 ```
 runs a beanchmark.  
 `benchmark/bench_definition.tsv` is the branchmark definition, each line contains the looed-up keyword and the ID of the exepcted matching keyword, separatd by a tab.  

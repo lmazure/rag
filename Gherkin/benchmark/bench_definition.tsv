@@ -1,5 +1,5 @@
-looked-up string	expected keyword ID
-I have a saved receiving address	bcddaf85-8a8a-47e6-baa7-8256f451e727-k
-My address is saved	bcddaf85-8a8a-47e6-baa7-8256f451e727-k
-My adres is saved	bcddaf85-8a8a-47e6-baa7-8256f451e727-k
-blabla	42
+keyword type	looked-up string	expected keyword ID
+Outcome	I have a saved receiving address	bcddaf85-8a8a-47e6-baa7-8256f451e727-k
+Outcome	My address is saved	bcddaf85-8a8a-47e6-baa7-8256f451e727-k
+Outcome	My adres is saved	bcddaf85-8a8a-47e6-baa7-8256f451e727-k
+Outcome	blabla	42

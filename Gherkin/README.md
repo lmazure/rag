@@ -1,12 +1,12 @@
 # Running a benchmark
 
-## TL;DR -- Do everything for comparing two (or more) models
+## TL;DR -- Do everything for comparing two (or more) embedding models
 ```sh
 pip install -r requirements.txt
-python fillDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database benchmark/keyword_samples.json
-python fillDatabase.py --model all-mpnet-base-v2 --db_path ./chromadb/database benchmark/keyword_samples.json
-python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 benchmark/bench_definition.tsv report.html
-rm -r chromadb/database
+python fillDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python fillDatabase.py --model all-mpnet-base-v2 --db_path ./chromadb/database ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
+rm -r ./chromadb/database
 ```
 
 ## Setup
@@ -23,31 +23,31 @@ populates the database using a given embedding model with the keywords stored in
 If the database does not exist before running the script, this one will create it.  
 If the embedding model is not present on the computer, the script will download and install it.  
 If an ID already exists for a given model and keyword type, the corresponding keyword and description will be replaced.  
-(There is currently no way to remove a given from the database.)
+(There is currently no way to remove a given keyword and/or description from the database.)
 
 ## Query the Chroma database
 ```sh
 python queryDatabase.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
 ```
-looks for the `I have a saved receiving address` string in the keyword and decriptions of the Outcome ketywords using embedding model `all-MiniLM-L6-v2`.
+looks for the `I have a saved receiving address` string in the keywords and descriptions of the Outcome keywords using embedding model `all-MiniLM-L6-v2`.
 
 ## Run a benchmark
 ```sh
-python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 benchmark/bench_definition.tsv report.html
+python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
 ```
 runs a benchmark.  
-`benchmark/bench_definition.tsv` is the branchmark definition. This one is a TSV (Tab Separated Value) file. THe first line contain the headers, it is ignored. Each other line must contains a keyword type, a looked-up keyword, and the ID of the exepcted matching keyword (the matching being via the keyword itself or via its definition).  
+`/Laurent\ initial\ benchmark/bench_definition.tsv` is the benchmark definition. This one is a TSV (Tab Separated Value) file. The first line contains the headers, it is ignored. Each other line must contains a keyword type, a looked-up keyword, and the ID of the expected matching keyword (the matching being via the keyword itself or via its definition).  
 `report.html` is the name of the HTML benchmark report that will be generated.
 
 ## Dump content the Chroma database
 ```sh
-python dumpDatabase.py --db_path chromadb/database
+python dumpDatabase.py --db_path ./chromadb/database
 ```
 will display the whole content of the database.
 
 ## Delete the Chroma database
 ```sh
-rm -r chromadb/database
+rm -r ./chromadb/database
 ```
 
 ## Parameters
@@ -102,7 +102,7 @@ You can use the models listed [here](https://www.sbert.net/docs/sentence_transfo
 ## Extraction of the keywords appearing in some feature files
 You can use this if you want to create a keyword library from your existing feature files.
 ```sh
-python keywordExtractor.py Gkerkin\ samples/*.feature my_list.json
+python keywordExtractor.py Gherkin\ samples/*.feature my_list.json
 ```
 will create `my_list.json` which is the list of all keywords appearing in the `samples/*.feature` files.
 

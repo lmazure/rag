@@ -7,7 +7,7 @@ def process_file(file_path, models, db_path, nb_results):
     results = {}
     index = 1
     
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf-8') as file:
         next(file)  # Skip header row
         reader = csv.reader(file, delimiter='\t')
         for row in reader:

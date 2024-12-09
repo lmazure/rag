@@ -1,0 +1,10 @@
+keyword type	looked up string	expected keyword ID
+Action	Je crée un répertoire	4
+Action	Je suis connecté	2
+Action	Je passe à la page suivante	6
+Action	J'obtiens du bleu	10
+Action	J'obtiens un bouton bleu	10
+Action	Je suis observateur	8
+Action	Je fais une recherche	14
+Action	authentification	1
+Action	Je change de langue	11

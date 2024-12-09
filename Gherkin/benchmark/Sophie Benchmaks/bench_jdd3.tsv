@@ -1,0 +1,10 @@
+keyword type	looked up string	expected keyword ID
+Action	I create a directory	4
+Action	I'm connected	2
+Action	I go to the next page	6
+Action	I get blue	10
+Action	I get a blue button	10
+Action	I am an observer	8
+Action	I do a research	14
+Action	authentication	1
+Action	I switch language	11

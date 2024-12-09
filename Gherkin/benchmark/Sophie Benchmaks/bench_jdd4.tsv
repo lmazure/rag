@@ -1,0 +1,11 @@
+keyword type	looked up string	expected keyword ID
+Action	Je déguste une poire	2
+Action	Je trace une pomme	4
+Action	J'ai 3 pommes	11
+Action	Je touille la pâte	14
+Action	J'ai 15 poires	16
+Action	Cuisson à 200°C	21
+Action	Cuisson à 180°C pendant 40 minutes	22
+Action	Je suis sorti	10
+Action	La tarte sort du four	23
+Action	Je savoure une pomme	3

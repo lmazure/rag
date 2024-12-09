@@ -1,0 +1,1096 @@
+{
+  "keywords": [
+    {
+      "type": "Context",
+      "keyword": "a motion sensor detects activity in \"<room>\"",
+      "description": "",
+      "id": "272f60cd-81e7-4dd4-8a3c-f8ba0ba87f1d"
+    },
+    {
+      "type": "Context",
+      "keyword": "a ticket with ID \"<ticket_id>\" exists with status \"<status>\"",
+      "description": "",
+      "id": "05c8c002-c853-4dcf-ab2e-acf7c8cd0d98"
+    },
+    {
+      "type": "Context",
+      "keyword": "a ticket with ID \"<ticket_id>\" has priority \"<priority>\"",
+      "description": "",
+      "id": "382e7400-f43d-4347-a675-d0af59a5d9f4"
+    },
+    {
+      "type": "Context",
+      "keyword": "another user \"<action>\" the post titled \"<post_title>\"",
+      "description": "",
+      "id": "245c2bd6-6e3b-42f3-9ca8-e9dd9f582071"
+    },
+    {
+      "type": "Context",
+      "keyword": "burns a total of \"<calories_burned>\" calories",
+      "description": "",
+      "id": "4157fa97-f362-4d35-bd79-2d8dc045c851"
+    },
+    {
+      "type": "Context",
+      "keyword": "chooses room type \"<room_type>\" for \"<nights>\" nights",
+      "description": "",
+      "id": "79838d0d-2596-4a8c-9ebe-602a1b91a343"
+    },
+    {
+      "type": "Context",
+      "keyword": "drinks \"<water_consumed>\" liters by the end of the day",
+      "description": "",
+      "id": "308da142-a0fd-4a2e-9bc0-927ef34620d4"
+    },
+    {
+      "type": "Context",
+      "keyword": "enters a description \"<description>\"",
+      "description": "",
+      "id": "cee79cff-9dac-4dcb-95c3-e7123b8c1c5b"
+    },
+    {
+      "type": "Context",
+      "keyword": "only \"<available_stock>\" units are in stock",
+      "description": "",
+      "id": "2403bcd2-6dd2-476c-98fc-2c43253068ab"
+    },
+    {
+      "type": "Context",
+      "keyword": "remains unresolved for \"<days_unresolved>\" days",
+      "description": "",
+      "id": "0d51a38c-bbe7-4636-a659-2fb5a3712067"
+    },
+    {
+      "type": "Context",
+      "keyword": "selects delivery method \"<delivery_method>\"",
+      "description": "",
+      "id": "7fe18aa9-1bc7-4820-ae58-c546aaf49de8"
+    },
+    {
+      "type": "Context",
+      "keyword": "sets the activity to \"<activity>\"",
+      "description": "",
+      "id": "94f49a45-4f9e-4946-9a24-8297ca56cc7a"
+    },
+    {
+      "type": "Context",
+      "keyword": "sets the delivery address to \"<delivery_address>\"",
+      "description": "",
+      "id": "d702f172-4b54-4256-a1ca-f42b3854d50a"
+    },
+    {
+      "type": "Context",
+      "keyword": "sets the duration to \"<duration>\" and distance to \"<distance>\"",
+      "description": "",
+      "id": "e600c8d2-ddae-44dc-b71a-33c9f24c42ea"
+    },
+    {
+      "type": "Context",
+      "keyword": "the battery level of \"<device>\" is \"<battery_level>\"",
+      "description": "",
+      "id": "e99e69ab-ca5f-4235-9abb-e4167146073a"
+    },
+    {
+      "type": "Context",
+      "keyword": "the current status of the order is \"<status>\"",
+      "description": "",
+      "id": "978f8552-f652-4199-889f-76290775075d"
+    },
+    {
+      "type": "Context",
+      "keyword": "the delivery status is \"<delivery_status>\"",
+      "description": "",
+      "id": "cc8e7a30-d364-4abc-a09b-3740378eab4f"
+    },
+    {
+      "type": "Context",
+      "keyword": "the number of guests is \"<guests>\"",
+      "description": "",
+      "id": "9c6aea92-3b93-445f-b124-3bd2e18aefa6"
+    },
+    {
+      "type": "Context",
+      "keyword": "the recorded date is \"<date>\"",
+      "description": "",
+      "id": "dc35bd7b-992d-49a9-a74e-f9c986684ede"
+    },
+    {
+      "type": "Context",
+      "keyword": "the reservation is for \"<date>\" at \"<time>\"",
+      "description": "",
+      "id": "519e5390-7fee-46e5-a76c-22d66902de34"
+    },
+    {
+      "type": "Context",
+      "keyword": "the target steps are \"<target_steps>\"",
+      "description": "",
+      "id": "65d0badf-d218-40bd-beb2-4a7e727fce4c"
+    },
+    {
+      "type": "Context",
+      "keyword": "the time is \"<time>\"",
+      "description": "",
+      "id": "d301746d-9025-4932-bcae-b4107d53b5cc"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user attempts to add \"<requested_quantity>\" units of \"<product>\" to the cart",
+      "description": "",
+      "id": "1ea1477c-0d93-414d-b714-9e13f1c2efe2"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user completed an order with ID \"<order_id>\"",
+      "description": "",
+      "id": "fb625525-4dc4-4012-9402-f90a829cf5d9"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user completes \"<workout_sessions>\" sessions in a week",
+      "description": "",
+      "id": "bf8a4c80-15e8-4c44-b4ad-43e974e9e62f"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user completes a goal \"<goal_name>\" with \"<achievement>\"",
+      "description": "",
+      "id": "aecd9a66-35e0-450a-9f4b-8a5a4e6d3f64"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user creates a routine named \"<routine_name>\"",
+      "description": "",
+      "id": "f7fab6b6-e3ac-427a-8a72-f581dc2d17be"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user enables workout reminders for \"<reminder_time>\"",
+      "description": "",
+      "id": "a6167a5c-8978-4259-8d92-6b986ce9fe73"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user enters username \"<username>\" and password \"<password>\"",
+      "description": "",
+      "id": "44f0cdce-bbec-421a-bcdc-ad06f3b3e2fa"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user flags a post with content \"<post_content>\" for \"<reason>\"",
+      "description": "",
+      "id": "370b3da0-0c83-4df2-90d4-8d14bcf96bb3"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has \"<notification_type>\" notifications enabled",
+      "description": "",
+      "id": "57ef25b3-19f6-4f37-96b3-cbca35fc17e8"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has \"<quantity>\" items in their cart",
+      "description": "",
+      "id": "c75bcad8-c519-4802-86ea-6623c54ac039"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has \"<quantity>\" units of \"<product>\" in their cart",
+      "description": "",
+      "id": "54c12029-686b-4426-95e0-607e5cf967ed"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has a reservation for table \"<table_number>\" on \"<date>\" at \"<time>\"",
+      "description": "",
+      "id": "ceeb4141-ed51-4b04-977e-368119803855"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has an existing booking with booking ID \"<booking_id>\"",
+      "description": "",
+      "id": "80497fc3-a20c-49f8-ac49-6f76989ff1b1"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has an existing reservation for table \"<table_number>\" on \"<date>\" at \"<time>\"",
+      "description": "",
+      "id": "a5550ce0-cb95-4b2a-a90b-96c46e54f2b5"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has an order with ID \"<order_id>\"",
+      "description": "",
+      "id": "73a7957c-1417-4731-924c-9aef3f75ae85"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has items \"<items>\" in the cart",
+      "description": "",
+      "id": "70209015-224b-48a7-a929-e926751f8d2e"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has items worth \"<total_price>\" in the cart",
+      "description": "",
+      "id": "af4f8886-1c18-4c65-8242-3795ba3221d5"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has placed an order with ID \"<order_id>\"",
+      "description": "",
+      "id": "164de1a8-f3aa-4d14-b215-8eda4b884256"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user has selected a hotel room",
+      "description": "",
+      "id": "a268b345-6f74-4f16-a2cd-e8068e71ca48"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user is inactive for \"<timeout_duration>\"",
+      "description": "",
+      "id": "100614a9-df40-4598-ba11-3a1e94d37275"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user is logged in",
+      "description": "",
+      "id": "8a9d9283-6dd9-467a-986c-04f0b9c15922"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user is logged in as a \"<role>\"",
+      "description": "",
+      "id": "282279b4-caec-4751-8384-0914cdd056d7"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user is on the hotel search page",
+      "description": "",
+      "id": "62e49fe4-6f57-4f96-bbea-9b62448a5933"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user is viewing the profile of \"<target_user>\"",
+      "description": "",
+      "id": "c1f86498-1b44-44ed-9311-b20affdeb836"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user navigates to the goal-setting section",
+      "description": "",
+      "id": "a2e40ab7-9ea7-411e-80a1-3bc3973d39ce"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user navigates to the login page",
+      "description": "",
+      "id": "8d8419dc-3cb2-4d9c-82dc-0ea43d2b934a"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user navigates to the password reset page",
+      "description": "",
+      "id": "2581d3c7-e30b-4d57-afcd-f042427ddd45"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user navigates to the privacy settings page",
+      "description": "",
+      "id": "b110820f-a10d-44f5-8feb-1c30538a9bfb"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user navigates to the product page for \"<product>\"",
+      "description": "",
+      "id": "d78f7442-dbc5-4d54-9f2d-eaa31af78eb2"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user performs \"<workout_type>\" for \"<duration>\" minutes",
+      "description": "",
+      "id": "c913fef8-bb80-4042-bf68-7cae0e7e1de5"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user records their \"<metric>\" with a value of \"<value>\"",
+      "description": "",
+      "id": "3f1724e1-a6a6-4af2-acf4-470bdb22da4f"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user selects a hotel named \"<hotel_name>\"",
+      "description": "",
+      "id": "4f19fdbf-328e-4ca1-a4dd-1ee58cf6deae"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user selects date \"<date>\" and time \"<time>\"",
+      "description": "",
+      "id": "80b8798a-eec6-42a5-b585-ded0a8eaee4e"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user selects issue type \"<issue_type>\"",
+      "description": "",
+      "id": "07187fda-2e4a-49bf-aae4-894a9b47bd8d"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user selects items \"<items>\" from the menu",
+      "description": "",
+      "id": "f8bcf093-9d67-4bf8-8a9e-24b84e990edf"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user selects table \"<table_number>\" for \"<guests>\" guests",
+      "description": "",
+      "id": "d0761ab7-919c-42a5-adbc-398b38d65548"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user selects table \"<table_number>\" for \"<guests>\" guests on \"<date>\" at \"<time>\"",
+      "description": "",
+      "id": "4325fd5c-3a31-46dc-bb33-df5d359412b8"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user selects the activity type \"<activity>\"",
+      "description": "",
+      "id": "3d66bfb9-f660-4646-8e48-797a387a7ee5"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user selects the device \"<device>\" in the app",
+      "description": "",
+      "id": "e911e2f0-6735-4f97-838e-9d45b8c8211c"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user sets a daily water intake goal of \"<water_goal>\" liters",
+      "description": "",
+      "id": "daea6018-15c4-4066-83b6-1bb8addeb884"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user starts a workout of type \"<workout_type>\"",
+      "description": "",
+      "id": "3bd5bd20-acea-4953-a576-48b13938abe5"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user views a post with content \"<post_content>\"",
+      "description": "",
+      "id": "36e1ee47-6903-4eba-aafc-f3cf35dd974b"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user views a ticket with ID \"<ticket_id>\" and status \"<status>\"",
+      "description": "",
+      "id": "0fb02383-32d7-4845-9e9e-b2026be3a0bc"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user views the schedule for \"<device>\"",
+      "description": "",
+      "id": "dc56de01-e99e-4ae0-b507-1ee86bb780dc"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user views their daily calorie target",
+      "description": "",
+      "id": "991c0d00-0b4c-42c8-9a97-c4ddb527a74e"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user walks \"<steps_walked>\" steps in a day",
+      "description": "",
+      "id": "9d62366e-bb93-46bb-b98d-354a01e56d15"
+    },
+    {
+      "type": "Context",
+      "keyword": "the user writes a post with content \"<post_content>\"",
+      "description": "",
+      "id": "bf7f70af-0614-4584-8d9f-665ba40f320e"
+    },
+    {
+      "type": "Context",
+      "keyword": "their activity level is \"<activity_level>\"",
+      "description": "",
+      "id": "eb378a88-02d5-4772-9947-ffe4f367e129"
+    },
+    {
+      "type": "Context",
+      "keyword": "there are \"<open_tickets>\" open tickets and \"<resolved_tickets>\" resolved tickets",
+      "description": "",
+      "id": "14aa4410-cb7b-4141-b5c2-9c4989fbe44b"
+    },
+    {
+      "type": "Action",
+      "keyword": "adds a resolution note \"<note>\"",
+      "description": "",
+      "id": "b95082d2-a1e7-4281-910c-29e3c6729c29"
+    },
+    {
+      "type": "Action",
+      "keyword": "clicks the \"Add to Cart\" button",
+      "description": "",
+      "id": "ad14f3c0-1f77-4563-a2f0-036daf941a07"
+    },
+    {
+      "type": "Action",
+      "keyword": "clicks the \"Checkout\" button",
+      "description": "",
+      "id": "f75edbeb-b178-4baf-be13-349eef2bea6b"
+    },
+    {
+      "type": "Action",
+      "keyword": "confirms the cancellation",
+      "description": "",
+      "id": "9ae26b65-0436-4243-8d5d-c8fc2ec63c78"
+    },
+    {
+      "type": "Action",
+      "keyword": "the app calculates hydration status",
+      "description": "",
+      "id": "4506537e-db79-4ce2-bb9c-1ef1c0f9bc37"
+    },
+    {
+      "type": "Action",
+      "keyword": "the app calculates the daily progress",
+      "description": "",
+      "id": "037ab044-2ef7-4abf-95a1-7d049162e64a"
+    },
+    {
+      "type": "Action",
+      "keyword": "the app generates the weekly summary",
+      "description": "",
+      "id": "99d38c6f-78e6-4154-b33f-8fa148aa2314"
+    },
+    {
+      "type": "Action",
+      "keyword": "the app suggests an adjustment",
+      "description": "",
+      "id": "bc347148-c4c4-4ed8-a0cb-0fad6f244509"
+    },
+    {
+      "type": "Action",
+      "keyword": "the heart rate reaches \"<heart_rate>\" bpm",
+      "description": "",
+      "id": "6b2e4213-26d8-4fef-9eb1-4fa1bbffd2a0"
+    },
+    {
+      "type": "Action",
+      "keyword": "the notification system processes the event",
+      "description": "",
+      "id": "5b83fe60-f8c6-445b-997c-1dfb69c6d21c"
+    },
+    {
+      "type": "Action",
+      "keyword": "the report is submitted",
+      "description": "",
+      "id": "fcd1d3ba-1dfd-4bb2-91ae-671f560da7fa"
+    },
+    {
+      "type": "Action",
+      "keyword": "the system auto-escalates the ticket",
+      "description": "",
+      "id": "0f2abb13-2153-45b5-87a1-6d7e02d74663"
+    },
+    {
+      "type": "Action",
+      "keyword": "the system checks the battery status",
+      "description": "",
+      "id": "7ebf03e4-520f-4cd4-8069-d646c39c4c90"
+    },
+    {
+      "type": "Action",
+      "keyword": "the system sends a notification",
+      "description": "",
+      "id": "2f52e6f9-3d1a-43b7-993f-7cad6fcf2442"
+    },
+    {
+      "type": "Action",
+      "keyword": "the system sends a reminder",
+      "description": "",
+      "id": "cd9addb4-a293-4410-a621-9d7e816e369a"
+    },
+    {
+      "type": "Action",
+      "keyword": "the system sends an alert",
+      "description": "",
+      "id": "6faa190d-8580-4381-96f2-05294b90db8d"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user \"<interaction>\" the post",
+      "description": "",
+      "id": "d772db54-1b6e-4d21-a605-395410ea1cb4"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user adds a special request \"<special_request>\"",
+      "description": "",
+      "id": "6d091d53-604c-455e-9c33-4db3dff36fdc"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user applies the discount code \"<code>\"",
+      "description": "",
+      "id": "fa4e6ecc-7e59-4f90-87b9-4d1fc768993a"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user applies the discount code \"<discount_code>\"",
+      "description": "",
+      "id": "be433b12-6d83-4e47-84df-00188d0f2add"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user attempts to cancel the order",
+      "description": "",
+      "id": "4a0cd7bc-c55a-4258-8151-dc368822c0cf"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user attempts to log in with username \"<username>\" and password \"<password>\" 3 times",
+      "description": "",
+      "id": "980912d9-e1aa-49be-a758-0dad8de7f9ff"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user attempts to perform an action",
+      "description": "",
+      "id": "a7df443f-e001-44c8-b195-95af7051087b"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user cancels the reservation",
+      "description": "",
+      "id": "d20aef87-7ce2-48a5-b2a6-1fd865085c84"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user changes the privacy setting for \"<data_type>\" to \"<privacy_level>\"",
+      "description": "",
+      "id": "8cc6ff93-77bb-442a-95c8-29e50c890b3a"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user changes the schedule to \"<new_schedule>\"",
+      "description": "",
+      "id": "39e665f2-b0d7-4967-8ee1-c9c4540f7188"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user changes the time to \"<new_time>\" and updates the number of guests to \"<new_guests>\"",
+      "description": "",
+      "id": "eef79b88-9265-4be0-82e0-6ee9f3f681ad"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user checks the tracking information",
+      "description": "",
+      "id": "28dc3b1f-36a5-4cd7-834e-082a5dc80afc"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user clicks \"<action>\"",
+      "description": "",
+      "id": "fb1641e6-fcaf-4593-8ad8-72b157da7732"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user confirms the order with payment method \"<payment_method>\"",
+      "description": "",
+      "id": "07077021-fba4-43ae-b1f8-f992b08abf3d"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user enters contact information \"<contact_info>\" and confirms the booking",
+      "description": "",
+      "id": "8cb15049-b2a1-442e-842f-0d50dba16d3e"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user enters email \"<email>\" and clicks \"<action>\"",
+      "description": "",
+      "id": "1c33ec04-ed77-43e3-b0b6-bd528c498922"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user enters payment details \"<payment_type>\"",
+      "description": "",
+      "id": "3a2c99e0-35be-4ee7-bb3a-818c6961090c"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user enters the 2FA code \"<2fa_code>\"",
+      "description": "",
+      "id": "a054baa6-f017-4c6b-8699-d5a3aff36c34"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user enters username \"<username>\" and password \"<password>\"",
+      "description": "",
+      "id": "8c76f567-249c-44fd-8bbe-0d3b90403c43"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user generates a report for \"<time_period>\"",
+      "description": "",
+      "id": "fbc25c3a-2c18-4d15-beca-37a6fce56235"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user leaves a review with a rating \"<rating>\" and comment \"<comment>\"",
+      "description": "",
+      "id": "e03fcd4d-282a-462c-b138-5209a3366d26"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user logs the workout",
+      "description": "",
+      "id": "ddf37e79-fc53-4442-ae0d-7751b5008b8d"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user marks the ticket as \"<resolution>\"",
+      "description": "",
+      "id": "808fd689-1972-4776-a753-daf1455019e0"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user provides guest details \"<guest_name>\" and payment method \"<payment_method>\"",
+      "description": "",
+      "id": "cf5574a7-efc1-4120-9024-b779d3b7065d"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user removes \"<remove_quantity>\" units of \"<product>\"",
+      "description": "",
+      "id": "0c7121ca-015b-4ecd-a150-b71df3e3cc17"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user requests to cancel the booking",
+      "description": "",
+      "id": "44975a7b-ef2c-414c-86a5-e7fe33f613cc"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user searches for available tables",
+      "description": "",
+      "id": "cf1b1720-1a65-4273-92ed-c2695e22a67e"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user searches for hotels in \"<location>\" with check-in date \"<check_in>\" and check-out date \"<check_out>\"",
+      "description": "",
+      "id": "e92a4797-0625-48cd-868c-a542761d1306"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user selects quantity \"<quantity>\" and size \"<size>\"",
+      "description": "",
+      "id": "406b7bee-bdae-477a-91b6-4ee1f90d4eca"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user sets a goal to \"<goal_type>\" with a target of \"<target>\"",
+      "description": "",
+      "id": "64d3871b-c1a8-41fe-bb3d-5bc29042d888"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user sets it to trigger at \"<time>\" with \"<device_actions>\"",
+      "description": "",
+      "id": "78f96898-34e1-4435-a203-13db507636b3"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user sets the device to \"<action>\" with intensity \"<intensity>\"",
+      "description": "",
+      "id": "afac18b8-2bd8-4a6b-80d3-6c1b37ba7fc2"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user sets visibility to \"<visibility>\" and adds \"<attachments>\"",
+      "description": "",
+      "id": "6a84248f-7c85-4e81-8bc2-ddc338f85b08"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user shares the achievement on \"<platform>\"",
+      "description": "",
+      "id": "fc9ed4b8-30d9-4b92-8073-68b7d66c874c"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user submits the ticket with priority \"<priority>\"",
+      "description": "",
+      "id": "37a1d7a3-fd5d-4ab1-a3c5-2e7d814f9039"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user tries to access the \"<resource>\"",
+      "description": "",
+      "id": "fd064c12-cacd-459a-a845-aea30a67682c"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user updates the ticket to \"<new_status>\" and adds a comment \"<comment>\"",
+      "description": "",
+      "id": "665c6cd2-15f5-46bf-9923-c44782b5fea4"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user views the booking details",
+      "description": "",
+      "id": "09439ceb-94fd-4e18-8f65-286ff33a8a03"
+    },
+    {
+      "type": "Action",
+      "keyword": "the user views their health dashboard",
+      "description": "",
+      "id": "42a290f6-097c-4066-b98c-cbaa5d8daf19"
+    },
+    {
+      "type": "Action",
+      "keyword": "the workout lasts for \"<duration>\" minutes and burns \"<calories_burned>\" calories",
+      "description": "",
+      "id": "c409851e-dbcb-4863-99d5-ac7b085ea417"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "a cancellation confirmation message \"<cancellation_message>\" should be displayed",
+      "description": "",
+      "id": "3cfe20d0-12b0-468a-a3b4-1e80c34e16b3"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "a message \"<error_message>\" should be displayed",
+      "description": "",
+      "id": "dab7cd74-5975-4db1-a393-c8aa38474656"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "a message \"<reset_message>\" should be displayed",
+      "description": "",
+      "id": "d8848fc3-07ce-48f7-8076-8980baf7db32"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "a new ticket should be created with type \"<issue_type>\", description \"<description>\", and priority \"<priority>\"",
+      "description": "",
+      "id": "49bf59a7-56cf-4df7-8e4c-c4076455a3af"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "a notification should be sent saying \"<notification_message>\"",
+      "description": "",
+      "id": "07262efd-26ef-4c81-a1b3-6d82a9749627"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "a session timeout message \"<timeout_message>\" should be displayed",
+      "description": "",
+      "id": "c1c1fa22-1d67-42df-9a8f-bac56dd34f7b"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "an error message \"<error_message>\" should be displayed",
+      "description": "",
+      "id": "3eab219c-6881-4d2b-99e0-a2a01beca6b2"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the access should be \"<access_type>\"",
+      "description": "",
+      "id": "ed3eeeec-ed4b-4bfa-8af9-0748c613ef01"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the account should be locked with message \"<lock_message>\"",
+      "description": "",
+      "id": "d6411d98-0d66-4730-a231-28273e1c16ea"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the alert should say \"Motion detected in <room> at <time>\"",
+      "description": "",
+      "id": "060f456b-8dd5-4f6b-abea-03c41b90df34"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the app should display \"<hydration_message>\"",
+      "description": "",
+      "id": "e2bd49d4-e89d-4a54-8039-98ee537ea303"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the app should display \"<progress_message>\"",
+      "description": "",
+      "id": "f0441a00-c816-4be7-97cf-6a09f2e69ec6"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the app should display a status message \"<status_message>\"",
+      "description": "",
+      "id": "2e08d45b-ae59-42e2-958a-ec7899e14825"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the booking confirmation page should display \"<confirmation_message>\"",
+      "description": "",
+      "id": "882da5d7-952e-484e-b5de-c98c8fe3140f"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the booking details should include hotel name \"<hotel_name>\", room type \"<room_type>\", and guest name \"<guest_name>\"",
+      "description": "",
+      "id": "cd719b09-368b-45a6-a718-7a01be9dfe67"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cancellation should \"<cancellation_result>\"",
+      "description": "",
+      "id": "d67708a1-620b-4725-8f3b-41d7bc2c8992"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cart should display \"<quantity>\" units of \"<product>\" in size \"<size>\"",
+      "description": "",
+      "id": "c2516575-98aa-4dc2-b3a3-8a0303c7302e"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the cart should display \"<remaining_quantity>\" units of \"<product>\"",
+      "description": "",
+      "id": "57510281-c5e7-437b-ae7b-c455dbbc30f6"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the dashboard should display \"<metric>\" as \"<value>\" for \"<date>\"",
+      "description": "",
+      "id": "257dfb27-cb4b-424c-b25c-41632efe0662"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the device \"<device>\" should perform \"<action>\" at \"<intensity>\" intensity",
+      "description": "",
+      "id": "239c60e4-e263-4076-b07e-2170f80f7ce7"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the discount \"<discount_amount>\" should be applied to the total price",
+      "description": "",
+      "id": "b2cd3a36-1e54-4d7d-90b3-61898608eedd"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the goal should be saved as \"<goal_type>\" with target \"<target>\"",
+      "description": "",
+      "id": "c9c9a762-a45f-4eff-a4d5-8656db4a7869"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the notification should say \"<notification_message>\"",
+      "description": "",
+      "id": "831b317f-b958-478f-a1fd-197ead143315"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the order confirmation page should display \"Order placed successfully with <delivery_method> delivery and paid via <payment_type>.\"",
+      "description": "",
+      "id": "498c1aba-179a-4f2d-ab99-d011f6b2672f"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the order should be placed successfully with \"<items>\", delivered to \"<delivery_address>\", and paid using \"<payment_method>\"",
+      "description": "",
+      "id": "cbb7c176-7070-4763-bcaa-21e13e42dcfe"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the post should be created with \"<post_content>\", visible to \"<visibility>\", and include \"<attachments>\"",
+      "description": "",
+      "id": "1919b24f-d7d5-4cd6-86c0-249050940c63"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the post should reflect the interaction \"<interaction>\"",
+      "description": "",
+      "id": "0103cb6b-34c6-45d6-b68e-acf0a7336b9c"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the priority should be updated to \"<new_priority>\"",
+      "description": "",
+      "id": "7f11751f-4a80-4c06-a174-71db948b35c8"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the relationship status should be updated to \"<new_status>\"",
+      "description": "",
+      "id": "1c6112d0-6296-4b30-b8c0-55e4eb07caf8"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the reminder should say \"Time to do your <activity> workout at <reminder_time>!\"",
+      "description": "",
+      "id": "58de13de-a424-4a1f-b58f-836acce90b7e"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the report should include \"<key_metrics>\"",
+      "description": "",
+      "id": "637c5c9a-90df-4c23-b16b-fb20779959f5"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the report should indicate \"<achievement_status>\"",
+      "description": "",
+      "id": "b66f0298-bf0a-404c-9180-8d965d0c527b"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the reservation should be successfully created with details \"Table: <table_number>, Guests: <guests>, Date: <date>, Time: <time>, Contact: <contact_info>\"",
+      "description": "",
+      "id": "e274dacf-4ec7-4834-88e6-2716c8fb023b"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the reservation should be updated with details \"Table: <table_number>, Guests: <new_guests>, Date: <date>, Time: <new_time>\"",
+      "description": "",
+      "id": "335815a8-3abe-4a33-bd13-8305cfb85820"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the reservation should include the special request \"<special_request>\"",
+      "description": "",
+      "id": "da35e0fc-6d72-41e8-9682-00d5d2abe5c4"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the review should be saved with the rating \"<rating>\" and comment \"<comment>\"",
+      "description": "",
+      "id": "0465afda-b9bf-4968-8e83-68a6e70aa0cb"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the routine \"<routine_name>\" should activate at \"<time>\" and perform \"<device_actions>\"",
+      "description": "",
+      "id": "0384d23e-d7e3-4273-8794-839487ba8499"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the schedule for \"<device>\" should be updated to \"<new_schedule>\"",
+      "description": "",
+      "id": "7fbf17ee-c6e3-4156-9022-d09f1daece80"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the search results should display hotels available in \"<location>\" for the specified dates",
+      "description": "",
+      "id": "106eb70b-017c-4be9-9513-a6aba17794a6"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the session should be saved with type \"<workout_type>\", duration \"<duration>\", and calories \"<calories_burned>\"",
+      "description": "",
+      "id": "9bd8d236-681a-4938-8f5b-0d08a704ada0"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the system should display a confirmation message \"Reservation for table <table_number> on <date> at <time> has been canceled\"",
+      "description": "",
+      "id": "3afb2aa6-75e1-476b-8f33-034a08059ebd"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the system should display tables with availability for \"<guests>\" guests at \"<time>\" on \"<date>\"",
+      "description": "",
+      "id": "b3a41775-2d73-4ccc-8738-2be3aa15d116"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the system should display the status \"<delivery_status>\"",
+      "description": "",
+      "id": "13a323ef-5502-4e9d-8b63-59bedfec6b34"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the system should log the report for \"<reason>\" and notify the moderators",
+      "description": "",
+      "id": "cf202a73-6c46-446e-b340-0f2ac62ef345"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the system should post \"I completed my goal '<goal_name>' with <achievement>!\" to \"<platform>\"",
+      "description": "",
+      "id": "d55dd840-26f0-4d27-b645-614be7737a78"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the system should save the setting with \"<data_type>\" set to \"<privacy_level>\"",
+      "description": "",
+      "id": "669af63c-8bfe-4ce2-aa81-1771c552e682"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the target should be updated to \"<new_calorie_target>\"",
+      "description": "",
+      "id": "28dc2f0c-d694-434f-90b1-a5cc6fc5a0a3"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the ticket status should be updated to \"<new_status>\" with the comment \"<comment>\"",
+      "description": "",
+      "id": "adec8537-a4c9-4e73-87b7-284fa1f65ac0"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the ticket status should be updated to \"<resolution>\" with the note \"<note>\"",
+      "description": "",
+      "id": "818fb8d3-3bed-408f-9931-5793fc26eea3"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the total price should be \"<discounted_price>\"",
+      "description": "",
+      "id": "193da024-fb11-42bf-9c2b-2b6ba3ac5ee9"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the total price should be reduced by \"<discount_percentage>%\"",
+      "description": "",
+      "id": "7ca43d6b-e887-4c57-a20f-c71bd948de62"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the user sees a welcome message \"<welcome_message>\"",
+      "description": "",
+      "id": "4cade4de-70d8-4090-b1ae-c5ec12b5c0a6"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the user should be redirected to the dashboard",
+      "description": "",
+      "id": "920a546e-8bd7-4aa5-8f60-4cc18e70246a"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the user should receive a notification saying \"<notification_message>\"",
+      "description": "",
+      "id": "67f13281-3734-47f1-a120-fc352a7c4fd7"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "the workout should be recorded with \"<activity>\", \"<duration>\", and \"<distance>\"",
+      "description": "",
+      "id": "1bf303f7-64c8-4504-be75-d97c4dd22209"
+    }
+  ]
+}

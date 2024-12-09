@@ -29,7 +29,7 @@ Feature: Online Shopping Cart
   Scenario Outline: Apply discount codes
     Given the user has added "<Product>" to the cart
     When the user applies the discount code "<Code>"
-    Then the total price should be "<Final Price>"
+    Then the total price should be <Final Price>
 
     Examples:
       | Product  | Code     | Final Price |

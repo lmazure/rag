@@ -1,0 +1,21 @@
+keyword type	looked up string	expected keyword ID
+Outcome	La notification "item créé" est affichée	831b317f-b958-478f-a1fd-197ead143315
+Context	Pour le 02/03/2025 à 17h, la table 10 est sélectionnée pour 5 personnes	4325fd5c-3a31-46dc-bb33-df5d359412b8
+Context	L'utilisateur n'est plus actif depuis une heure	100614a9-df40-4598-ba11-3a1e94d37275
+Outcome	L'adresse email est privée dans les paramètres système	669af63c-8bfe-4ce2-aa81-1771c552e682
+Action	Accéder au tableau de bord santé	42a290f6-097c-4066-b98c-cbaa5d8daf19
+Context	Une chambre d'hôtel est réservée 	a268b345-6f74-4f16-a2cd-e8068e71ca48
+Action	l'heure est réglée à 20h et le nombre d'invités à 12	eef79b88-9265-4be0-82e0-6ee9f3f681ad
+Action	je saisis le login JDoe et le mot de passe 1234	8c76f567-249c-44fd-8bbe-0d3b90403c43
+Action	l'utilisateur saisis le code 150623 pour l'authetification à deux facteurs	a054baa6-f017-4c6b-8699-d5a3aff36c34
+Context	L'emploi du temps du radiateur est affiché	dc56de01-e99e-4ae0-b507-1ee86bb780dc
+Context	L'utilisateur réalise 5km en 1h dans l'objectif "améliorer le cardio"	aecd9a66-35e0-450a-9f4b-8a5a4e6d3f64
+Outcome	Le message "Tu es banni" est affiché et le compte est bloqué	d6411d98-0d66-4730-a231-28273e1c16ea
+Action	Le satut de la batterie est vérifié	7ebf03e4-520f-4cd4-8069-d646c39c4c90
+Action	L'utilisateur choisit la taille M et règle la quantité sur 4	406b7bee-bdae-477a-91b6-4ee1f90d4eca
+Outcome	"Il est l'heure de faire votre yoga à midi !" est affiché dans le rappel	58de13de-a424-4a1f-b58f-836acce90b7e
+Action	Je règle le statut sur fermé et j'ajoute un commentaire disant "C'est ok!"	665c6cd2-15f5-46bf-9923-c44782b5fea4
+Outcome	Le prix total est réduit de 20€	b2cd3a36-1e54-4d7d-90b3-61898608eedd
+Context	L'utilisateur va sur la page de connexion	8d8419dc-3cb2-4d9c-82dc-0ea43d2b934a
+Context	j'ai un ticket urgent avec l'id 12	382e7400-f43d-4347-a675-d0af59a5d9f4
+Context	l'utilisateur a fait du crossfit pendant 20 minutes	c913fef8-bb80-4042-bf68-7cae0e7e1de5

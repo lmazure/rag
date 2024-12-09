@@ -1,0 +1,124 @@
+{
+    "keywords": [
+      {
+        "type": "Action",
+        "keyword": "I log in",
+        "description": "",
+        "id": "1"
+      },
+      {
+        "type": "Action",
+        "keyword": "I am online",
+        "description": "",
+        "id": "2"
+      },
+      {
+        "type": "Action",
+        "keyword": "I am offline",
+        "description": "",
+        "id": "3"
+      },
+      {
+        "type": "Action",
+        "keyword": "I create a folder",
+        "description": "",
+        "id": "4"
+      },
+      {
+        "type": "Action",
+        "keyword": "I open a directory",
+        "description": "",
+        "id": "5"
+      },
+      {
+        "type": "Action",
+        "keyword": "I switch tabs",
+        "description": "",
+        "id": "6"
+      },
+      {
+        "type": "Action",
+        "keyword": "I enter my information",
+        "description": "",
+        "id": "7"
+      },
+      {
+        "type": "Action",
+        "keyword": "I have observer role",
+        "description": "",
+        "id": "8"
+      },
+      {
+        "type": "Action",
+        "keyword": "The page is displayed",
+        "description": "",
+        "id": "9"
+      },
+      {
+        "type": "Action",
+        "keyword": "The button is blue",
+        "description": "",
+        "id": "10"
+      },
+      {
+        "type": "Action",
+        "keyword": "The page is in French",
+        "description": "",
+        "id": "11"
+      },
+      {
+        "type": "Action",
+        "keyword": "I click the button",
+        "description": "",
+        "id": "12"
+      },
+      {
+        "type": "Action",
+        "keyword": "I add a file",
+        "description": "",
+        "id": "13"
+      },
+      {
+        "type": "Action",
+        "keyword": "I search for a product",
+        "description": "",
+        "id": "14"
+      },
+      {
+        "type": "Action",
+        "keyword": "I add a product to the cart",
+        "description": "",
+        "id": "15"
+      },
+      {
+        "type": "Action",
+        "keyword": "The payment page is displayed",
+        "description": "",
+        "id": "16"
+      },
+      {
+        "type": "Action",
+        "keyword": "The payment is validated",
+        "description": "",
+        "id": "17"
+      },
+      {
+        "type": "Action",
+        "keyword": "I create an account",
+        "description": "",
+        "id": "18"
+      },
+      {
+        "type": "Action",
+        "keyword": "I get a token",
+        "description": "",
+        "id": "19"
+      },
+      {
+        "type": "Action",
+        "keyword": "I change the color",
+        "description": "",
+        "id": "20"
+      }
+    ]
+  }

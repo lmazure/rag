@@ -2,7 +2,7 @@ import argparse
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
-def extract_keywords(db_path, model, keyword_type, keyword, nb_results):
+def extract_keywords(db_path: str, model: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
     # Initialize Chroma client
     chroma_client = chromadb.PersistentClient(path=db_path)
 

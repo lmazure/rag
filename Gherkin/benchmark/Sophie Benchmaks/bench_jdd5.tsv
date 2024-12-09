@@ -1,0 +1,11 @@
+keyword type	looked up string	expected keyword ID
+Action	I savor a pear	2
+Action	I outline an apple	4
+Action	I have 3 apples	11
+Action	I stir the dough	14
+Action	I have 15 pears	16
+Action	Cook at 200°C	21
+Action	Cook at 180°C during 40 minutes	22
+Action	I came out	10
+Action	The pie comes out of the oven	23
+Action	I enjoy an apple	3

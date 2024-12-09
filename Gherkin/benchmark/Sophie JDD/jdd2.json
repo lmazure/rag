@@ -1,0 +1,124 @@
+{
+    "keywords": [
+      {
+        "type": "Action",
+        "keyword": "Je me connecte",
+        "description": "L'utilisateur se connecte à son compte.",
+        "id": "1"
+      },
+      {
+        "type": "Action",
+        "keyword": "Je suis en ligne",
+        "description": "",
+        "id": "2"
+      },
+      {
+        "type": "Action",
+        "keyword": "Je suis hors ligne",
+        "description": "",
+        "id": "3"
+      },
+      {
+        "type": "Action",
+        "keyword": "Je crée un dossier",
+        "description": "",
+        "id": "4"
+      },
+      {
+        "type": "Action",
+        "keyword": "J'ouvre un répertoire",
+        "description": "L'utilisateur accède au contenu d'un répertoire.",
+        "id": "5"
+      },
+      {
+        "type": "Action",
+        "keyword": "Je change d'onglet",
+        "description": "L'utilisateur navigue vers un nouvel onglet.",
+        "id": "6"
+      },
+      {
+        "type": "Action",
+        "keyword": "Je saisis mes informations",
+        "description": "",
+        "id": "7"
+      },
+      {
+        "type": "Action",
+        "keyword": "J'ai le rôle observateur",
+        "description": "L'utilisateur dispose d'un accès en tant qu'observateur.",
+        "id": "8"
+      },
+      {
+        "type": "Action",
+        "keyword": "La page est affichée",
+        "description": "La page demandée est visible pour l'utilisateur.",
+        "id": "9"
+      },
+      {
+        "type": "Action",
+        "keyword": "Le bouton est bleu",
+        "description": "Le bouton apparaît en bleu sur l'interface.",
+        "id": "10"
+      },
+      {
+        "type": "Action",
+        "keyword": "La page est en français",
+        "description": "Le contenu de la page est affiché en français.",
+        "id": "11"
+      },
+      {
+        "type": "Action",
+        "keyword": "Je clique sur le bouton",
+        "description": "",
+        "id": "12"
+      },
+      {
+        "type": "Action",
+        "keyword": "J'ajoute un fichier",
+        "description": "",
+        "id": "13"
+      },
+      {
+        "type": "Action",
+        "keyword": "Je cherche un produit",
+        "description": "L'utilisateur effectue une recherche de produit.",
+        "id": "14"
+      },
+      {
+        "type": "Action",
+        "keyword": "J'ajoute un produit au panier",
+        "description": "L'utilisateur ajoute un article à son panier.",
+        "id": "15"
+      },
+      {
+        "type": "Action",
+        "keyword": "La page de paiement s'affiche",
+        "description": "La page de paiement est visible pour l'utilisateur.",
+        "id": "16"
+      },
+      {
+        "type": "Action",
+        "keyword": "le paiement est validé",
+        "description": "La transaction de paiement a été acceptée.",
+        "id": "17"
+      },
+      {
+        "type": "Action",
+        "keyword": "je crée un compte",
+        "description": "L'utilisateur s'inscrit en créant un compte.",
+        "id": "18"
+      },
+      {
+        "type": "Action",
+        "keyword": "j'obtiens un token",
+        "description": "Un jeton d'accès est généré pour l'utilisateur.",
+        "id": "19"
+      },
+      {
+        "type": "Action",
+        "keyword": "je modifie la couleur",
+        "description": "",
+        "id": "20"
+      }
+    ]
+  }

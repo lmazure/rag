@@ -6,6 +6,16 @@ import uuid
 from gherkin.parser import Parser
 from gherkin.token_scanner import TokenScanner
 
+def condense_keyword(keyword: str) -> str:
+    """
+    Condense a keyword by removing any specific integer, float, strings, or parameter name.
+    """
+    condensed_keyword = re.sub(r'<[^>]*>', '<>', keyword)
+    condensed_keyword = re.sub(r'"[^"]*"', '""', condensed_keyword)
+    condensed_keyword = re.sub(r'\d+\.\d*', '12.34', condensed_keyword)
+    condensed_keyword = re.sub(r'\d+', '123', condensed_keyword)
+    return condensed_keyword
+
 def extract_keywords(file_path: str) -> list[dict[str, str]]:
     """
     Extract Gherkin keywords from a single feature file.
@@ -38,7 +48,7 @@ def extract_keywords(file_path: str) -> list[dict[str, str]]:
             else:
                 lastKeywordType = step_type
             keyword = step['text'].strip()
-            condensed_keyword = re.sub(r'"[^"]*"', '""', re.sub(r'<[^>]*>', '<>', keyword))
+            condensed_keyword = condense_keyword(keyword)
             keywords.append({
                 'type': step_type,
                 'keyword': keyword,

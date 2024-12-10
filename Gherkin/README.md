@@ -106,12 +106,3 @@ python keywordExtractor.py Gherkin\ samples/*.feature my_list.json
 ```
 will create `my_list.json` which is the list of all keywords appearing in the `samples/*.feature` files.  
 Keywords that only differ by integer values, float values, string values, or parameter names are merged (the longest one is kept).
-
-# Todo
-- `dumpDatabase.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
-- JSON schema - keyword cannot be empty
-- support other models
-- `keywordExtractor.py` - test unicity of keywords
-- `keywordExtractor.py` - management of incorrect feature files
-- `keywordExtractor.py` - management of the datatable column names
-- `keywordExtractor.py` - ☠ ⸘management of the parameters‽

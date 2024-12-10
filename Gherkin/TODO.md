@@ -1,1 +1,7 @@
-- keywordExtractor: unit test for keyword consolidation
+- `keywordExtractor` - unit test for keyword consolidation
+- `dumpDatabase.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
+- JSON schema - keyword cannot be empty
+- support other models
+- `keywordExtractor.py` - management of incorrect feature files
+- `keywordExtractor.py` - management of the datatable column names
+- `keywordExtractor.py` - ☠ ⸘management of the parameters‽

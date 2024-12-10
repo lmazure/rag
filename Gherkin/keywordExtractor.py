@@ -16,10 +16,10 @@ def condense_keyword(keyword: str) -> str:
     condensed_keyword = re.sub(r'\d+', '123', condensed_keyword)
     return condensed_keyword
 
-def extract_keywords(file_path: str) -> list[dict[str, str]]:
+def extract_keywords_from_feature_file(file_path: str) -> list[dict[str, str]]:
     """
     Extract Gherkin keywords from a single feature file.
-    Returns a list of dictionaries containing keyword type, text, and description.
+    Return a list of dictionaries containing keyword type, text, and description.
     """
     # Read the feature file
     try:
@@ -75,6 +75,24 @@ def sort_keywords(keywords: list[dict[str, str]]) -> list[dict[str, str]]:
         )
     )
 
+def consolidate_keywords(new_keywords: list[dict[str, str]], all_keywords: list[dict[str, str]]) -> None:
+    """
+    Add the new keywords into the existing list of all keywords.
+    If a keyword with the same type and condensed keyword already exists,
+    the longest keyword is kept.
+    """
+    for kw in new_keywords:
+        existing_keyword = next((k for k in all_keywords if ((k['type'] == kw['type']) and (k['condensed_keyword'] == kw['condensed_keyword']))), None)
+        if existing_keyword:
+            print(f"Duplicate keyword: old='{existing_keyword['keyword']}' new='{kw['keyword']}'")
+            if len(existing_keyword['keyword']) > len(kw['keyword']):
+                # we keep the already recorded keyword which is longer
+                continue
+            else:
+                # the new keyword is longer, we remove the old one
+                all_keywords.remove(existing_keyword)
+        all_keywords.append(kw)
+
 def process_feature_files(file_paths: list[str]) -> dict:
     """
     Process multiple feature files and return a dictionary with unique, sorted keywords.
@@ -83,18 +101,8 @@ def process_feature_files(file_paths: list[str]) -> dict:
     
     for file_path in file_paths:
         if file_path.endswith('.feature'):
-            keywords = extract_keywords(file_path)
-            for kw in keywords:
-                existing_keyword = next((k for k in all_keywords if ((k['type'] == kw['type']) and (k['condensed_keyword'] == kw['condensed_keyword']))), None)
-                if existing_keyword:
-                    print(f"Duplicate keyword: old='{existing_keyword['keyword']}' new='{kw['keyword']}'")
-                    if len(existing_keyword['keyword']) > len(kw['keyword']):
-                        # we keep the already recorded keyword which is longer
-                        continue
-                    else:
-                        # the new keyword is longer, we remove the old one
-                        all_keywords.remove(existing_keyword)
-                all_keywords.append(kw)
+            keywords = extract_keywords_from_feature_file(file_path)
+            consolidate_keywords(keywords, all_keywords)
     
     # Sort the keywords
     sorted_keywords = sort_keywords(all_keywords)

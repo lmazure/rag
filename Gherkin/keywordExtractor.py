@@ -1,15 +1,25 @@
 import json
+import re
 import sys
-from typing import List, Dict
 import uuid
 
 from gherkin.parser import Parser
 from gherkin.token_scanner import TokenScanner
 
-def extract_keywords(file_path: str) -> List[Dict[str, str]]:
+def condense_keyword(keyword: str) -> str:
+    """
+    Condense a keyword by removing any specific integer, float, strings, or parameter name.
+    """
+    condensed_keyword = re.sub(r'<[^>]*>', '<>', keyword)
+    condensed_keyword = re.sub(r'"[^"]*"', '""', condensed_keyword)
+    condensed_keyword = re.sub(r'\d+\.\d*', '12.34', condensed_keyword)
+    condensed_keyword = re.sub(r'\d+', '123', condensed_keyword)
+    return condensed_keyword
+
+def extract_keywords_from_feature_file(file_path: str) -> list[dict[str, str]]:
     """
     Extract Gherkin keywords from a single feature file.
-    Returns a list of dictionaries containing keyword type, text, and description.
+    Return a list of dictionaries containing keyword type, text, and description.
     """
     # Read the feature file
     try:
@@ -37,22 +47,25 @@ def extract_keywords(file_path: str) -> List[Dict[str, str]]:
                     step_type = lastKeywordType
             else:
                 lastKeywordType = step_type
+            keyword = step['text'].strip()
+            condensed_keyword = condense_keyword(keyword)
             keywords.append({
                 'type': step_type,
-                'keyword': step['text'].strip(),
+                'keyword': keyword,
+                'condensed_keyword': condensed_keyword,
                 'description': '',
                 'id': str(uuid.uuid4())
             })
 
     return keywords
 
-def sort_keywords(keywords: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def sort_keywords(keywords: list[dict[str, str]]) -> list[dict[str, str]]:
     """
     Sort keywords first by type (Context, Action, Outcome), then alphabetically by keyword text.
     """
     # Define the order of keyword types
     type_order = {'Context': 1, 'Action': 2, 'Outcome': 3}
-    
+
     # Sort the keywords
     return sorted(
         keywords,
@@ -62,28 +75,42 @@ def sort_keywords(keywords: List[Dict[str, str]]) -> List[Dict[str, str]]:
         )
     )
 
-def process_feature_files(file_paths: List[str]) -> Dict:
+def consolidate_keywords(new_keywords: list[dict[str, str]], all_keywords: list[dict[str, str]]) -> None:
+    """
+    Add the new keywords into the existing list of all keywords.
+    If a keyword with the same type and condensed keyword already exists,
+    the longest keyword is kept.
+    """
+    for kw in new_keywords:
+        existing_keyword = next((k for k in all_keywords if ((k['type'] == kw['type']) and (k['condensed_keyword'] == kw['condensed_keyword']))), None)
+        if existing_keyword:
+            print(f"Duplicate keyword: old='{existing_keyword['keyword']}' new='{kw['keyword']}'")
+            if len(existing_keyword['keyword']) > len(kw['keyword']):
+                # we keep the already recorded keyword which is longer
+                continue
+            else:
+                # the new keyword is longer, we remove the old one
+                all_keywords.remove(existing_keyword)
+        all_keywords.append(kw)
+
+def process_feature_files(file_paths: list[str]) -> dict:
     """
     Process multiple feature files and return a dictionary with unique, sorted keywords.
     """
     all_keywords = []
-    unique_keywords = set()
     
     for file_path in file_paths:
         if file_path.endswith('.feature'):
-            keywords = extract_keywords(file_path)
-            
-            # Add only unique keywords
-            for kw in keywords:
-                # Create a tuple of type and keyword for uniqueness check
-                kw_tuple = (kw['type'], kw['keyword'])
-                if kw_tuple not in unique_keywords:
-                    unique_keywords.add(kw_tuple)
-                    all_keywords.append(kw)
+            keywords = extract_keywords_from_feature_file(file_path)
+            consolidate_keywords(keywords, all_keywords)
     
     # Sort the keywords
     sorted_keywords = sort_keywords(all_keywords)
-    
+
+    # Remove the `condensed_keyword` field
+    for kw in sorted_keywords:
+        del kw['condensed_keyword']
+
     return {'keywords': sorted_keywords}
 
 def main():

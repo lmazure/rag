@@ -65,7 +65,7 @@ def sort_keywords(keywords: list[dict[str, str]]) -> list[dict[str, str]]:
     """
     # Define the order of keyword types
     type_order = {'Context': 1, 'Action': 2, 'Outcome': 3}
-    
+
     # Sort the keywords
     return sorted(
         keywords,

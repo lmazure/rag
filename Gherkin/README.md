@@ -36,7 +36,7 @@ looks for the `I have a saved receiving address` string in the keywords and desc
 python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
 ```
 runs a benchmark.  
-`/Laurent\ initial\ benchmark/bench_definition.tsv` is the benchmark definition. This one is a TSV (Tab Separated Value) file. The first line contains the headers, it is ignored. Each other line must contains a keyword type, a looked-up keyword, and the ID of the expected matching keyword (the matching being via the keyword itself or via its definition).  
+`benchmark/Laurent\ initial\ benchmark/bench_definition.tsv` is the benchmark definition. This one is a TSV (Tab Separated Value) file. The first line contains the headers, it is ignored. Each other line must contains a keyword type, a looked-up keyword, and the ID of the expected matching keyword (the matching being via the keyword itself or via its definition).  
 `report.html` is the name of the HTML benchmark report that will be generated.
 
 ## Dump content the Chroma database
@@ -106,3 +106,22 @@ python keywordExtractor.py Gherkin\ samples/*.feature my_list.json
 ```
 will create `my_list.json` which is the list of all keywords appearing in the `samples/*.feature` files.  
 Keywords that only differ by integer values, float values, string values, or parameter names are merged (the longest one is kept).
+
+## Extraction of the keywords appearing in a GitHub project
+```sh
+REPO=https://github.com/danascheider/tessitura-front-end.git
+DIR=features
+git clone --filter=blob:none --no-checkout --depth 1 --sparse $REPO
+cd `basename -s .git $REPO`
+git config set --global --append safe.directory `pwd`
+git config core.sparseCheckout true
+git sparse-checkout init
+git sparse-checkout add $DIR
+git checkout
+
+python ../keywordExtractor.py features/*.feature ../my_list.json
+
+git config unset --global --value `pwd` safe.directory
+cd ..
+rm -rf `basename -s .git $REPO`
+```

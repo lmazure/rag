@@ -4,7 +4,7 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 import json
 
 def main():
-    parser = argparse.ArgumentParser(description="Compute embedding vectors and store them in Chroma database.")
+    parser = argparse.ArgumentParser(description="Compute embedding vectors and store them in the Chroma database.")
     parser.add_argument("keyword_file", help="JSON file containing keywords")
     parser.add_argument("--model", default="all-MiniLM-L6-v2", help="Embedding model to use (default: all-MiniLM-L6-v2)")
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")

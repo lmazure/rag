@@ -117,7 +117,7 @@ git config set --global --append safe.directory `pwd`
 git sparse-checkout set $DIR
 git checkout
 
-python ../keywordExtractor.py features/*.feature ../my_list.json
+python ../keywordExtractor.py --string_delimiter "'"  features/*.feature ../my_list.json
 
 git config unset --global --value `pwd` safe.directory
 cd ..

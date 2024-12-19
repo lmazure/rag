@@ -18,7 +18,7 @@ def dump_chromadb_collections(client):
 
 def main():
 
-    parser = argparse.ArgumentParser(description="Dump ChromaDB collections to stdout")
+    parser = argparse.ArgumentParser(description="Dump the collections present in the Chroma database.")
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")
     args = parser.parse_args()
 

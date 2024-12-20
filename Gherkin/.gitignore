@@ -1,6 +1,6 @@
 chromadb
 .venv
-.venv.*
+.venv*
 __pycache__
 *.html
 *.json

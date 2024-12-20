@@ -1,0 +1,42 @@
+keyword type	looked-up string	expected keyword ID
+Outcome	le genre est mis à jour	ea6d4c48-f216-4fb4-94bf-81d6f7aaafab
+Outcome	le genre est modifié	ea6d4c48-f216-4fb4-94bf-81d6f7aaafab
+Outcome	le sexe est mis à jour	ea6d4c48-f216-4fb4-94bf-81d6f7aaafab
+Outcome	le sexe est modifié	ea6d4c48-f216-4fb4-94bf-81d6f7aaafab
+Outcome	le nom de famille est mis à jour	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	le nom de famille est modifié	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	le patronyme est modifié	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	le prenom est mis à jour	bf8b6597-7f0c-42fb-bef9-830247e4ed52
+Outcome	le prenom est modifié	bf8b6597-7f0c-42fb-bef9-830247e4ed52
+Outcome	le pronom est mis à jour	bf8b6597-7f0c-42fb-bef9-830247e4ed52
+Outcome	le pronom est modifié	bf8b6597-7f0c-42fb-bef9-830247e4ed52
+Outcome	le nom	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	le prenom	bf8b6597-7f0c-42fb-bef9-830247e4ed52
+Outcome	la commande est abandonnée	d65debed-e3d0-4cb3-8e63-441837e7956e
+Outcome	modif du prénom	bf8b6597-7f0c-42fb-bef9-830247e4ed52
+Outcome	modif du nom	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	modif du patronyme	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	abandon de la commande	d65debed-e3d0-4cb3-8e63-441837e7956e
+Outcome	modif  prénom	bf8b6597-7f0c-42fb-bef9-830247e4ed52
+Outcome	modif  nom	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	modif  patronyme	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	abandon  commande	d65debed-e3d0-4cb3-8e63-441837e7956e
+Outcome	modif  prénm	bf8b6597-7f0c-42fb-bef9-830247e4ed52
+Outcome	modif  nm	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	modif  patronme	8d908f77-0c74-4229-b690-3c0c18447be9
+Outcome	abandon  comande	d65debed-e3d0-4cb3-8e63-441837e7956e
+Outcome	le nombre d'articles dans le panier est mis à jour	e447c3b5-ef9b-4ebf-ae41-bb0fab147bfb
+Outcome	le nombre d'articles dans le panier est mis à jour à zéro	907f612d-1c56-404c-bde9-4f05119b9e72
+Outcome	le nombre d'articles dans le panier est modifié	e447c3b5-ef9b-4ebf-ae41-bb0fab147bfb
+Outcome	le nombre d'articles dans le panier est modifié à zéro	907f612d-1c56-404c-bde9-4f05119b9e72
+Outcome	le nombre d'articles dans le panier est mis à jour à 0	907f612d-1c56-404c-bde9-4f05119b9e72
+Outcome	le nombre d'articles dans le panier est modifié à 0	907f612d-1c56-404c-bde9-4f05119b9e72
+Outcome	le nombre d'articles dans le panier est mis à 0	907f612d-1c56-404c-bde9-4f05119b9e72
+Outcome	le nombre d'articles dans le panier est 0	907f612d-1c56-404c-bde9-4f05119b9e72
+Outcome	le panier est vide	e447c3b5-ef9b-4ebf-ae41-bb0fab147bfb
+Outcome	le panier est vidé	e447c3b5-ef9b-4ebf-ae41-bb0fab147bfb
+Outcome	le numérico de téléphone fixe est mis à jour	246bc728-de3d-4b84-b18b-d6f8fecaf6a7
+Outcome	les produits de la catégorie "Livres pour adolescents" sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7
+Outcome	les produits de "Livres pour adolescents" sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7
+Outcome	les produits de la catégorie "DVD" sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7
+Outcome	les produits de "DVD" sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7

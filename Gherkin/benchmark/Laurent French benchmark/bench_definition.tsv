@@ -33,10 +33,26 @@ Outcome	le nombre d'articles dans le panier est mis à jour à 0	907f612d-1c56-4
 Outcome	le nombre d'articles dans le panier est modifié à 0	907f612d-1c56-404c-bde9-4f05119b9e72
 Outcome	le nombre d'articles dans le panier est mis à 0	907f612d-1c56-404c-bde9-4f05119b9e72
 Outcome	le nombre d'articles dans le panier est 0	907f612d-1c56-404c-bde9-4f05119b9e72
+Outcome	Il n'y a aucun article dans le panier	907f612d-1c56-404c-bde9-4f05119b9e72
+Outcome	Il n'y a plus d'article dans le panier	907f612d-1c56-404c-bde9-4f05119b9e72
 Outcome	le panier est vide	e447c3b5-ef9b-4ebf-ae41-bb0fab147bfb
 Outcome	le panier est vidé	e447c3b5-ef9b-4ebf-ae41-bb0fab147bfb
+Outcome	panier vide	e447c3b5-ef9b-4ebf-ae41-bb0fab147bfb
 Outcome	le numérico de téléphone fixe est mis à jour	246bc728-de3d-4b84-b18b-d6f8fecaf6a7
 Outcome	les produits de la catégorie "Livres pour adolescents" sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7
 Outcome	les produits de "Livres pour adolescents" sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7
 Outcome	les produits de la catégorie "DVD" sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7
 Outcome	les produits de "DVD" sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7
+Outcome	les produits de la catégorie sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7
+Outcome	les produits sont affichés	57b1418b-9d92-4941-9360-bbae28e482c7
+Action	l'utilisateur modifie son adresse e-mail	6e98d011-c8b9-47f8-b502-0618931b6dff
+Action	l'utilisateur modifie son adresse email	6e98d011-c8b9-47f8-b502-0618931b6dff
+Action	l'utilisateur modifie son email	6e98d011-c8b9-47f8-b502-0618931b6dff
+Action	l'utilisateur change son email	6e98d011-c8b9-47f8-b502-0618931b6dff
+Action	modifie email	6e98d011-c8b9-47f8-b502-0618931b6dff
+Action	modif email	6e98d011-c8b9-47f8-b502-0618931b6dff
+Action	change email	6e98d011-c8b9-47f8-b502-0618931b6dff
+Action	l'utilisateur entre un email invalide	4f770068-eeca-4efc-868c-5f63a6d6e06d
+Action	l'utilisateur entre un email incorrect	4f770068-eeca-4efc-868c-5f63a6d6e06d
+Action	l'utilisateur entre un email faux	4f770068-eeca-4efc-868c-5f63a6d6e06d
+Action	l'utilisateur entre un email foireux	4f770068-eeca-4efc-868c-5f63a6d6e06d

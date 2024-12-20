@@ -102,10 +102,11 @@ You can use the models listed [here](https://www.sbert.net/docs/sentence_transfo
 ## Extraction of the keywords appearing in some feature files
 You can use this if you want to create a keyword library from your existing feature files.
 ```sh
-python keywordExtractor.py Gherkin\ samples/*.feature my_list.json
+python keywordExtractor.py [--string_delimiter "'"] Gherkin\ samples/*.feature my_list.json
 ```
 will create `my_list.json` which is the list of all keywords appearing in the `samples/*.feature` files.  
-Keywords that only differ by integer values, float values, string values, or parameter names are merged (the longest one is kept).
+Keywords that only differ by integer values, float values, string values, or parameter names are merged (the longest one is kept).  
+Use `--string_delimiter "'"` if the string values are delimted by single quotes (by default, they are delimted by double quotes).
 
 ## Extraction of the keywords appearing in a GitHub project
 ```sh

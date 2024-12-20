@@ -35,8 +35,15 @@ def extract_keywords_from_feature_file(file_path: str, string_delimiter: str = '
 
     # Parse the feature file
     parser = Parser()
-    feature = parser.parse(TokenScanner(content))
-    
+    try:
+        feature = parser.parse(TokenScanner(content))
+    except Exception as e:
+        print(f"Error parsing file {file_path}: {str(e)}")
+        sys.exit(1)
+    if 'feature' not in feature:
+        print(f"Error parsing file {file_path}: Feature not found")
+        sys.exit(1)
+
     # Process each feature (it can either be a scenario or a background, but we does care, we can retrieve the steps the same way)
     keywords = []
     for component in feature['feature']['children']:

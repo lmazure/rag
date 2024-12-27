@@ -1,3 +1,5 @@
+- `run_web_server.py` - add a filter: comma-separated list of keyword types + comma-separated list of models
+- `run_web_server.py` - proper display of the list of keywords in home.html
 - `dumpDatabase.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
 - JSON schema - keyword cannot be empty
 - support other models

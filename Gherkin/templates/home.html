@@ -4,8 +4,50 @@
     </head>
     <body>
         <h1>Chroma Database Viewer</h1>
+        <div id="keywordsList"></div>
         <p>Access the database content at <a href="/keywords">/keywords</a></p>
         <p>Access  the keyword types at <a href="/keyword_types">/keyword_types</a></p>
         <p>Access  the models at <a href="/models">/models</a></p>
+        
+        <script>
+            // Fetch and display keywords when the page loads
+            window.onload = function() {
+                fetch('/keywords')
+                    .then(response => response.json())
+                    .then(data => {
+                        const keywordsList = document.getElementById('keywordsList');
+                        Object.entries(data["data"]).forEach(([model, types]) => {
+                            const modelElement = document.createElement('h2');
+                            modelElement.textContent = model;
+                            keywordsList.appendChild(modelElement);
+                            Object.entries(types).forEach(([type, keywords]) => {
+                                const typeElement = document.createElement('h3');
+                                typeElement.textContent = type;
+                                keywordsList.appendChild(typeElement);
+                                const tableElement = document.createElement('table');
+                                const tableHeaderElement = document.createElement('tr');
+                                const idHeaderElement = document.createElement('th');
+                                idHeaderElement.textContent = "ID";
+                                tableHeaderElement.appendChild(idHeaderElement);
+                                const keywordHeaderElement = document.createElement('th');
+                                keywordHeaderElement.textContent = "Keyword";
+                                tableHeaderElement.appendChild(keywordHeaderElement);
+                                tableElement.appendChild(tableHeaderElement);
+                                keywords.forEach(keyword => {
+                                    const rowElement = document.createElement('tr');
+                                    const idElement = document.createElement('td');
+                                    idElement.textContent = keyword["id"];
+                                    rowElement.appendChild(idElement);
+                                    const keywordElement = document.createElement('td');
+                                    keywordElement.textContent = keyword["content"];
+                                    rowElement.appendChild(keywordElement);
+                                    tableElement.appendChild(rowElement);
+                                })
+                                keywordsList.appendChild(tableElement);
+                            })
+                        })})
+                    .catch(error => console.error('Error fetching keywords:', error));
+            };
+        </script>
     </body>
 </html>

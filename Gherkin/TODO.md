@@ -1,6 +1,5 @@
 - `run_web_server.py` - improve display by using <details>
 - `run_web_server.py` - add a filter: comma-separated list of keyword types + comma-separated list of models
-- `run_web_server.py` - the location of the Chroma database should be defined by a command line parameter
 - `run_web_server.py` - add a command line parameter to launch the browser
 - `run_web_server.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
 - `dumpDatabase.py` - delete the script

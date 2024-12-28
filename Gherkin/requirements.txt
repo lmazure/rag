@@ -2,3 +2,6 @@ gherkin-official
 chromadb
 sentence_transformers
 flask
+numpy
+scikit-learn
+matplotlib

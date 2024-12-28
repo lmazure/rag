@@ -3,6 +3,7 @@ import chromadb
 import argparse
 import sys
 import os
+import webbrowser
 
 app = Flask(__name__)
 db_path = None  # Will be set from command line argument
@@ -120,6 +121,7 @@ def home():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run a web server to navigate the Chroma database')
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")
+    parser.add_argument("--browser", action="store_true", help="Open the web browser after starting the server")
     args = parser.parse_args()
     db_path = args.db_path
 
@@ -147,5 +149,8 @@ if __name__ == '__main__':
         print(f"Error: Failed to connect to Chroma database at {db_path}")
         print(f"Details: {str(e)}")
         sys.exit(1)
+
+    if args.browser:
+        webbrowser.open('http://localhost:5000')
 
     app.run(host='0.0.0.0', port=5000, debug=True)

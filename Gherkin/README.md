@@ -33,22 +33,23 @@ looks for the `I have a saved receiving address` string in the keywords and desc
 
 ## Run a benchmark
 ```sh
-python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
+python runBenchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --db_path chromadb/database --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
 ```
 runs a benchmark.  
 `benchmark/Laurent\ initial\ benchmark/bench_definition.tsv` is the benchmark definition. This one is a TSV (Tab Separated Value) file. The first line contains the headers, it is ignored. Each other line must contains a keyword type, a looked-up keyword, and the ID of the expected matching keyword (the matching being via the keyword itself or via its definition).  
 `report.html` is the name of the HTML benchmark report that will be generated.
 
-## Dump content the Chroma database
+## Navigate the Chroma database
 ```sh
-python dumpDatabase.py --db_path ./chromadb/database
+python run_web_server.py --db_path chromadb/database --browser
 ```
-will display the whole content of the database.
+displays the whole content of the database in the Browser.
 
 ## Delete the Chroma database
 ```sh
 rm -r ./chromadb/database
 ```
+deletes the Chroma database.
 
 ## Parameters
 | parameter        | meaning                                                           |

@@ -1,7 +1,6 @@
 - `run_web_server.py` - improve display by using <details>
 - `run_web_server.py` - add a filter: comma-separated list of keyword types + comma-separated list of models
 - `run_web_server.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
-- `dumpDatabase.py` - delete the script
 - all scripts - use underscore instead of camel case
 - all scripts - add the notion of collection
 - JSON schema - keyword cannot be empty

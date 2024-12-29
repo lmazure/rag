@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import chromadb
 
 def get_vectors_from_chroma(collection):
     """
@@ -14,7 +15,7 @@ def get_vectors_from_chroma(collection):
         numpy.ndarray: Matrix of vectors
     """
     # Get all items from the collection
-    results = collection.get()
+    results = collection.get(include=['embeddings'])
     
     # Extract embeddings
     vectors = np.array(results['embeddings'])
@@ -53,6 +54,7 @@ def visualize_projections(vectors, labels=None):
     """
     fig = plt.figure(figsize=(15, 5))
     
+    print(f"vectors: {vectors.shape}", flush=True)
     # 1D Projection
     projected_1d, var_1d = project_vectors(vectors, n_components=1)
     ax1 = fig.add_subplot(131)
@@ -100,21 +102,19 @@ def visualize_projections(vectors, labels=None):
     plt.show()
 
 # Example usage:
-def main():
-    import chromadb
-    
+def main():    
     # Initialize ChromaDB client
-    client = chromadb.Client()
+    client = chromadb.PersistentClient(path="./chromadb/database")
     
     # Get your collection
-    collection = client.get_collection("your_collection_name")
+    collection = client.get_collection("all-MiniLM-L6-v2-Outcome")
     
     # Get vectors from collection
     vectors = get_vectors_from_chroma(collection)
     
     # Optional: Get metadata or IDs to use as labels
     results = collection.get()
-    labels = results['ids']  # or use metadata fields
+    labels = results['documents']  # or use metadata fields
     
     # Visualize projections
     visualize_projections(vectors, labels)

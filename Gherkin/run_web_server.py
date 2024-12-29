@@ -62,15 +62,18 @@ def get_database_content(client) -> dict:
     
     collections = client.list_collections()
     for collection in collections:
-        if get_model(collection.name) not in collections_data:
-            collections_data[get_model(collection.name)] = {}
-
         # Get the collection
         coll = client.get_collection(collection.name)
-        
+
         # Get all documents in the collection
         results = coll.get(include=['documents'])
-        
+
+        # Initialize the data structure for the model (if not already done)
+        if get_model(coll.name) not in collections_data:
+            embeddings = coll.get(include=['embeddings'])
+            dimension = len(embeddings['embeddings'][0])
+            collections_data[get_model(coll.name)] = {'metadata': {'dimension': dimension}, 'keywords': {}}
+
         # Create a list of documents with their IDs
         documents = []
         for doc_id, document in zip(results['ids'], results['documents']):
@@ -79,7 +82,7 @@ def get_database_content(client) -> dict:
                 'content': document
             })
             
-        collections_data[get_model(collection.name)][get_keyword_type(collection.name)] = documents
+        collections_data[get_model(collection.name)]['keywords'][get_keyword_type(collection.name)] = documents
     
     return collections_data
 

@@ -43,13 +43,16 @@
                     .then(response => response.json())
                     .then(data => {
                         const keywordsList = document.getElementById('keywordsList');
-                        Object.entries(data["data"]).forEach(([model, types]) => {
+                        Object.entries(data["data"]).forEach(([model, data]) => {
                             const modelElement = document.createElement('details');
                             const modelNameElement = document.createElement('summary');
                             modelNameElement.textContent = model;
                             modelElement.appendChild(modelNameElement);
+                            const modelInfoElement = document.createElement('div');
+                            modelInfoElement.textContent = `Dimension: ${data["metadata"]["dimension"]}`;
+                            modelElement.appendChild(modelInfoElement);
                             keywordsList.appendChild(modelElement);
-                            Object.entries(types).forEach(([type, keywords]) => {
+                            Object.entries(data["keywords"]).forEach(([type, keywords]) => {
                                 const typeElement = document.createElement('details');  
                                 const typeElementName = document.createElement('summary');
                                 typeElementName.textContent = type;

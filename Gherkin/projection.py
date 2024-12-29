@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import chromadb
 
 def get_vectors_from_chroma(collection):
@@ -104,7 +103,7 @@ def main():
     client = chromadb.PersistentClient(path="./chromadb/database")
     
     # Get your collection
-    collection = client.get_collection("all-MiniLM-L6-v2-Outcome")
+    collection = client.get_collection("all-MiniLM-L6-v2-Action")
     
     # Get vectors from collection
     vectors = get_vectors_from_chroma(collection)

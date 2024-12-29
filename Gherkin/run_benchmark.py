@@ -1,7 +1,7 @@
 import argparse
 import csv
 import html
-from queryDatabase import extract_keywords
+from query_database import extract_keywords
 
 def process_file(file_path, models, db_path, nb_results):
     results = {}

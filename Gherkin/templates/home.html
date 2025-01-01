@@ -58,6 +58,10 @@
                                 typeElementName.textContent = type;
                                 typeElement.appendChild(typeElementName);
                                 modelElement.appendChild(typeElement);
+                                const visualisationElement = document.createElement('a');
+                                visualisationElement.href = `/projections?model=${model}&keyword-type=${type}`;
+                                visualisationElement.textContent = "Visualisation";
+                                typeElement.appendChild(visualisationElement);
                                 const tableElement = document.createElement('table');
                                 const tableHeaderElement = document.createElement('tr');
                                 const idHeaderElement = document.createElement('th');

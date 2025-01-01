@@ -175,6 +175,10 @@ def get_projections():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/visualisation')
+def visualisation():
+    return render_template('visualisation.html')
+
 @app.route('/', methods=['GET'])
 def home():
     return render_template('home.html')

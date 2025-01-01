@@ -1,4 +1,3 @@
-- `run_web_server.py` - add a filter: comma-separated list of keyword types + comma-separated list of models
 - `run_web_server.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
 - all scripts - add the notion of collection
 - JSON schema - keyword cannot be empty

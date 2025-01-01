@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            pointer-events: none;
+        }
+        #tooltip {
+            position: absolute;
+            background: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">Loading...</div>
+    <div id="tooltip"></div>
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const model = urlParams.get('model');
+        const keywordType = urlParams.get('keyword-type');
+
+        if (!model || !keywordType) {
+            document.getElementById('info').textContent = 'Error: Missing model or keyword-type parameters';
+            throw new Error('Missing parameters');
+        }
+
+        // Three.js setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x111111);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Add lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 0.5);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+
+        // Camera controls
+        camera.position.z = 5;
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+
+        // Mouse controls
+        document.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaMove = {
+                    x: e.clientX - previousMousePosition.x,
+                    y: e.clientY - previousMousePosition.y
+                };
+
+                scene.rotation.y += deltaMove.x * 0.01;
+                scene.rotation.x += deltaMove.y * 0.01;
+
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Fetch and visualize data
+        fetch(`/projections?model=${model}&keyword-type=${keywordType}`)
+            .then(response => response.json())
+            .then(data => {
+                const points = data.map(item => item.projection);
+                const contents = data.map(item => item.content);
+
+                // Find min and max values for normalization
+                const minValues = [
+                    Math.min(...points.map(p => p[0])),
+                    Math.min(...points.map(p => p[1])),
+                    Math.min(...points.map(p => p[2]))
+                ];
+                const maxValues = [
+                    Math.max(...points.map(p => p[0])),
+                    Math.max(...points.map(p => p[1])),
+                    Math.max(...points.map(p => p[2]))
+                ];
+
+                // Create geometry
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const colors = [];
+
+                points.forEach((point, i) => {
+                    // Normalize to range [-2, 2]
+                    const normalizedPoint = point.map((value, j) => {
+                        return (value - minValues[j]) / (maxValues[j] - minValues[j]) * 4 - 2;
+                    });
+                    vertices.push(...normalizedPoint);
+
+                    // Generate a unique color based on position
+                    const color = new THREE.Color(
+                        (normalizedPoint[0] + 2) / 4,
+                        (normalizedPoint[1] + 2) / 4,
+                        (normalizedPoint[2] + 2) / 4
+                    );
+                    colors.push(color.r, color.g, color.b);
+                });
+
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+                // Create point material
+                const material = new THREE.PointsMaterial({
+                    size: 0.1,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8
+                });
+
+                // Create points object
+                const pointCloud = new THREE.Points(geometry, material);
+                scene.add(pointCloud);
+
+                // Update info
+                document.getElementById('info').innerHTML = 
+                    `Model: ${model}<br>Keyword type: ${keywordType}<br>Nb of keywords: ${points.length}`;
+
+                // Setup tooltip
+                const tooltip = document.getElementById('tooltip');
+                const raycaster = new THREE.Raycaster();
+                raycaster.params.Points.threshold = 0.1;
+
+                document.addEventListener('mousemove', (event) => {
+                    const mouse = new THREE.Vector2(
+                        (event.clientX / window.innerWidth) * 2 - 1,
+                        -(event.clientY / window.innerHeight) * 2 + 1
+                    );
+
+                    raycaster.setFromCamera(mouse, camera);
+                    const intersects = raycaster.intersectObject(pointCloud);
+
+                    if (intersects.length > 0) {
+                        const index = intersects[0].index;
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = event.clientX + 10 + 'px';
+                        tooltip.style.top = event.clientY + 10 + 'px';
+                        tooltip.textContent = contents[index];
+                    } else {
+                        tooltip.style.display = 'none';
+                    }
+                });
+            })
+            .catch(error => {
+                document.getElementById('info').textContent = `Error: ${error.message}`;
+            });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

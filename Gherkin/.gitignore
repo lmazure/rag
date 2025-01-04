@@ -2,5 +2,5 @@ chromadb
 .venv
 .venv*
 __pycache__
-*.html
+/*.html
 *.json

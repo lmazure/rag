@@ -1,4 +1,6 @@
-- `dumpDatabase.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
+- `run_web_server.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
+- `run_web_server.py` - create a page to test realtime pattern matching
+- `fill_database.py` - Try another embedding library
+- all scripts - add the notion of project
 - JSON schema - keyword cannot be empty
-- support other models
-- `keywordExtractor.py` - manage keywords in foreign languages
+- `keyword_extractor.py` - manage keywords in foreign languages

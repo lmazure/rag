@@ -16,6 +16,27 @@
             font-family: Arial, sans-serif;
             pointer-events: none;
         }
+        #controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            font-family: Arial, sans-serif;
+        }
+        #controls button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background: #444;
+            border: none;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        #controls button:hover {
+            background: #555;
+        }
         #tooltip {
             position: absolute;
             background: white;
@@ -25,11 +46,27 @@
             font-size: 12px;
             display: none;
         }
+        .text-label {
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
     <div id="info">Loading...</div>
     <div id="tooltip"></div>
+    <div id="controls">
+        <label for="textMode">Labels:</label>
+        <select id="textMode">
+            <option value="never">Never</option>
+            <option value="static">When static</option>
+            <option value="always">Always</option>
+        </select>
+        <br>
+        <button id="resetView">Reset View</button>
+    </div>
     <script>
         // Get URL parameters
         const urlParams = new URLSearchParams(window.location.search);
@@ -58,8 +95,49 @@
 
         // Camera controls
         camera.position.z = 5;
+        const initialCameraPosition = new THREE.Vector3(0, 0, 5);
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
+        let lastRotationTime = Date.now();
+        const rotationTimeout = 500; // Time in ms to consider scene as "static" after rotation
+
+        // Reset view function
+        function resetView() {
+            scene.rotation.x = 0;
+            scene.rotation.y = 0;
+            scene.rotation.z = 0;
+            camera.position.copy(initialCameraPosition);
+            lastRotationTime = Date.now();
+        }
+
+        // Reset button click handler
+        document.getElementById('resetView').addEventListener('click', resetView);
+
+        // Mouse wheel zoom
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+
+            // Convert mouse position to normalized device coordinates (-1 to +1)
+            const mouse = new THREE.Vector2(
+                (e.clientX / window.innerWidth) * 2 - 1,
+                -(e.clientY / window.innerHeight) * 2 + 1
+            );
+
+            // Get the direction vector from camera to mouse position
+            const vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+            vector.unproject(camera);
+            vector.sub(camera.position).normalize();
+
+            // Calculate zoom amount based on wheel delta
+            const zoomSpeed = 0.1;
+            const zoomDelta = -Math.sign(e.deltaY) * zoomSpeed;
+
+            // Move camera along the direction vector
+            camera.position.addScaledVector(vector, zoomDelta);
+
+            // Update last rotation time to trigger label visibility
+            lastRotationTime = Date.now();
+        }, { passive: false });
 
         // Mouse controls
         document.addEventListener('mousedown', (e) => {
@@ -76,6 +154,8 @@
 
                 scene.rotation.y += deltaMove.x * 0.01;
                 scene.rotation.x += deltaMove.y * 0.01;
+
+                lastRotationTime = Date.now();
 
                 previousMousePosition = { x: e.clientX, y: e.clientY };
             }
@@ -130,7 +210,7 @@
 
                 // Create point material
                 const material = new THREE.PointsMaterial({
-                    size: 0.1,
+                    size: 0.05,
                     vertexColors: true,
                     transparent: true,
                     opacity: 0.8
@@ -139,6 +219,59 @@
                 // Create points object
                 const pointCloud = new THREE.Points(geometry, material);
                 scene.add(pointCloud);
+
+                // Add text labels for each point
+                points.forEach((point, i) => {
+                    const normalizedPoint = point.map((value, j) => {
+                        return (value - minValues[j]) / (maxValues[j] - minValues[j]) * 4 - 2;
+                    });
+
+                    const label = document.createElement('div');
+                    label.className = 'text-label';
+                    label.textContent = contents[i];
+                    label.style.position = 'absolute';
+                    document.body.appendChild(label);
+
+                    // Create a Three.js object to track position
+                    const labelPos = new THREE.Vector3(normalizedPoint[0], normalizedPoint[1], normalizedPoint[2]);
+                    const labelObj = new THREE.Object3D();
+                    labelObj.position.copy(labelPos);
+                    scene.add(labelObj);
+
+                    // Update label positions in animation loop
+                    function updateLabelPosition() {
+                        const vector = new THREE.Vector3();
+                        vector.setFromMatrixPosition(labelObj.matrixWorld);
+                        
+                        // Calculate distance from camera
+                        const distance = camera.position.distanceTo(vector);
+                        const maxDistance = 10; // Adjust this value based on your scene scale
+                        const opacity = Math.max(0.2, 1 - (distance / maxDistance));
+                        
+                        vector.project(camera);
+
+                        const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+                        const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+
+                        const textMode = document.getElementById('textMode').value;
+                        const timeSinceLastRotation = Date.now() - lastRotationTime;
+                        const isStatic = timeSinceLastRotation > rotationTimeout;
+
+                        if (textMode === 'always' || (textMode === 'static' && isStatic)) {
+                            label.style.display = vector.z < 1 ? 'block' : 'none';
+                            label.style.opacity = vector.z < 1 ? opacity : 0;
+                        } else {
+                            label.style.display = 'none';
+                        }
+
+                        label.style.left = x + 'px';
+                        label.style.top = y + 'px';
+                    }
+
+                    // Store the update function for each label
+                    window.labelUpdates = window.labelUpdates || [];
+                    window.labelUpdates.push(updateLabelPosition);
+                });
 
                 // Update info
                 document.getElementById('info').innerHTML = 
@@ -176,6 +309,10 @@
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
+            // Update all label positions
+            if (window.labelUpdates) {
+                window.labelUpdates.forEach(update => update());
+            }
             renderer.render(scene, camera);
         }
         animate();

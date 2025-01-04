@@ -40,8 +40,8 @@ def get_list_of_models() -> list[str]:
         list: The list of model names.
     """
     client = chromadb.PersistentClient(path=db_path)
-    collections = client.list_collections()
-    models = [get_model(collection.name) for collection in collections]
+    collection_names = client.list_collections()
+    models = [get_model(name) for name in collection_names]
     return list(set(models))
 
 def get_list_of_keyword_types() -> list[str]:
@@ -52,8 +52,8 @@ def get_list_of_keyword_types() -> list[str]:
         list: The list of keyword types.
     """
     client = chromadb.PersistentClient(path=db_path)
-    collections = client.list_collections()
-    keyword_types = [get_keyword_type(collection.name) for collection in collections]
+    collection_names = client.list_collections()
+    keyword_types = [get_keyword_type(name) for name in collection_names]
     return list(set(keyword_types))
 
 def get_database_content() -> dict:
@@ -68,10 +68,10 @@ def get_database_content() -> dict:
     collections_data = {}
 
     client = chromadb.PersistentClient(path=db_path)
-    collections = client.list_collections()
-    for collection in collections:
+    collection_names = client.list_collections()
+    for name in collection_names:
         # Get the collection
-        coll = client.get_collection(collection.name)
+        coll = client.get_collection(name)
 
         # Get all documents in the collection
         results = coll.get(include=['documents'])
@@ -90,7 +90,7 @@ def get_database_content() -> dict:
                 'content': document
             })
             
-        collections_data[get_model(collection.name)]['keywords'][get_keyword_type(collection.name)] = documents
+        collections_data[get_model(name)]['keywords'][get_keyword_type(name)] = documents
     
     return collections_data
 

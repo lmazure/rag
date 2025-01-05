@@ -281,7 +281,7 @@
                 // Setup tooltip
                 const tooltip = document.getElementById('tooltip');
                 const raycaster = new THREE.Raycaster();
-                raycaster.params.Points.threshold = 0.1;
+                raycaster.params.Points.threshold = 0.03;
 
                 document.addEventListener('mousemove', (event) => {
                     const mouse = new THREE.Vector2(

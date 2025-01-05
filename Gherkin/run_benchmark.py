@@ -3,7 +3,7 @@ import csv
 import html
 from query_database import extract_keywords
 
-def process_file(file_path, models, db_path, nb_results):
+def process_file(file_path, models, db_path, project, nb_results):
     results = {}
     index = 1
     
@@ -16,7 +16,7 @@ def process_file(file_path, models, db_path, nb_results):
             search_results = {}
             
             for model in models:
-                model_results = extract_keywords(db_path, model, keyword_type, keyword, nb_results)
+                model_results = extract_keywords(db_path, model, project, keyword_type, keyword, nb_results)
                 search_results[model] = { 'matches': model_results, 'success': [result['id'] for result in model_results].index(expected_id) if expected_id in [result['id'] for result in model_results] else -1 }
             
             results[index] = {
@@ -99,6 +99,7 @@ def main():
     parser = argparse.ArgumentParser(description="Process keywords using multiple models and Chroma database.")
     parser.add_argument("--models", required=True, help="Comma-separated list of the names of the models to evaluate")
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")
+    parser.add_argument("--project", default="Common", help="Name of the project (default: Common)")
     parser.add_argument("--nb_results", default=3, type=int, required=True, help="Number of matches to consider (default: 3)")
     parser.add_argument("benchmark_file", help="Path to the benchmark definition file")
     parser.add_argument("report_file", help="Path to the HTML report file to generate")
@@ -108,7 +109,7 @@ def main():
     models = [model.strip() for model in args.models.split(',')]
     
     # Run benchmark
-    results = process_file(args.benchmark_file, models, args.db_path, args.nb_results)
+    results = process_file(args.benchmark_file, models, args.db_path, args.project, args.nb_results)
     
     # Generate HTML report
     generate_html(args.report_file, results)

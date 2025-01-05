@@ -3,8 +3,8 @@
 ## TL;DR -- Do everything for comparing two (or more) embedding models
 ```sh
 pip install -r requirements.txt
-python fill_database.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
-python fill_database.py --model all-mpnet-base-v2 --db_path ./chromadb/database ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python fill_database.py --model all-MiniLM-L6-v2 ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python fill_database.py --model all-mpnet-base-v2 ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
 python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
 rm -r ./chromadb/database
 ```
@@ -17,9 +17,9 @@ installs the required Python ppackages.
 
 ## Fill the Chroma database with keywords
 ```sh
-python fill_database.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database my_list.json
+python fill_database.py --model all-MiniLM-L6-v2 --db_path ./chromadb/db --project my_project my_list.json
 ```
-populates the database using a given embedding model with the keywords stored in the `my_list.json` file (see [below](#schema-of-the-keyword-json)).  
+populates the database using a given embedding model with the keywords stored in the `my_list.json` file (see [below](#schema-of-the-keyword-json)), the data is stored under the project `my_project`.  
 If the database does not exist before running the script, this one will create it.  
 If the embedding model is not present on the computer, the script will download and install it.  
 If an ID already exists for a given model and keyword type, the corresponding keyword and description will be replaced.  
@@ -27,13 +27,13 @@ If an ID already exists for a given model and keyword type, the corresponding ke
 
 ## Query the Chroma database
 ```sh
-python query_database.py --model all-MiniLM-L6-v2 --db_path ./chromadb/database --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
+python query_database.py --model all-MiniLM-L6-v2 --db_path ./chromadb/db --project my_project my_list.json --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
 ```
-looks for the `I have a saved receiving address` string in the keywords and descriptions of the Outcome keywords using embedding model `all-MiniLM-L6-v2`.
+looks for the `I have a saved receiving address` string in the keywords and descriptions of the Outcome keywords (in the project `my_project`) using embedding model `all-MiniLM-L6-v2`.
 
 ## Run a benchmark
 ```sh
-python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --db_path chromadb/database --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
+python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --db_path chromadb/db --project my_project --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
 ```
 runs a benchmark.  
 `benchmark/Laurent\ initial\ benchmark/bench_definition.tsv` is the benchmark definition. This one is a TSV (Tab Separated Value) file. The first line contains the headers, it is ignored. Each other line must contains a keyword type, a looked-up keyword, and the ID of the expected matching keyword (the matching being via the keyword itself or via its definition).  
@@ -41,7 +41,7 @@ runs a benchmark.
 
 ## Navigate the Chroma database
 ```sh
-python run_web_server.py --db_path chromadb/database --browser
+python run_web_server.py --db_path chromadb/db --browser
 ```
 displays the whole content of the database in the Browser.
 
@@ -52,13 +52,15 @@ rm -r ./chromadb/database
 deletes the Chroma database.
 
 ## Parameters
-| parameter        | meaning                                                           |
-| ---------------- | ----------------------------------------------------------------- |
-| `--model`        | name of the embedding model (see [below](#usable-models))         |
-| `--models`       | comma-separated list of model names (see [below](#usable-models)) |
-| `--db_path`      | folder where is the ChromaDB database                             |
-| `--keyword_type` | `Context`, `Action`, or `Outcome`                                 |
-| `--nb_results  ` | number of matches to return                                       |
+| parameter        | meaning                                                           | default value         |
+| ---------------- | ----------------------------------------------------------------- | --------------------- |
+| `--model`        | name of the embedding model (see [below](#usable-models))         | `all-MiniLM-L6-v2`    |
+| `--models`       | comma-separated list of model names (see [below](#usable-models)) |                       |
+| `--db_path`      | folder where is the ChromaDB database                             | `./chromadb/database` |
+| `--project`      | name of the project                                               | `Common`              |
+| `--keyword_type` | `Context`, `Action`, or `Outcome`                                 |                       |
+| `--nb_results  ` | number of matches to return                                       | `3`                   |
+| `--browser`      | open the Web Browser                                              |                       |
 
 ## Schema of the keyword JSON
 ```json

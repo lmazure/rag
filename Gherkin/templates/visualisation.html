@@ -71,6 +71,7 @@
         // Get URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const model = urlParams.get('model');
+        const project = urlParams.get('project');
         const keywordType = urlParams.get('keyword-type');
 
         if (!model || !keywordType) {
@@ -166,7 +167,7 @@
         });
 
         // Fetch and visualize data
-        fetch(`/projections?model=${model}&keyword-type=${keywordType}`)
+        fetch(`/projections?model=${model}&project=${project}&keyword-type=${keywordType}`)
             .then(response => response.json())
             .then(data => {
                 const points = data.map(item => item.projection);

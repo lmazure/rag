@@ -38,10 +38,10 @@ def extract_keywords_from_feature_file(file_path: str, string_delimiter: str = '
     try:
         feature = parser.parse(TokenScanner(content))
     except Exception as e:
-        print(f"Error parsing file {file_path}: {str(e)}")
+        print(f"Error parsing file {file_path}: {str(e)}", file=sys.stderr)
         sys.exit(1)
     if 'feature' not in feature:
-        print(f"Error parsing file {file_path}: Feature not found")
+        print(f"Error parsing file {file_path}: Feature not found", file=sys.stderr)
         sys.exit(1)
 
     # Process each feature (it can either be a scenario or a background, but we does care, we can retrieve the steps the same way)
@@ -52,7 +52,7 @@ def extract_keywords_from_feature_file(file_path: str, string_delimiter: str = '
             step_type = step['keywordType']
             if (step_type == 'Conjunction'):
                 if (lastKeywordType == None):
-                    print("Conjunction without previous keyword")
+                    print("Conjunction without previous keyword", file=sys.stderr)
                     sys.exit(1)
                 else:
                     step_type = lastKeywordType

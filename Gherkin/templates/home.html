@@ -16,26 +16,27 @@
             details > summary {
                 cursor: pointer;
             }
-            /* Style for model names (like H2) */
+            /* Style for model names  */
             details > summary {
                 font-size: 1.5em;
                 font-weight: bold;
                 margin: 0.83em 0;
             }
-            /* Style for type names (like H3) */
+            /* Style for project names */
             details details > summary {
                 font-size: 1.17em;
                 margin: 1em 0;
+            }
+            /* Style for type names */
+            details details details > summary {
+                font-size: 1em;
             }
         </style>
     </head>
     <body>
         <h1>Chroma Database Viewer</h1>
         <div id="keywordsList"></div>
-        <p>Access the database content at <a href="/keywords">/keywords</a></p>
-        <p>Access the keyword types at <a href="/keyword_types">/keyword_types</a></p>
-        <p>Access the models at <a href="/models">/models</a></p>
-        
+       
         <script>
             // Fetch and display keywords when the page loads
             window.onload = function() {
@@ -52,36 +53,43 @@
                             modelInfoElement.textContent = `Dimension: ${data["metadata"]["dimension"]}`;
                             modelElement.appendChild(modelInfoElement);
                             keywordsList.appendChild(modelElement);
-                            Object.entries(data["keywords"]).forEach(([type, keywords]) => {
-                                const typeElement = document.createElement('details');  
-                                const typeElementName = document.createElement('summary');
-                                typeElementName.textContent = type;
-                                typeElement.appendChild(typeElementName);
-                                modelElement.appendChild(typeElement);
-                                const visualisationElement = document.createElement('a');
-                                visualisationElement.href = `/visualisation?model=${model}&keyword-type=${type}`;
-                                visualisationElement.textContent = "Visualisation";
-                                typeElement.appendChild(visualisationElement);
-                                const tableElement = document.createElement('table');
-                                const tableHeaderElement = document.createElement('tr');
-                                const idHeaderElement = document.createElement('th');
-                                idHeaderElement.textContent = "ID";
-                                tableHeaderElement.appendChild(idHeaderElement);
-                                const keywordHeaderElement = document.createElement('th');
-                                keywordHeaderElement.textContent = "Keyword";
-                                tableHeaderElement.appendChild(keywordHeaderElement);
-                                tableElement.appendChild(tableHeaderElement);
-                                keywords.forEach(keyword => {
-                                    const rowElement = document.createElement('tr');
-                                    const idElement = document.createElement('td');
-                                    idElement.textContent = keyword["id"];
-                                    rowElement.appendChild(idElement);
-                                    const keywordElement = document.createElement('td');
-                                    keywordElement.textContent = keyword["content"];
-                                    rowElement.appendChild(keywordElement);
-                                    tableElement.appendChild(rowElement);
+                            Object.entries(data["projects"]).forEach(([project, types]) => {
+                                const projectElement = document.createElement('details');  
+                                const projectElementName = document.createElement('summary');
+                                projectElementName.textContent = project;
+                                projectElement.appendChild(projectElementName);
+                                modelElement.appendChild(projectElement);
+                                Object.entries(types["keywords"]).forEach(([type, keywords]) => {
+                                    const typeElement = document.createElement('details');  
+                                    const typeElementName = document.createElement('summary');
+                                    typeElementName.textContent = type;
+                                    typeElement.appendChild(typeElementName);
+                                    projectElement.appendChild(typeElement);
+                                    const visualisationElement = document.createElement('a');
+                                    visualisationElement.href = `/visualisation?model=${model}&project=${project}&keyword-type=${type}`;
+                                    visualisationElement.textContent = "Visualisation";
+                                    typeElement.appendChild(visualisationElement);
+                                    const tableElement = document.createElement('table');
+                                    const tableHeaderElement = document.createElement('tr');
+                                    const idHeaderElement = document.createElement('th');
+                                    idHeaderElement.textContent = "ID";
+                                    tableHeaderElement.appendChild(idHeaderElement);
+                                    const keywordHeaderElement = document.createElement('th');
+                                    keywordHeaderElement.textContent = "Keyword";
+                                    tableHeaderElement.appendChild(keywordHeaderElement);
+                                    tableElement.appendChild(tableHeaderElement);
+                                    keywords.forEach(keyword => {
+                                        const rowElement = document.createElement('tr');
+                                        const idElement = document.createElement('td');
+                                        idElement.textContent = keyword["id"];
+                                        rowElement.appendChild(idElement);
+                                        const keywordElement = document.createElement('td');
+                                        keywordElement.textContent = keyword["content"];
+                                        rowElement.appendChild(keywordElement);
+                                        tableElement.appendChild(rowElement);
+                                    })
+                                    typeElement.appendChild(tableElement);
                                 })
-                                typeElement.appendChild(tableElement);
                             })
                         })})
                     .catch(error => console.error('Error fetching keywords:', error));

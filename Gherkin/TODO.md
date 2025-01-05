@@ -1,6 +1,5 @@
 - `run_web_server.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
-- `run_web_server.py` - create a page to test realtime pattern matching
-- `fill_database.py` - Try another embedding library
-- all scripts - add the notion of project
+- `run_web_server.py` - create a page to test real-time pattern matching
+- `fill_database.py` - try another embedding library
 - JSON schema - keyword cannot be empty
 - `keyword_extractor.py` - manage keywords in foreign languages

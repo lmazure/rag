@@ -27,7 +27,7 @@ If an ID already exists for a given model and keyword type, the corresponding ke
 
 ## Query the Chroma database
 ```sh
-python query_database.py --model all-MiniLM-L6-v2 --db_path ./chromadb/db --project my_project my_list.json --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
+python query_database.py --model all-MiniLM-L6-v2 --db_path ./chromadb/db --project my_project --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
 ```
 looks for the `I have a saved receiving address` string in the keywords and descriptions of the Outcome keywords (in the project `my_project`) using embedding model `all-MiniLM-L6-v2`.
 

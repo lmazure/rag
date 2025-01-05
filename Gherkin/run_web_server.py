@@ -10,6 +10,7 @@ import common
 
 app = Flask(__name__)
 db_path = None  # Will be set from command line argument
+port = 5000
 
 def get_database_content() -> dict:
 
@@ -19,19 +20,23 @@ def get_database_content() -> dict:
     collection_names = client.list_collections()
     for name in collection_names:
         # Get the collection
-        coll = client.get_collection(name)
-        model = common.get_model(coll.name)
-        project = common.get_project_name(coll.name)
-        keyword_type = common.get_keyword_type(coll.name)
+        collection = client.get_collection(name)
+        model = common.get_model(name)
+        project = common.get_project_name(name)
+        keyword_type = common.get_keyword_type(name)
 
         # Get all documents in the collection
-        results = coll.get(include=['documents'])
+        results = collection.get(include=['documents'])
 
         # Initialize the data structure for the model (if not already done)
         if model not in collections_data:
-            embeddings = coll.get(include=['embeddings'])
+            embeddings = collection.get(include=['embeddings'])
             dimension = len(embeddings['embeddings'][0])
             collections_data[model] = {'metadata': {'dimension': dimension}, 'projects': {project: {'keywords': {}}}}
+
+        # Initialize the data structure for the project (if not already done)
+        if project not in collections_data[model]['projects']:
+            collections_data[model]['projects'][project] = {'keywords': {}}
 
         # Create a list of documents with their IDs
         documents = []
@@ -81,6 +86,7 @@ def get_keywords():
             'data': data
         })
     except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr, flush=True)
         return jsonify({
             'status': 'error',
             'message': str(e)
@@ -110,7 +116,7 @@ def home():
     return render_template('home.html')
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run a web server (on port 5000) to navigate the Chroma database')
+    parser = argparse.ArgumentParser(description=f'Run a web server (on port {port}) to navigate the Chroma database')
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")
     parser.add_argument("--browser", action="store_true", help="Open the Web Browser after starting the server")
     args = parser.parse_args()
@@ -118,17 +124,17 @@ if __name__ == '__main__':
 
     # Check if the path exists
     if not os.path.exists(db_path):
-        print(f"Error: Path does not exist: {db_path}")
+        print(f"Error: Path does not exist: {db_path}", file=sys.stderr)
         sys.exit(1)
 
     # Check if it's a directory
     if not os.path.isdir(db_path):
-        print(f"Error: Path is not a directory: {db_path}")
+        print(f"Error: Path is not a directory: {db_path}", file=sys.stderr)
         sys.exit(1)
 
     # Check for essential Chroma database files/directories
     if not os.path.exists(os.path.join(db_path, 'chroma.sqlite3')):
-        print(f"Error: Not a valid Chroma database at {db_path}")
+        print(f"Error: Not a valid Chroma database at {db_path}", file=sys.stderr)
         sys.exit(1)
 
     try:
@@ -137,11 +143,11 @@ if __name__ == '__main__':
         # Try to list collections to verify database is functional
         client.list_collections()
     except Exception as e:
-        print(f"Error: Failed to connect to Chroma database at {db_path}")
+        print(f"Error: Failed to connect to Chroma database at {db_path}", file=sys.stderr)
         print(f"Details: {str(e)}")
         sys.exit(1)
 
     if args.browser:
-        webbrowser.open('http://localhost:5000')
+        webbrowser.open(f'http://localhost:{port}')
 
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)

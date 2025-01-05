@@ -1,3 +1,6 @@
+import re
+import sys
+
 def get_keyword_type(collection_name: str) -> str:
     """
     Return the keyword typefrom a collection name.
@@ -25,4 +28,10 @@ def get_collection_name(model_name: str, project_name: str, keyword_type: str) -
     For example, if the model name is "model", the project name is "my_project", and the keyword type is "Outcome",
     the collection name is "model-my_project-Outcome".
     """
+    if not re.match("^[a-zA-Z0-9_]*$", project_name):
+        print("Error: Project name can only contain characters, digits, or underscores.", file=sys.stderr)
+        sys.exit(1)
+    if keyword_type not in ["Context", "Action", "Outcome"]:
+        print("Error: Keyword type can only be 'Context', 'Action', or 'Outcome'.", file=sys.stderr)
+        sys.exit(1)
     return f"{model_name}-{project_name}-{keyword_type}"

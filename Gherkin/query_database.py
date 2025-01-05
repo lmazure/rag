@@ -16,7 +16,7 @@ def extract_keywords(db_path: str, model: str, project: str, keyword_type: str, 
             embedding_function=SentenceTransformerEmbeddingFunction(model_name=model)
         )
     except chromadb.errors.InvalidCollectionException as e:
-        print(f"Error: Model {model} and/or project {project} do not exist in database {db_path}.")
+        print(f"Error: Model {model} and/or project {project} do not exist in database {db_path}.", file=sys.stderr)
         sys.exit(1)
 
     # Perform the query

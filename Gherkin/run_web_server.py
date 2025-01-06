@@ -41,11 +41,15 @@ def get_database_content() -> dict:
         # Create a list of documents with their IDs
         documents = []
         for doc_id, document in zip(results['ids'], results['documents']):
-            documents.append({
-                'id': doc_id,
-                'content': document
-            })
-            
+            if common.get_document_type(doc_id) == 'keyword':
+                data = {
+                    'id': common.get_external_id(doc_id),
+                    'keyword': document
+                }
+                description_id = common.get_internal_id_of_description(doc_id)
+                if description_id in results['ids']:
+                    data['description'] = results['documents'][results['ids'].index(description_id)]    
+                documents.append(data)
         collections_data[model]['projects'][project]['keywords'][keyword_type] = documents
     
     return collections_data
@@ -70,11 +74,17 @@ def get_projected_vectors(model:str, project:str, keyword_type:str) -> list:
 
     # Create a list of documents with their IDs
     data = []
-    for doc_projection, document in zip(projected_vectors, results['documents']):
-        data.append({
-            'projection': doc_projection.tolist(),
-            'content': document
-        })
+    for doc_projection, document, doc_id in zip(projected_vectors, results['documents'], results['ids']):
+        if common.get_document_type(doc_id) == 'keyword':
+            d = {
+                'keyword_projection': doc_projection.tolist(),
+                'keyword': document
+            }
+            description_id = common.get_internal_id_of_description(doc_id)
+            if description_id in results['ids']:
+                d['description'] = results['documents'][results['ids'].index(description_id)]    
+                d['description_projection'] = projected_vectors[[results['ids'].index(description_id)]].tolist()
+            data.append(d)
     return data
     
 @app.route('/keywords', methods=['GET'])

@@ -170,8 +170,8 @@
         fetch(`/projections?model=${model}&project=${project}&keyword-type=${keywordType}`)
             .then(response => response.json())
             .then(data => {
-                const points = data.map(item => item.projection);
-                const contents = data.map(item => item.content);
+                const points = data.map(item => item.keyword_projection);
+                const contents = data.map(item => item.keyword);
 
                 // Find min and max values for normalization
                 const minValues = [

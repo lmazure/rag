@@ -39,7 +39,7 @@ runs a benchmark.
 `benchmark/Laurent\ initial\ benchmark/bench_definition.tsv` is the benchmark definition. This one is a TSV (Tab Separated Value) file. The first line contains the headers, it is ignored. Each other line must contains a keyword type, a looked-up keyword, and the ID of the expected matching keyword (the matching being via the keyword itself or via its definition).  
 `report.html` is the name of the HTML benchmark report that will be generated.
 
-## Navigate the Chroma database
+## Explore the Chroma database
 ```sh
 python run_web_server.py --db_path chromadb/db --browser
 ```

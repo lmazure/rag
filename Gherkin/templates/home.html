@@ -77,6 +77,9 @@
                                     const keywordHeaderElement = document.createElement('th');
                                     keywordHeaderElement.textContent = "Keyword";
                                     tableHeaderElement.appendChild(keywordHeaderElement);
+                                    const descriptionHeaderElement = document.createElement('th');
+                                    descriptionHeaderElement.textContent = "Description";
+                                    tableHeaderElement.appendChild(descriptionHeaderElement);
                                     tableElement.appendChild(tableHeaderElement);
                                     keywords.forEach(keyword => {
                                         const rowElement = document.createElement('tr');
@@ -84,8 +87,11 @@
                                         idElement.textContent = keyword["id"];
                                         rowElement.appendChild(idElement);
                                         const keywordElement = document.createElement('td');
-                                        keywordElement.textContent = keyword["content"];
+                                        keywordElement.textContent = keyword["keyword"];
                                         rowElement.appendChild(keywordElement);
+                                        const descriptionElement = document.createElement('td');
+                                        descriptionElement.textContent = keyword["description"];
+                                        rowElement.appendChild(descriptionElement);
                                         tableElement.appendChild(rowElement);
                                     })
                                     typeElement.appendChild(tableElement);

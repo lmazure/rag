@@ -193,6 +193,8 @@
                 const descriptionVertices = [];
                 const keywordColors = [];
                 const descriptionColors = [];
+                const keywordLabels = [];
+                const descriptionLabels = [];
 
                 points.forEach((point, i) => {
                     // Normalize to range [-2, 2]
@@ -210,9 +212,11 @@
                     if (types[i] === 'keyword') {
                         keywordVertices.push(...normalizedPoint);
                         keywordColors.push(color.r, color.g, color.b);
+                        keywordLabels.push(contents[i]);
                     } else {
                         descriptionVertices.push(...normalizedPoint);
                         descriptionColors.push(color.r, color.g, color.b);
+                        descriptionLabels.push(contents[i]);
                     }
                 });
 
@@ -350,17 +354,17 @@
                         tooltip.style.display = 'block';
                         tooltip.style.left = event.clientX + 10 + 'px';
                         tooltip.style.top = event.clientY + 10 + 'px';
-                        tooltip.textContent = contents[index];
+                        tooltip.textContent = keywordLabels[index];
                     } else {
                         raycaster.setFromCamera(mouse, camera);
                         const intersects = raycaster.intersectObject(descriptionPoints);
 
                         if (intersects.length > 0) {
-                            const index = intersects[0].index + points.filter((point, i) => types[i] === 'keyword').length;
+                            const index = intersects[0].index;
                             tooltip.style.display = 'block';
                             tooltip.style.left = event.clientX + 10 + 'px';
                             tooltip.style.top = event.clientY + 10 + 'px';
-                            tooltip.textContent = contents[index];
+                            tooltip.textContent = descriptionLabels[index];
                         } else {
                             tooltip.style.display = 'none';
                         }

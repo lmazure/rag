@@ -170,8 +170,9 @@
         fetch(`/projections?model=${model}&project=${project}&keyword-type=${keywordType}`)
             .then(response => response.json())
             .then(data => {
-                const points = data.map(item => item.keyword_projection);
-                const contents = data.map(item => item.keyword);
+                const points = data.flatMap(item => item.description_projection ? [item.keyword_projection, item.description_projection] : item.keyword_projection);
+                const contents = data.flatMap(item => item.description ? [item.keyword, item.description] : item.keyword);
+                const types = data.flatMap(item => item.description ? ['keyword', 'description'] : ['keyword']);
 
                 // Find min and max values for normalization
                 const minValues = [
@@ -276,7 +277,7 @@
 
                 // Update info
                 document.getElementById('info').innerHTML = 
-                    `Model: ${model}<br>Keyword type: ${keywordType}<br>Nb of keywords: ${points.length}`;
+                    `Model: ${model}<br>Keyword type: ${keywordType}<br>Nb of keywords and descriptions: ${points.length}`;
 
                 // Setup tooltip
                 const tooltip = document.getElementById('tooltip');

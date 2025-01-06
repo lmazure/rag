@@ -83,7 +83,7 @@ def get_projected_vectors(model:str, project:str, keyword_type:str) -> list:
             description_id = common.get_internal_id_of_description(doc_id)
             if description_id in results['ids']:
                 d['description'] = results['documents'][results['ids'].index(description_id)]    
-                d['description_projection'] = projected_vectors[[results['ids'].index(description_id)]].tolist()
+                d['description_projection'] = projected_vectors[results['ids'].index(description_id)].tolist()
             data.append(d)
     return data
     

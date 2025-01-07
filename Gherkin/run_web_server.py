@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, render_template, request
 import chromadb
+from chromadb.config import Settings
 import argparse
 import sys
 import os
@@ -16,7 +17,7 @@ def get_database_content() -> dict:
 
     collections_data = {}
 
-    client = chromadb.PersistentClient(path=db_path)
+    client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
     collection_names = client.list_collections()
     for name in collection_names:
         # Get the collection
@@ -57,7 +58,7 @@ def get_database_content() -> dict:
 def get_projected_vectors(model:str, project:str, keyword_type:str) -> list:
 
     collection_name = common.get_collection_name(model, project, keyword_type)
-    client = chromadb.PersistentClient(path=db_path)
+    client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
     collection = client.get_collection(collection_name)
 
     # Get all items from the collection
@@ -149,7 +150,7 @@ if __name__ == '__main__':
 
     try:
         # Test database connection and content
-        client = chromadb.PersistentClient(path=db_path)
+        client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
         # Try to list collections to verify database is functional
         client.list_collections()
     except Exception as e:

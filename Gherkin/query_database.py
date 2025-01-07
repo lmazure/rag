@@ -1,12 +1,13 @@
 import argparse
 import chromadb
+from chromadb.config import Settings
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 import common
 import sys
 
 def extract_keywords(db_path: str, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
     # Initialize Chroma client
-    chroma_client = chromadb.PersistentClient(path=db_path)
+    chroma_client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
 
     # Get the appropriate collection
     collection_name = f"{common.get_collection_name(model, project, keyword_type)}"

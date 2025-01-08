@@ -118,9 +118,29 @@ def get_projections():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/query', methods=['GET'])
+def get_search_results():
+    model = request.args.get('model')
+    project = request.args.get('project')
+    keyword_type = request.args.get('keyword-type')
+    query = request.args.get('query')
+    
+    if not model or not project or not keyword_type or not query:
+        return jsonify({'error': 'Both model, project, keyword-type, and query parameters are required'}), 400
+        
+    try:
+        results = common.extract_keywords(db_path, model, project, keyword_type, query, 5)
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/visualisation')
 def visualisation():
     return render_template('visualisation.html')
+
+@app.route('/search')
+def search():
+    return render_template('search.html')
 
 @app.route('/', methods=['GET'])
 def home():

@@ -78,7 +78,14 @@ def generate_html(file_path, results):
         for model in all_models:
             if model in data['results']:
                 model_results = data['results'][model]
-                matches = "<hr/>".join([f"{match['id']} match={match['match']}{'😊' if i == model_results['success'] else ''}<br>keyword = {html.escape(match['keyword'])} {match['keyword_distance'] if 'keyword_distance' in match else ''}<br>description = {html.escape(match['description'] if 'description' in match else '')} {match['description_distance'] if 'description_distance' in match else ''}" for i, match in enumerate(model_results['matches'])])
+                matches = "<hr/>".join([f"""{match['id']} 
+                                             match={match['match']}
+                                             {'😊' if i == model_results['success'] else ''}<br>
+                                             keyword = {html.escape(match['keyword'])} 
+                                             {match['keyword_distance'] if 'keyword_distance' in match else ''}<br>
+                                             description = {html.escape(match['description'] if 'description' in match else '')} 
+                                             {match['description_distance'] if 'description_distance' in match else ''}
+                                             """ for i, match in enumerate(model_results['matches'])])
                 success = "✔️" if (model_results['success'] >= 0) else '❌️'
                 html_content += f'<td class="matches">{matches}</td><td>{success}</td>'
             else:

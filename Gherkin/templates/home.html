@@ -69,6 +69,13 @@
                                     visualisationElement.href = `/visualisation?model=${model}&project=${project}&keyword-type=${type}`;
                                     visualisationElement.textContent = "Visualisation";
                                     typeElement.appendChild(visualisationElement);
+                                    const spacingElement = document.createElement('span');
+                                    spacingElement.textContent = "   ";
+                                    typeElement.appendChild(spacingElement);
+                                    const searchElement = document.createElement('a');
+                                    searchElement.href = `/search?model=${model}&project=${project}&keyword-type=${type}`;
+                                    searchElement.textContent = "Search";
+                                    typeElement.appendChild(searchElement);
                                     const tableElement = document.createElement('table');
                                     const tableHeaderElement = document.createElement('tr');
                                     const idHeaderElement = document.createElement('th');

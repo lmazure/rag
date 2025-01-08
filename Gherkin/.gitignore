@@ -3,4 +3,3 @@ chromadb
 .venv*
 __pycache__
 /*.html
-*.json

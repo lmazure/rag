@@ -69,6 +69,13 @@
                                     visualisationElement.href = `/visualisation?model=${model}&project=${project}&keyword-type=${type}`;
                                     visualisationElement.textContent = "Visualisation";
                                     typeElement.appendChild(visualisationElement);
+                                    const spacingElement = document.createElement('span');
+                                    spacingElement.textContent = "   ";
+                                    typeElement.appendChild(spacingElement);
+                                    const searchElement = document.createElement('a');
+                                    searchElement.href = `/search?model=${model}&project=${project}&keyword-type=${type}`;
+                                    searchElement.textContent = "Search";
+                                    typeElement.appendChild(searchElement);
                                     const tableElement = document.createElement('table');
                                     const tableHeaderElement = document.createElement('tr');
                                     const idHeaderElement = document.createElement('th');
@@ -77,6 +84,9 @@
                                     const keywordHeaderElement = document.createElement('th');
                                     keywordHeaderElement.textContent = "Keyword";
                                     tableHeaderElement.appendChild(keywordHeaderElement);
+                                    const descriptionHeaderElement = document.createElement('th');
+                                    descriptionHeaderElement.textContent = "Description";
+                                    tableHeaderElement.appendChild(descriptionHeaderElement);
                                     tableElement.appendChild(tableHeaderElement);
                                     keywords.forEach(keyword => {
                                         const rowElement = document.createElement('tr');
@@ -84,8 +94,11 @@
                                         idElement.textContent = keyword["id"];
                                         rowElement.appendChild(idElement);
                                         const keywordElement = document.createElement('td');
-                                        keywordElement.textContent = keyword["content"];
+                                        keywordElement.textContent = keyword["keyword"];
                                         rowElement.appendChild(keywordElement);
+                                        const descriptionElement = document.createElement('td');
+                                        descriptionElement.textContent = keyword["description"];
+                                        rowElement.appendChild(descriptionElement);
                                         tableElement.appendChild(rowElement);
                                     })
                                     typeElement.appendChild(tableElement);

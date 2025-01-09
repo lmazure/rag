@@ -1,7 +1,7 @@
 import argparse
 import csv
 import html
-from query_database import extract_keywords
+import common
 
 def process_file(file_path, models, db_path, project, nb_results):
     results = {}
@@ -16,7 +16,7 @@ def process_file(file_path, models, db_path, project, nb_results):
             search_results = {}
             
             for model in models:
-                model_results = extract_keywords(db_path, model, project, keyword_type, keyword, nb_results)
+                model_results = common.extract_keywords(db_path, model, project, keyword_type, keyword, nb_results)
                 search_results[model] = { 'matches': model_results, 'success': [result['id'] for result in model_results].index(expected_id) if expected_id in [result['id'] for result in model_results] else -1 }
             
             results[index] = {
@@ -78,7 +78,14 @@ def generate_html(file_path, results):
         for model in all_models:
             if model in data['results']:
                 model_results = data['results'][model]
-                matches = "<br>".join([f"{match['id']}: {html.escape(match['keyword'])} {match['distance']:.2f} {'😊' if i == model_results['success'] else ''}" for i, match in enumerate(model_results['matches'])])
+                matches = "<hr/>".join([f"""{match['id']} 
+                                             match={match['match']}
+                                             {'😊' if i == model_results['success'] else ''}<br>
+                                             keyword = {html.escape(match['keyword'])} 
+                                             {match['keyword_distance'] if 'keyword_distance' in match else ''}<br>
+                                             description = {html.escape(match['description'] if 'description' in match else '')} 
+                                             {match['description_distance'] if 'description_distance' in match else ''}
+                                             """ for i, match in enumerate(model_results['matches'])])
                 success = "✔️" if (model_results['success'] >= 0) else '❌️'
                 html_content += f'<td class="matches">{matches}</td><td>{success}</td>'
             else:
@@ -100,7 +107,7 @@ def main():
     parser.add_argument("--models", required=True, help="Comma-separated list of the names of the models to evaluate")
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")
     parser.add_argument("--project", default="Common", help="Name of the project (default: Common)")
-    parser.add_argument("--nb_results", default=3, type=int, required=True, help="Number of matches to consider (default: 3)")
+    parser.add_argument("--nb_results", default=3, type=int, help="Number of matches to consider (default: 3)")
     parser.add_argument("benchmark_file", help="Path to the benchmark definition file")
     parser.add_argument("report_file", help="Path to the HTML report file to generate")
 

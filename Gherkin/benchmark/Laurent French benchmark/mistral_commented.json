@@ -1,0 +1,502 @@
+{
+  "keywords": [
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur a des articles dans le panier",
+      "description": "",
+      "id": "27591ccb-2dbb-4e47-b0e9-6fe627c6c0a2"
+    },
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur a plusieurs articles dans le panier",
+      "description": "",
+      "id": "eab89709-fbd5-42fd-8744-8c0a463a1629"
+    },
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur a un article dans le panier",
+      "description": "",
+      "id": "6b084860-974d-41f5-b3ff-a3078cfee6ec"
+    },
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur a un bon d'achat valide",
+      "description": "",
+      "id": "62badcc0-bfca-4222-a077-dea28e577d8c"
+    },
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur a une commande d\u00e9j\u00e0 exp\u00e9di\u00e9e",
+      "description": "",
+      "id": "c18a1d62-2c43-4a4e-a379-c4206d19ab03"
+    },
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur a une commande en cours",
+      "description": "",
+      "id": "81fdc4eb-abd2-476f-8678-f336e9458917"
+    },
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur est connect\u00e9",
+      "description": "",
+      "id": "ea4a2e7f-fd24-4ca9-a5d6-353a74a1f9c8"
+    },
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur est sur la page d'accueil",
+      "description": "",
+      "id": "0d5ef4cb-58d5-43c6-9556-1cedcf6df3e8"
+    },
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur est sur la page de connexion",
+      "description": "",
+      "id": "a7da5ec7-d14e-471e-abfe-66f084659585"
+    },
+    {
+      "type": "Context",
+      "keyword": "l'utilisateur est sur la page de d\u00e9tails du produit",
+      "description": "",
+      "id": "6f288c74-1a39-4c5c-8e8a-216627f8c7b2"
+    },
+    {
+      "type": "Context",
+      "keyword": "la promotion Black Friday est active",
+      "description": "",
+      "id": "9edc999b-5467-4c16-8198-9cf81087fab3"
+    },
+    {
+      "type": "Context",
+      "keyword": "la promotion Black Friday n'est pas active",
+      "description": "",
+      "id": "c15096af-fc6d-4ef8-bb68-e7e96c8ea0ff"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur annule la suppression",
+      "description": "",
+      "id": "4255667c-0c08-4777-a464-d8d6d0f8f955"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur clique sur la sous-cat\u00e9gorie \"Adolescents\"",
+      "description": "la chaîne de caractères définit la sous-catégorie à afficher",
+      "id": "6a8d2dc0-bd56-4247-99df-3663c83492a2"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur clique sur le bouton \"Annuler la commande\" \u00e0 c\u00f4t\u00e9 de la commande",
+      "description": "",
+      "id": "653c430c-f5e1-4916-87a1-2b804bb1a739"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur clique sur le bouton \"Enregistrer les modifications\"",
+      "description": "",
+      "id": "02185535-ddae-4868-b310-3928308931bc"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur clique sur le bouton \"Rechercher\" sans entrer de terme de recherche",
+      "description": "",
+      "id": "5440ebbf-ef32-4b71-8f30-717058b6ee42"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur clique sur le bouton \"Retirer\" \u00e0 c\u00f4t\u00e9 de l'article",
+      "description": "",
+      "id": "04647c50-3fd4-46ab-9c35-4efe590351a8"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur clique sur le menu \"DVD de films\"",
+      "description": "la chaîne de caractères définit la catégorie à afficher",
+      "id": "f863049e-2fd2-49c0-89b2-b1f81ca37104"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur confirme la suppression",
+      "description": "",
+      "id": "66ccfe2a-4cea-4568-826b-e3dfe292b495"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre \"roman adolescent\" dans la barre de recherche",
+      "description": "la chaîne de caractères definit le type de produit à rechercher",
+      "id": "6fe06c00-7edb-431d-9360-145e5721fee9"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre des informations de livraison valides et des informations de paiement invalides",
+      "description": "",
+      "id": "e30e10e5-b653-43de-ace2-b6185f9a5d91"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre l'adresse e-mail de l'ami",
+      "description": "",
+      "id": "2202e7a3-8f1a-41ed-b6b3-1b847130e99c"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre le code du bon d'achat",
+      "description": "",
+      "id": "4d16bb5d-159f-4c40-adac-269ae0740c4c"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre les informations de livraison et de paiement valides",
+      "description": "",
+      "id": "0fadd1b7-2683-44ff-822f-3ed90ae5bdff"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre un code de bon d'achat invalide",
+      "description": "",
+      "id": "e2cfa6cc-cf42-4646-8fc3-017e42d18bd1"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre un nom d'utilisateur invalide et un mot de passe valide",
+      "description": "",
+      "id": "cdd6837b-dd5c-4d26-92f0-7762b8ad2ccd"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre un nom d'utilisateur valide et un mot de passe invalide",
+      "description": "",
+      "id": "a6e19161-fdab-4691-addd-1fb11ce72e06"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre un nom d'utilisateur valide et un mot de passe valide",
+      "description": "",
+      "id": "ce1d302a-c37c-4015-ace0-0a3c7567e577"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre un terme de recherche invalide dans la barre de recherche",
+      "description": "",
+      "id": "dac6f246-ba80-4b33-a766-222199646062"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre un terme de recherche valide dans la barre de recherche",
+      "description": "",
+      "id": "1f2aa09b-4e3c-48e8-a4c0-266ef278d836"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur entre une adresse e-mail invalide",
+      "description": "",
+      "id": "4f770068-eeca-4efc-868c-5f63a6d6e06d"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur laisse les champs de t\u00e9l\u00e9phone fixe et portable vides",
+      "description": "",
+      "id": "08c348ea-52df-4a05-98b4-0e05c426c126"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur modifie son adresse",
+      "description": "",
+      "id": "0821efff-7b2a-42bf-b12e-681144f57249"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur modifie son adresse e-mail",
+      "description": "",
+      "id": "6e98d011-c8b9-47f8-b502-0618931b6dff"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur modifie son adresse e-mail avec une adresse invalide",
+      "description": "",
+      "id": "008f5893-4612-4879-a44a-c64d60254b16"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur modifie son genre",
+      "description": "",
+      "id": "45865868-e3fa-4498-91d1-e0aa50099257"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur modifie son nom",
+      "description": "",
+      "id": "79b02011-5b32-4108-900b-755b9cd7fd50"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur modifie son num\u00e9ro de t\u00e9l\u00e9phone fixe",
+      "description": "",
+      "id": "fa349002-2a1b-44d2-b7d3-a29a36ad1047"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur modifie son num\u00e9ro de t\u00e9l\u00e9phone portable",
+      "description": "",
+      "id": "b79a1dc0-203b-4b3d-b8bd-e0ada2ac1c04"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur modifie son pr\u00e9nom",
+      "description": "",
+      "id": "4290358d-a044-4216-b47d-77208451b2a9"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur s\u00e9lectionne le montant du bon d'achat",
+      "description": "",
+      "id": "35a101c2-2db1-43af-a33e-be0a66ba26a1"
+    },
+    {
+      "type": "Action",
+      "keyword": "l'utilisateur va dans la section \"Mes commandes\"",
+      "description": "la chaîne de caractères definit la section du site à afficher",
+      "id": "71c9854c-0de1-4610-b618-e0b9ec29d822"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'adresse e-mail est mise \u00e0 jour",
+      "description": "",
+      "id": "6d69b1b6-cfa3-4b03-91b0-7587b03a92f3"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'adresse e-mail n'est pas mise \u00e0 jour",
+      "description": "",
+      "id": "f73b9c3c-263b-4296-81a1-7ae9f2081875"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'adresse est mise \u00e0 jour",
+      "description": "",
+      "id": "0c167153-bdc3-4d37-9744-d21eda715474"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'article est ajout\u00e9 au panier",
+      "description": "",
+      "id": "22cd544f-6590-449e-8cca-09c63be5f7df"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'article est retir\u00e9 du panier",
+      "description": "",
+      "id": "c6c07703-1680-43fd-bf7f-d6ffd13de3e4"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'utilisateur clique sur le bouton \"Passer la commande\"",
+      "description": "",
+      "id": "1f92cb6d-b8ab-4ae7-8ed0-08f29e06dee2"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'utilisateur clique sur le lien de validation dans l'e-mail",
+      "description": "",
+      "id": "e699b6f6-1c4b-47d3-a0f7-c3007ca76c69"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'utilisateur est d\u00e9connect\u00e9",
+      "description": "",
+      "id": "b1d7b117-053b-4616-a5ce-72b8fb399549"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'utilisateur est redirig\u00e9 vers la page d'accueil",
+      "description": "",
+      "id": "67e85491-c117-4532-ae22-69f79be20e08"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'utilisateur ne clique pas sur le lien de validation dans l'e-mail",
+      "description": "",
+      "id": "85318cb4-0431-4535-93d4-eb2587b49685"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "l'utilisateur reste connect\u00e9",
+      "description": "",
+      "id": "3cc6bdae-7ef0-4b16-a3fc-519038250fd9"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "la commande est annul\u00e9e",
+      "description": "",
+      "id": "d65debed-e3d0-4cb3-8e63-441837e7956e"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "la commande est confirm\u00e9e",
+      "description": "",
+      "id": "3f47539c-2be9-48f1-8185-b3d199e28582"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "la commande est confirm\u00e9e avec le montant r\u00e9duit",
+      "description": "",
+      "id": "11f62d6a-c3bc-4958-aac9-e39647d09d52"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "la commande est confirm\u00e9e sans r\u00e9duction",
+      "description": "",
+      "id": "486eb721-81d0-40e7-82a3-07fc4a0edf01"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "la r\u00e9duction de -20% est automatiquement appliqu\u00e9e au total de la commande",
+      "description": "",
+      "id": "e40db7bf-ba27-4cff-9c8c-c7db782f703d"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "la r\u00e9duction de -20% n'est pas appliqu\u00e9e au total de la commande",
+      "description": "",
+      "id": "8176331c-e966-421c-98d8-a2d5e6bd612d"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le bon d'achat est envoy\u00e9 \u00e0 l'adresse e-mail de l'ami",
+      "description": "",
+      "id": "bfc4b38e-cc9a-491b-a12b-3bde577565bd"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le compte est supprim\u00e9",
+      "description": "",
+      "id": "15800dd0-e57c-4739-81e3-4d443270573a"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le compte n'est pas supprim\u00e9",
+      "description": "",
+      "id": "f3e19996-90d3-42c3-bdcd-5592b48ca6dc"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le genre est mis \u00e0 jour",
+      "description": "",
+      "id": "ea6d4c48-f216-4fb4-94bf-81d6f7aaafab"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le montant du bon d'achat est d\u00e9duit du total de la commande",
+      "description": "",
+      "id": "d96743e1-8538-4fbe-9fdf-3687c4f28209"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le nom est mis \u00e0 jour",
+      "description": "",
+      "id": "8d908f77-0c74-4229-b690-3c0c18447be9"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le nombre d'articles dans le panier est mis \u00e0 jour",
+      "description": "",
+      "id": "54496418-0298-4140-b91f-3fffa1421b1c"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le nombre d'articles dans le panier est mis \u00e0 jour \u00e0 z\u00e9ro",
+      "description": "",
+      "id": "907f612d-1c56-404c-bde9-4f05119b9e72"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le num\u00e9ro de t\u00e9l\u00e9phone fixe est mis \u00e0 jour",
+      "description": "",
+      "id": "246bc728-de3d-4b84-b18b-d6f8fecaf6a7"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le num\u00e9ro de t\u00e9l\u00e9phone portable est mis \u00e0 jour",
+      "description": "",
+      "id": "cb431ce6-a667-44e4-97b4-141332bf60cc"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le panier est vid\u00e9",
+      "description": "",
+      "id": "e447c3b5-ef9b-4ebf-ae41-bb0fab147bfb"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "le pr\u00e9nom est mis \u00e0 jour",
+      "description": "",
+      "id": "bf8b6597-7f0c-42fb-bef9-830247e4ed52"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "les produits de la cat\u00e9gorie \"Livres pour adolescents\" sont affich\u00e9s",
+      "description": "la chaîne de caractères definit la catégorie de produits qui devrait \u00eatre affichée",
+      "id": "57b1418b-9d92-4941-9360-bbae28e482c7"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "les r\u00e9sultats de recherche correspondants sont affich\u00e9s",
+      "description": "",
+      "id": "ec1a820a-342c-49da-8058-da6635078644"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "les r\u00e9sultats de recherche pour \"roman adolescent\" dans la cat\u00e9gorie \"Livres pour adolescents\" sont affich\u00e9s",
+      "description": "la première chaîne de caractères definit la type de produits recherché et la deuxième chaîne de caractères definit la catégorie de produits qui devraient \u00eatre recherch\u00e9s",
+      "id": "a0f1f1fb-a665-4b37-87ec-b1a764ad7d0a"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "tous les articles sont retir\u00e9s du panier",
+      "description": "",
+      "id": "bab63c73-ab42-4d05-aef7-e8caae2bfd31"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "un e-mail de validation est envoy\u00e9 \u00e0 la nouvelle adresse e-mail",
+      "description": "",
+      "id": "255a7e58-7c41-4682-84a0-6ec829ffef19"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "un message \"Veuillez entrer un terme de recherche\" est affich\u00e9",
+      "description": "",
+      "id": "8b7c091c-b7f1-48e5-a950-0a86d398e0fa"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "un message d'erreur \"Au moins un num\u00e9ro de t\u00e9l\u00e9phone doit \u00eatre rempli\" est affich\u00e9",
+      "description": "",
+      "id": "83387cac-ebc9-4672-ac0d-be6407bdd6e9"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "un message de bienvenue est affich\u00e9",
+      "description": "",
+      "id": "a1ef7845-178a-4b9a-b7d5-c6a6d7c8af08"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "un message de confirmation d'annulation est affich\u00e9",
+      "description": "",
+      "id": "4acb5ed7-1257-4e68-a81d-23cd43d498f7"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "un message de confirmation de suppression est affich\u00e9",
+      "description": "",
+      "id": "fb64967b-3164-4283-9c43-f56c9488e2f6"
+    },
+    {
+      "type": "Outcome",
+      "keyword": "un message de confirmation est affich\u00e9",
+      "description": "",
+      "id": "dec01593-3ddb-4393-ac82-bce7b45b0d4d"
+    }
+  ]
+}

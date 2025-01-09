@@ -1,5 +1,6 @@
 import argparse
 import chromadb
+from chromadb.config import Settings
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 import json
 import common
@@ -12,7 +13,7 @@ def main():
     parser.add_argument("--project", default="Common", help="Name of the project (default: Common)")
     args = parser.parse_args()
 
-    chroma_client = chromadb.PersistentClient(path=args.db_path)
+    chroma_client = chromadb.PersistentClient(path=args.db_path, settings=Settings(anonymized_telemetry=False))
     
     collections = {
         "Context": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(args.model, args.project, 'Context')}", \

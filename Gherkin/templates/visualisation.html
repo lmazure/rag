@@ -74,8 +74,8 @@
         const project = urlParams.get('project');
         const keywordType = urlParams.get('keyword-type');
 
-        if (!model || !keywordType) {
-            document.getElementById('info').textContent = 'Error: Missing model or keyword-type parameters';
+        if (!model || !project || !keywordType) {
+            document.getElementById('info').textContent = 'Error: Missing model, project, or keyword-type parameters';
             throw new Error('Missing parameters');
         }
 
@@ -170,8 +170,9 @@
         fetch(`/projections?model=${model}&project=${project}&keyword-type=${keywordType}`)
             .then(response => response.json())
             .then(data => {
-                const points = data.map(item => item.projection);
-                const contents = data.map(item => item.content);
+                const points = data.flatMap(item => item.description_projection ? [item.keyword_projection, item.description_projection] : [item.keyword_projection]);
+                const contents = data.flatMap(item => item.description ? [item.keyword, item.description] : [item.keyword]);
+                const types = data.flatMap(item => item.description ? ['keyword', 'description'] : ['keyword']);
 
                 // Find min and max values for normalization
                 const minValues = [
@@ -185,17 +186,21 @@
                     Math.max(...points.map(p => p[2]))
                 ];
 
-                // Create geometry
-                const geometry = new THREE.BufferGeometry();
-                const vertices = [];
-                const colors = [];
+                // Create separate geometries for keywords and descriptions
+                const keywordGeometry = new THREE.BufferGeometry();
+                const descriptionGeometry = new THREE.BufferGeometry();
+                const keywordVertices = [];
+                const descriptionVertices = [];
+                const keywordColors = [];
+                const descriptionColors = [];
+                const keywordLabels = [];
+                const descriptionLabels = [];
 
                 points.forEach((point, i) => {
                     // Normalize to range [-2, 2]
                     const normalizedPoint = point.map((value, j) => {
                         return (value - minValues[j]) / (maxValues[j] - minValues[j]) * 4 - 2;
                     });
-                    vertices.push(...normalizedPoint);
 
                     // Generate a unique color based on position
                     const color = new THREE.Color(
@@ -203,23 +208,75 @@
                         (normalizedPoint[1] + 2) / 4,
                         (normalizedPoint[2] + 2) / 4
                     );
-                    colors.push(color.r, color.g, color.b);
+
+                    if (types[i] === 'keyword') {
+                        keywordVertices.push(...normalizedPoint);
+                        keywordColors.push(color.r, color.g, color.b);
+                        keywordLabels.push(contents[i]);
+                    } else {
+                        descriptionVertices.push(...normalizedPoint);
+                        descriptionColors.push(color.r, color.g, color.b);
+                        descriptionLabels.push(contents[i]);
+                    }
                 });
 
-                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                keywordGeometry.setAttribute('position', new THREE.Float32BufferAttribute(keywordVertices, 3));
+                keywordGeometry.setAttribute('color', new THREE.Float32BufferAttribute(keywordColors, 3));
+                descriptionGeometry.setAttribute('position', new THREE.Float32BufferAttribute(descriptionVertices, 3));
+                descriptionGeometry.setAttribute('color', new THREE.Float32BufferAttribute(descriptionColors, 3));
 
-                // Create point material
-                const material = new THREE.PointsMaterial({
+                // Create materials for different shapes
+                const keywordMaterial = new THREE.PointsMaterial({
                     size: 0.05,
                     vertexColors: true,
                     transparent: true,
-                    opacity: 0.8
+                    opacity: 0.8,
+                    sizeAttenuation: true,
+                    map: createCircleTexture()
                 });
 
-                // Create points object
-                const pointCloud = new THREE.Points(geometry, material);
-                scene.add(pointCloud);
+                const descriptionMaterial = new THREE.PointsMaterial({
+                    size: 0.05,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8,
+                    sizeAttenuation: true,
+                    map: createSquareTexture()
+                });
+
+                // Create points objects
+                const keywordPoints = new THREE.Points(keywordGeometry, keywordMaterial);
+                const descriptionPoints = new THREE.Points(descriptionGeometry, descriptionMaterial);
+                scene.add(keywordPoints);
+                scene.add(descriptionPoints);
+
+                // Function to create circle texture for keyword points
+                function createCircleTexture() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 64;
+                    canvas.height = 64;
+                    const context = canvas.getContext('2d');
+                    context.beginPath();
+                    context.arc(32, 32, 16, 0, 2 * Math.PI);
+                    context.fillStyle = '#ffffff';
+                    context.fill();
+                    const texture = new THREE.CanvasTexture(canvas);
+                    texture.needsUpdate = true;
+                    return texture;
+                }
+
+                // Function to create square texture for description points
+                function createSquareTexture() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 64;
+                    canvas.height = 64;
+                    const context = canvas.getContext('2d');
+                    context.fillStyle = '#ffffff';
+                    context.fillRect(16, 16, 32, 32);
+                    const texture = new THREE.CanvasTexture(canvas);
+                    texture.needsUpdate = true;
+                    return texture;
+                }
 
                 // Add text labels for each point
                 points.forEach((point, i) => {
@@ -276,7 +333,7 @@
 
                 // Update info
                 document.getElementById('info').innerHTML = 
-                    `Model: ${model}<br>Keyword type: ${keywordType}<br>Nb of keywords: ${points.length}`;
+                    `Model: ${escapeHTML(model)}<br>Project: ${escapeHTML(project)}<br>Keyword type: ${escapeHTML(keywordType)}<br>● Nb of keywords: ${keywordLabels.length}<br>■ Nb of descriptions: ${descriptionLabels.length}`;
 
                 // Setup tooltip
                 const tooltip = document.getElementById('tooltip');
@@ -290,16 +347,27 @@
                     );
 
                     raycaster.setFromCamera(mouse, camera);
-                    const intersects = raycaster.intersectObject(pointCloud);
+                    const intersects = raycaster.intersectObject(keywordPoints);
 
                     if (intersects.length > 0) {
                         const index = intersects[0].index;
                         tooltip.style.display = 'block';
                         tooltip.style.left = event.clientX + 10 + 'px';
                         tooltip.style.top = event.clientY + 10 + 'px';
-                        tooltip.textContent = contents[index];
+                        tooltip.textContent = keywordLabels[index];
                     } else {
-                        tooltip.style.display = 'none';
+                        raycaster.setFromCamera(mouse, camera);
+                        const intersects = raycaster.intersectObject(descriptionPoints);
+
+                        if (intersects.length > 0) {
+                            const index = intersects[0].index;
+                            tooltip.style.display = 'block';
+                            tooltip.style.left = event.clientX + 10 + 'px';
+                            tooltip.style.top = event.clientY + 10 + 'px';
+                            tooltip.textContent = descriptionLabels[index];
+                        } else {
+                            tooltip.style.display = 'none';
+                        }
                     }
                 });
             })
@@ -324,6 +392,15 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
+ 
+        function escapeHTML(str) {
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
     </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, render_template, request
 import chromadb
+from chromadb.config import Settings
 import argparse
 import sys
 import os
@@ -16,7 +17,7 @@ def get_database_content() -> dict:
 
     collections_data = {}
 
-    client = chromadb.PersistentClient(path=db_path)
+    client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
     collection_names = client.list_collections()
     for name in collection_names:
         # Get the collection
@@ -41,11 +42,15 @@ def get_database_content() -> dict:
         # Create a list of documents with their IDs
         documents = []
         for doc_id, document in zip(results['ids'], results['documents']):
-            documents.append({
-                'id': doc_id,
-                'content': document
-            })
-            
+            if common.get_document_type(doc_id) == 'keyword':
+                data = {
+                    'id': common.get_external_id(doc_id),
+                    'keyword': document
+                }
+                description_id = common.get_internal_id_of_description(doc_id)
+                if description_id in results['ids']:
+                    data['description'] = results['documents'][results['ids'].index(description_id)]    
+                documents.append(data)
         collections_data[model]['projects'][project]['keywords'][keyword_type] = documents
     
     return collections_data
@@ -53,7 +58,7 @@ def get_database_content() -> dict:
 def get_projected_vectors(model:str, project:str, keyword_type:str) -> list:
 
     collection_name = common.get_collection_name(model, project, keyword_type)
-    client = chromadb.PersistentClient(path=db_path)
+    client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
     collection = client.get_collection(collection_name)
 
     # Get all items from the collection
@@ -70,11 +75,17 @@ def get_projected_vectors(model:str, project:str, keyword_type:str) -> list:
 
     # Create a list of documents with their IDs
     data = []
-    for doc_projection, document in zip(projected_vectors, results['documents']):
-        data.append({
-            'projection': doc_projection.tolist(),
-            'content': document
-        })
+    for doc_projection, document, doc_id in zip(projected_vectors, results['documents'], results['ids']):
+        if common.get_document_type(doc_id) == 'keyword':
+            d = {
+                'keyword_projection': doc_projection.tolist(),
+                'keyword': document
+            }
+            description_id = common.get_internal_id_of_description(doc_id)
+            if description_id in results['ids']:
+                d['description'] = results['documents'][results['ids'].index(description_id)]    
+                d['description_projection'] = projected_vectors[results['ids'].index(description_id)].tolist()
+            data.append(d)
     return data
     
 @app.route('/keywords', methods=['GET'])
@@ -107,9 +118,29 @@ def get_projections():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/query', methods=['GET'])
+def get_search_results():
+    model = request.args.get('model')
+    project = request.args.get('project')
+    keyword_type = request.args.get('keyword-type')
+    query = request.args.get('query')
+    
+    if not model or not project or not keyword_type or not query:
+        return jsonify({'error': 'Both model, project, keyword-type, and query parameters are required'}), 400
+        
+    try:
+        results = common.extract_keywords(db_path, model, project, keyword_type, query, 5)
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/visualisation')
 def visualisation():
     return render_template('visualisation.html')
+
+@app.route('/search')
+def search():
+    return render_template('search.html')
 
 @app.route('/', methods=['GET'])
 def home():
@@ -139,7 +170,7 @@ if __name__ == '__main__':
 
     try:
         # Test database connection and content
-        client = chromadb.PersistentClient(path=db_path)
+        client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
         # Try to list collections to verify database is functional
         client.list_collections()
     except Exception as e:

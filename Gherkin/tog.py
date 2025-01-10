@@ -10,23 +10,23 @@ import uuid
 client = chromadb.PersistentClient(path="./chromadb", settings=Settings(anonymized_telemetry=False))
 
 # Create embedding function using Together AI's API
-toget = Together()
 class MyCustomEmbeddingFunction(EmbeddingFunction[Documents]):
+    def __init__(self, model: str):
+        self.client = Together()
+        self.model = model
+
     def __call__(self, input: Documents) -> Embeddings:
         """Embed the input documents."""
         embeddings = []
-        for doc in input:
-            response = toget.embeddings.create(
-                input=doc,  # Together.ai expects a list
-                model="togethercomputer/m2-bert-80M-8k-retrieval"  # You can also use other models like 'togethercomputer/m2-bert-80M-2k-retrieval'
-            )
-            embeddings.append(response.data[0].embedding)
-        
-        return embeddings
+        response = self.client.embeddings.create(
+            input=input,
+            model=self.model
+        )
+        return [d.embedding for d in response.data]
 
 
 # Create collection with the remote embedding function
-embed = MyCustomEmbeddingFunction()
+embed = MyCustomEmbeddingFunction("togethercomputer/m2-bert-80M-8k-retrieval")
 collection = client.create_collection(
     name="my_documents",
     embedding_function=embed

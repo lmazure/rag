@@ -8,7 +8,12 @@ from together import Together
 
 ### parse model@host
 
-def parse_model_and_host(model_and_host: str) -> tuple[str, str]:
+def parse_model_and_host(model_and_host: str
+                         ) -> tuple[str, str]:
+    """
+    Parse a string of the form "model@host" and return a tuple of (model, host).
+    If "@" is absent, the host is None.
+    """
     parts = model_and_host.split('@')
     if len(parts) == 1:
         return parts[0], None
@@ -146,14 +151,15 @@ def build_embedding_function(host: str, model: str) -> SentenceTransformerEmbedd
     raise ValueError(f"Unknown host ({host})")
 
 
-def extract_keywords(db_path: str, host: str, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
+def search_keywords(db_path: str, host: str, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
     """
     Extract the nearest neighbours of a keyword from a Chroma database.
 
     Args:
         db_path: The path to the Chroma database.
-        model: The name of the model to use for the extraction.
-        project: The name of the project to use for the extraction.
+        host: The host of the model.
+        model: The name of the model.
+        project: The name of the project.
         keyword_type: The type of keyword to extract.
         keyword: The keyword to search for.
         nb_results: The number of results to return.
@@ -194,19 +200,22 @@ def extract_keywords(db_path: str, host: str, model: str, project: str, keyword_
     )
 
     data = []
-    for i in range(len(search_results['ids'][0])):
-        if get_document_type(search_results['ids'][0][i]) == 'keyword':
-            d = { 'id': get_external_id(search_results['ids'][0][i]), 'match': 'keyword', 'keyword': search_results['documents'][0][i], 'keyword_distance': search_results['distances'][0][i]}
-            description_id = get_internal_id_of_description(search_results['ids'][0][i])
+    result_ids = search_results['ids'][0]
+    result_docs = search_results['documents'][0]
+    result_dists = search_results['distances'][0]
+    for i in range(len(result_ids)):
+        if get_document_type(result_ids[i]) == 'keyword':
+            d = { 'id': get_external_id(result_ids[i]), 'match': 'keyword', 'keyword': result_docs[i], 'keyword_distance': result_dists[i]}
+            description_id = get_internal_id_of_description(result_ids[i])
             if description_id in documents['ids']:
                 d['description'] = documents['documents'][documents['ids'].index(description_id)]
-                if description_id in search_results['ids'][0]:
-                    d['description_distance'] = search_results['distances'][0][search_results['ids'][0].index(description_id)]
+                if description_id in result_ids:
+                    d['description_distance'] = result_dists[result_ids.index(description_id)]
         else:
-            d = { 'id': get_external_id(search_results['ids'][0][i]), 'match': 'description', 'description': search_results['documents'][0][i], 'description_distance': search_results['distances'][0][i]}
-            keyword_id = get_internal_id_of_keyword(search_results['ids'][0][i])
+            d = { 'id': get_external_id(result_ids[i]), 'match': 'description', 'description': result_docs[i], 'description_distance': result_dists[i]}
+            keyword_id = get_internal_id_of_keyword(result_ids[i])
             d['keyword'] = documents['documents'][documents['ids'].index(keyword_id)]
-            if keyword_id in search_results['ids'][0]:
-                d['keyword_distance'] = search_results['distances'][0][search_results['ids'][0].index(keyword_id)]
+            if keyword_id in result_ids:
+                d['keyword_distance'] = result_dists[result_ids.index(keyword_id)]
         data.append(d)
     return data

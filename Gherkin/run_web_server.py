@@ -129,7 +129,7 @@ def get_search_results():
         return jsonify({'error': 'Both model, project, keyword-type, and query parameters are required'}), 400
         
     try:
-        results = common.extract_keywords(db_path, model, project, keyword_type, query, 5)
+        results = common.search_keywords(db_path, model, project, keyword_type, query, 5)
         return jsonify(results)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

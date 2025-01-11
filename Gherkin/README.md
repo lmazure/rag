@@ -5,7 +5,8 @@
 pip install -r requirements.txt
 python fill_database.py --model all-MiniLM-L6-v2 ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
 python fill_database.py --model all-mpnet-base-v2 ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
-python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
+python fill_database.py --model togethercomputer/m2-bert-80M-8k-retrieval@Together ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2,togethercomputer/m2-bert-80M-8k-retrieval@Together --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
 rm -r ./chromadb/database
 ```
 
@@ -52,15 +53,15 @@ rm -r ./chromadb/database
 deletes the Chroma database.
 
 ## Parameters
-| parameter        | meaning                                                                                            | default value         |
-| ---------------- | -------------------------------------------------------------------------------------------------- | --------------------- |
-| `--model`        | name of the embedding model (see [below](#usable-models))                                          | `all-MiniLM-L6-v2`    |
-| `--models`       | comma-separated list of model names (see [below](#usable-models))                                  |                       |
-| `--db_path`      | folder where is the ChromaDB database                                                              | `./chromadb/database` |
-| `--project`      | name of the project                                                                                | `Common`              |
-| `--keyword_type` | `Context`, `Action`, or `Outcome`                                                                  |                       |
-| `--nb_results  ` | number of matches to return                                                                        | `3`                   |
-| `--browser`      | open the Web Browser                                                                               |                       |
+| parameter        | meaning                                                           | default value         |
+| ---------------- | ----------------------------------------------------------------- | --------------------- |
+| `--model`        | name of the embedding model (see [below](#usable-models))         | `all-MiniLM-L6-v2`    |
+| `--models`       | comma-separated list of model names (see [below](#usable-models)) |                       |
+| `--db_path`      | folder where is the ChromaDB database                             | `./chromadb/database` |
+| `--project`      | name of the project                                               | `Common`              |
+| `--keyword_type` | `Context`, `Action`, or `Outcome`                                 |                       |
+| `--nb_results  ` | number of matches to return                                       | `3`                   |
+| `--browser`      | open the Web Browser                                              |                       |
 
 ## Schema of the keyword JSON
 ```json
@@ -109,6 +110,7 @@ For local embedding models, simply use `model_name`.
 | Together | togethercomputer/m2-bert-80M-8k-retrieval                                                                     | TOGETHER_API_KEY                          |
 | Together | togethercomputer/m2-bert-80M-32k-retrieval                                                                    | TOGETHER_API_KEY                          |
 | Together | … the list is [here](https://api.together.ai/models)                                                          | TOGETHER_API_KEY                          |
+
 # Helpers
 
 ## Extraction of the keywords appearing in some feature files

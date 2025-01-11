@@ -3,7 +3,7 @@ import csv
 import html
 import common
 
-def process_file(file_path, models, db_path, project, nb_results):
+def process_file(file_path, hosts, models, db_path, project, nb_results):
     results = {}
     index = 1
     
@@ -15,8 +15,8 @@ def process_file(file_path, models, db_path, project, nb_results):
             keyword_type, keyword, expected_id = row
             search_results = {}
             
-            for model in models:
-                model_results = common.extract_keywords(db_path, model, project, keyword_type, keyword, nb_results)
+            for host, model in zip(hosts, models):
+                model_results = common.extract_keywords(db_path, host, model, project, keyword_type, keyword, nb_results)
                 search_results[model] = { 'matches': model_results, 'success': [result['id'] for result in model_results].index(expected_id) if expected_id in [result['id'] for result in model_results] else -1 }
             
             results[index] = {
@@ -113,10 +113,11 @@ def main():
 
     args = parser.parse_args()
     
-    models = [model.strip() for model in args.models.split(',')]
+    models = [common.parse_model_and_host(model)[0] for model in args.models.split(',')]
+    hosts = [common.parse_model_and_host(model)[1] for model in args.models.split(',')]
     
     # Run benchmark
-    results = process_file(args.benchmark_file, models, args.db_path, args.project, args.nb_results)
+    results = process_file(args.benchmark_file, hosts, models, args.db_path, args.project, args.nb_results)
     
     # Generate HTML report
     generate_html(args.report_file, results)

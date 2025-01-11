@@ -14,7 +14,8 @@ def main():
     
     args = parser.parse_args()
 
-    results = common.extract_keywords(args.db_path, args.model, args.project, args.keyword_type, args.keyword, args.nb_results)
+    model, host = common.parse_model_and_host(args.model)
+    results = common.extract_keywords(args.db_path, host, model, args.project, args.keyword_type, args.keyword, args.nb_results)
 
     # Print results
     print(f"Top {len(results)} matches for '{args.keyword}' in {args.project} project in {args.keyword_type} category:")

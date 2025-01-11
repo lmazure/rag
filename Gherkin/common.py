@@ -1,8 +1,18 @@
 import re
 import chromadb
+from chromadb import Documents, EmbeddingFunction, Embeddings
 from chromadb.config import Settings
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-import common
+from together import Together
+
+
+### parse model@host
+
+def parse_model_and_host(model_and_host: str) -> tuple[str, str]:
+    parts = model_and_host.split('@')
+    if len(parts) == 1:
+        return parts[0], None
+    return parts[0], parts[1]
 
 ### management of collection names
 
@@ -25,7 +35,8 @@ def get_model(collection_name: str) -> str:
     Return the model name from a collection name.
     For example, if the collection name is "model-my_project-Outcome", the model name is "model".
     """
-    return '-'.join(collection_name.split('-')[:-2])
+    model_name = '-'.join(collection_name.split('-')[:-2])
+    return model_name.replace("_--_","/")
 
 def get_collection_name(model_name: str, project_name: str, keyword_type: str) -> str:
     """
@@ -33,11 +44,14 @@ def get_collection_name(model_name: str, project_name: str, keyword_type: str) -
     For example, if the model name is "model", the project name is "my_project", and the keyword type is "Outcome",
     the collection name is "model-my_project-Outcome".
     """
+    model = model_name.replace("/","_--_")
+    if not re.match("^[-a-zA-Z0-9_]*$", model):
+        raise ValueError(f"Error: Model name ({model_name}) can only contain characters, digits, slash, dash, or underscores.")
     if not re.match("^[a-zA-Z0-9_]*$", project_name):
-        raise ValueError("Error: Project name can only contain characters, digits, or underscores.")
+        raise ValueError(f"Error: Project name ({project_name}) can only contain characters, digits, or underscores.")
     if keyword_type not in ["Context", "Action", "Outcome"]:
-        raise ValueError("Error: Keyword type can only be 'Context', 'Action', or 'Outcome'.")
-    return f"{model_name}-{project_name}-{keyword_type}"
+        raise ValueError(f"Error: Keyword type ({keyword_type}) can only be 'Context', 'Action', or 'Outcome'.")
+    return f"{model}-{project_name}-{keyword_type}"
 
 
 
@@ -110,7 +124,29 @@ def get_internal_id_of_keyword(internal_description_id: str) -> str:
 
 ### database queries
 
-def extract_keywords(db_path: str, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
+class TogetherEmbeddingFunction(EmbeddingFunction[Documents]):
+    def __init__(self, model: str):
+        self.client = Together()
+        self.model = model
+
+    def __call__(self, input: Documents) -> Embeddings:
+        """Embed the input documents."""
+        embeddings = []
+        response = self.client.embeddings.create(
+            input=input,
+            model=self.model
+        )
+        return [d.embedding for d in response.data]
+
+def build_embedding_function(host: str, model: str) -> SentenceTransformerEmbeddingFunction:
+    if host == None:
+        return SentenceTransformerEmbeddingFunction(model_name=model)
+    if host == "Together":
+        return TogetherEmbeddingFunction(model)
+    raise ValueError(f"Unknown host ({host})")
+
+
+def extract_keywords(db_path: str, host: str, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
     """
     Extract the nearest neighbours of a keyword from a Chroma database.
 
@@ -138,11 +174,13 @@ def extract_keywords(db_path: str, model: str, project: str, keyword_type: str, 
     chroma_client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
 
     # Get the appropriate collection
-    collection_name = f"{common.get_collection_name(model, project, keyword_type)}"
+    collection_name = f"{get_collection_name(model, project, keyword_type)}"
+
+    embedding_function = build_embedding_function(host, model)
     try:
         collection = chroma_client.get_collection(
             name=collection_name,
-            embedding_function=SentenceTransformerEmbeddingFunction(model_name=model)
+            embedding_function=embedding_function
         )
     except chromadb.errors.InvalidCollectionException as e:
         raise ValueError(f"Error: Model {model} and/or project {project} do not exist in database {db_path}.") from e
@@ -157,16 +195,16 @@ def extract_keywords(db_path: str, model: str, project: str, keyword_type: str, 
 
     data = []
     for i in range(len(search_results['ids'][0])):
-        if common.get_document_type(search_results['ids'][0][i]) == 'keyword':
-            d = { 'id': common.get_external_id(search_results['ids'][0][i]), 'match': 'keyword', 'keyword': search_results['documents'][0][i], 'keyword_distance': search_results['distances'][0][i]}
-            description_id = common.get_internal_id_of_description(search_results['ids'][0][i])
+        if get_document_type(search_results['ids'][0][i]) == 'keyword':
+            d = { 'id': get_external_id(search_results['ids'][0][i]), 'match': 'keyword', 'keyword': search_results['documents'][0][i], 'keyword_distance': search_results['distances'][0][i]}
+            description_id = get_internal_id_of_description(search_results['ids'][0][i])
             if description_id in documents['ids']:
                 d['description'] = documents['documents'][documents['ids'].index(description_id)]
                 if description_id in search_results['ids'][0]:
                     d['description_distance'] = search_results['distances'][0][search_results['ids'][0].index(description_id)]
         else:
-            d = { 'id': common.get_external_id(search_results['ids'][0][i]), 'match': 'description', 'description': search_results['documents'][0][i], 'description_distance': search_results['distances'][0][i]}
-            keyword_id = common.get_internal_id_of_keyword(search_results['ids'][0][i])
+            d = { 'id': get_external_id(search_results['ids'][0][i]), 'match': 'description', 'description': search_results['documents'][0][i], 'description_distance': search_results['distances'][0][i]}
+            keyword_id = get_internal_id_of_keyword(search_results['ids'][0][i])
             d['keyword'] = documents['documents'][documents['ids'].index(keyword_id)]
             if keyword_id in search_results['ids'][0]:
                 d['keyword_distance'] = search_results['distances'][0][search_results['ids'][0].index(keyword_id)]

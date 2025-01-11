@@ -14,14 +14,13 @@ def main():
     args = parser.parse_args()
 
     chroma_client = chromadb.PersistentClient(path=args.db_path, settings=Settings(anonymized_telemetry=False))
-    
+    model, host = common.parse_model_and_host(args.model)
+
+    embedding_function =  common.build_embedding_function(host, model)
     collections = {
-        "Context": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(args.model, args.project, 'Context')}", \
-                                                          embedding_function=SentenceTransformerEmbeddingFunction(model_name=args.model)),
-        "Action": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(args.model, args.project, 'Action')}"   , \
-                                                         embedding_function=SentenceTransformerEmbeddingFunction(model_name=args.model)),
-        "Outcome": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(args.model, args.project, 'Outcome')}", \
-                                                          embedding_function=SentenceTransformerEmbeddingFunction(model_name=args.model))
+        "Context": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(model, args.project, 'Context')}", embedding_function=embedding_function),
+        "Action": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(model, args.project, 'Action')}", embedding_function=embedding_function),
+        "Outcome": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(model, args.project, 'Outcome')}", embedding_function=embedding_function)
     }
 
     with open(args.keyword_file, 'r', encoding='utf-8') as file:

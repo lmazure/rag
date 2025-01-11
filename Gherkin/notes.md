@@ -86,7 +86,7 @@ def embedding_function(texts):
     return embeddings
 ```
 
-This way, the heavy computation happens on the provider's servers rather than your local machine. You just need to handle the API calls and store the results in ChromaDB.
+This way, the heavy computation happens on the host's servers rather than your local machine. You just need to handle the API calls and store the results in ChromaDB.
 
 Would you like me to show how to implement this with any other specific embedding API service?
 

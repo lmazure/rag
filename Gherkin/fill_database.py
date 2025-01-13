@@ -12,25 +12,22 @@ def main():
     parser.add_argument("--db_path", default="./chromadb/database", help="Path to the Chroma database (default: ./chromadb/database)")
     parser.add_argument("--project", default="Common", help="Name of the project (default: Common)")
     args = parser.parse_args()
-
-    chroma_client = chromadb.PersistentClient(path=args.db_path, settings=Settings(anonymized_telemetry=False))
     model, host = common.parse_model_and_host(args.model)
 
+    chroma_client = chromadb.PersistentClient(path=args.db_path, settings=Settings(anonymized_telemetry=False))
     embedding_function =  common.build_embedding_function(host, model)
-    collections = {
-        "Context": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(model, args.project, 'Context')}", embedding_function=embedding_function),
-        "Action": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(model, args.project, 'Action')}", embedding_function=embedding_function),
-        "Outcome": chroma_client.get_or_create_collection(name=f"{common.get_collection_name(model, args.project, 'Outcome')}", embedding_function=embedding_function)
-    }
 
     with open(args.keyword_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
-    
-    keywords = data['keywords']
-    for i, item in enumerate(keywords):
-        collections[item['type']].upsert(documents=[item['keyword']], ids=[f"{item['id']}-k"])
-        if len(item['description']):
-            collections[item['type']].upsert(documents=[item['description']], ids=[f"{item['id']}-d"])
+
+    for type in ["Context", "Action", "Outcome"]:
+        collection = chroma_client.get_or_create_collection(name=f"{common.get_collection_name(model, args.project, type)}", embedding_function=embedding_function)
+        keywords = [item for item in data['keywords'] if item['type'] == type]
+        if keywords != []:
+            collection.upsert(documents=[item['keyword'] for item in keywords], ids=[f"{item['id']}-k" for item in keywords])
+            documented_keywords = [item for item in keywords if len(item['description']) > 0]
+            if documented_keywords != []:
+                collection.upsert(documents=[item['description'] for item in documented_keywords], ids=[f"{item['id']}-d" for item in documented_keywords])
 
 if __name__ == "__main__":
     main()

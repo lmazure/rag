@@ -1,5 +1,3 @@
-- `run_web_server.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
-- `run_web_server.py` - create a page to test real-time pattern matching
-- `fill_database.py` - try another embedding library
+- 🐛 fix broken real-time search in `run_web_server.py`
 - JSON schema - keyword cannot be empty
 - `keyword_extractor.py` - manage keywords in foreign languages

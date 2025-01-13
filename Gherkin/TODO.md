@@ -1,3 +1,3 @@
-- 🐛 fix broken real-time search in `run_web_server.py`
+- 🐛 `run_web_server.py`- wrong search results if the user quickly types "L'utilisateur définit"
 - JSON schema - keyword cannot be empty
 - `keyword_extractor.py` - manage keywords in foreign languages

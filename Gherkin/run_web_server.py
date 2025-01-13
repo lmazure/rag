@@ -23,6 +23,7 @@ def get_database_content() -> dict:
         # Get the collection
         collection = client.get_collection(name)
         model = common.get_model(name)
+        host = common.get_host(name)
         project = common.get_project_name(name)
         keyword_type = common.get_keyword_type(name)
 
@@ -34,6 +35,8 @@ def get_database_content() -> dict:
             embeddings = collection.get(include=['embeddings'])
             dimension = len(embeddings['embeddings'][0])
             collections_data[model] = {'metadata': {'dimension': dimension}, 'projects': {project: {'keywords': {}}}}
+            if host:
+                collections_data[model]['metadata']['host'] = host
 
         # Initialize the data structure for the project (if not already done)
         if project not in collections_data[model]['projects']:
@@ -55,9 +58,9 @@ def get_database_content() -> dict:
     
     return collections_data
 
-def get_projected_vectors(model:str, project:str, keyword_type:str) -> list:
+def get_projected_vectors(model:str, host:str, project:str, keyword_type:str) -> list:
 
-    collection_name = common.get_collection_name(model, project, keyword_type)
+    collection_name = common.get_collection_name(model, host, project, keyword_type)
     client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
     collection = client.get_collection(collection_name)
 
@@ -106,6 +109,7 @@ def get_keywords():
 @app.route('/projections', methods=['GET'])
 def get_projections():
     model = request.args.get('model')
+    host = request.args.get('host')
     project = request.args.get('project')
     keyword_type = request.args.get('keyword-type')
     
@@ -113,7 +117,7 @@ def get_projections():
         return jsonify({'error': 'Both model, project, and keyword-type parameters are required'}), 400
         
     try:
-        projections = get_projected_vectors(model, project, keyword_type)
+        projections = get_projected_vectors(model, host, project, keyword_type)
         return jsonify(projections)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -121,15 +125,16 @@ def get_projections():
 @app.route('/query', methods=['GET'])
 def get_search_results():
     model = request.args.get('model')
+    host = request.args.get('host')
     project = request.args.get('project')
     keyword_type = request.args.get('keyword-type')
     query = request.args.get('query')
     
     if not model or not project or not keyword_type or not query:
         return jsonify({'error': 'Both model, project, keyword-type, and query parameters are required'}), 400
-        
+    
     try:
-        results = common.search_keywords(db_path, model, project, keyword_type, query, 5)
+        results = common.search_keywords(db_path, host, model, project, keyword_type, query, 5)
         return jsonify(results)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

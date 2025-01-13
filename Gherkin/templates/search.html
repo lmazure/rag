@@ -59,9 +59,15 @@
         // Get URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const model = urlParams.get('model');
+        const host = urlParams.get('host');
         const project = urlParams.get('project');
         const keywordType = urlParams.get('keyword-type');
 
+        if (!model || !project || !keywordType) {
+            document.getElementById('info').textContent = 'Error: Missing model, project, or keyword-type parameters';
+            throw new Error('Missing parameters');
+        }
+        
         let debounceTimer;
 
         document.getElementById('searchInput').addEventListener('input', function(e) {
@@ -81,6 +87,7 @@
                 const searchParams = new URLSearchParams({
                     query: query,
                     model: model,
+                    host: host,
                     project: project,
                     "keyword-type": keywordType
                 });

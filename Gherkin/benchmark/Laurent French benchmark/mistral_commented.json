@@ -123,7 +123,7 @@
     {
       "type": "Action",
       "keyword": "l'utilisateur entre \"roman adolescent\" dans la barre de recherche",
-      "description": "la chaîne de caractères definit le type de produit à rechercher",
+      "description": "la chaîne de caractères définit le type de produit à rechercher",
       "id": "6fe06c00-7edb-431d-9360-145e5721fee9"
     },
     {
@@ -255,7 +255,7 @@
     {
       "type": "Action",
       "keyword": "l'utilisateur va dans la section \"Mes commandes\"",
-      "description": "la chaîne de caractères definit la section du site à afficher",
+      "description": "la chaîne de caractères définit la section du site à afficher",
       "id": "71c9854c-0de1-4610-b618-e0b9ec29d822"
     },
     {
@@ -435,7 +435,7 @@
     {
       "type": "Outcome",
       "keyword": "les produits de la cat\u00e9gorie \"Livres pour adolescents\" sont affich\u00e9s",
-      "description": "la chaîne de caractères definit la catégorie de produits qui devrait \u00eatre affichée",
+      "description": "la chaîne de caractères définit la catégorie de produits qui devrait \u00eatre affichée",
       "id": "57b1418b-9d92-4941-9360-bbae28e482c7"
     },
     {
@@ -447,7 +447,7 @@
     {
       "type": "Outcome",
       "keyword": "les r\u00e9sultats de recherche pour \"roman adolescent\" dans la cat\u00e9gorie \"Livres pour adolescents\" sont affich\u00e9s",
-      "description": "la première chaîne de caractères definit la type de produits recherché et la deuxième chaîne de caractères definit la catégorie de produits qui devraient \u00eatre recherch\u00e9s",
+      "description": "la première chaîne de caractères définit la type de produits recherché et la deuxième chaîne de caractères définit la catégorie de produits qui devraient \u00eatre recherch\u00e9s",
       "id": "a0f1f1fb-a665-4b37-87ec-b1a764ad7d0a"
     },
     {

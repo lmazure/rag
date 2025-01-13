@@ -71,6 +71,7 @@
         // Get URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const model = urlParams.get('model');
+        const host = urlParams.get('host');
         const project = urlParams.get('project');
         const keywordType = urlParams.get('keyword-type');
 
@@ -167,7 +168,7 @@
         });
 
         // Fetch and visualize data
-        fetch(`/projections?model=${model}&project=${project}&keyword-type=${keywordType}`)
+        fetch(`/projections?model=${model}&host=${host ?? ''}&project=${project}&keyword-type=${keywordType}`)
             .then(response => response.json())
             .then(data => {
                 const points = data.flatMap(item => item.description_projection ? [item.keyword_projection, item.description_projection] : [item.keyword_projection]);

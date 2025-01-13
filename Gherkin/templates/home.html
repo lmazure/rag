@@ -52,6 +52,12 @@
                             const modelInfoElement = document.createElement('div');
                             modelInfoElement.textContent = `Dimension: ${data["metadata"]["dimension"]}`;
                             modelElement.appendChild(modelInfoElement);
+                            host = data["metadata"]["host"]
+                            if (host) {
+                                const hostInfoElement = document.createElement('div');
+                                hostInfoElement.textContent = `Host: ${host}`;
+                                modelElement.appendChild(hostInfoElement);
+                            }
                             keywordsList.appendChild(modelElement);
                             Object.entries(data["projects"]).forEach(([project, types]) => {
                                 const projectElement = document.createElement('details');  
@@ -66,14 +72,14 @@
                                     typeElement.appendChild(typeElementName);
                                     projectElement.appendChild(typeElement);
                                     const visualisationElement = document.createElement('a');
-                                    visualisationElement.href = `/visualisation?model=${model}&project=${project}&keyword-type=${type}`;
+                                    visualisationElement.href = `/visualisation?model=${model}&host=${host ?? ''}&project=${project}&keyword-type=${type}`;
                                     visualisationElement.textContent = "Visualisation";
                                     typeElement.appendChild(visualisationElement);
                                     const spacingElement = document.createElement('span');
                                     spacingElement.textContent = "   ";
                                     typeElement.appendChild(spacingElement);
                                     const searchElement = document.createElement('a');
-                                    searchElement.href = `/search?model=${model}&project=${project}&keyword-type=${type}`;
+                                    searchElement.href = `/search?model=${model}&host=${host ?? ''}&project=${project}&keyword-type=${type}`;
                                     searchElement.textContent = "Search";
                                     typeElement.appendChild(searchElement);
                                     const tableElement = document.createElement('table');

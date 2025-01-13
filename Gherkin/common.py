@@ -35,28 +35,40 @@ def get_project_name(collection_name: str) -> str:
     """
     return collection_name.split('-')[-2]
 
+def get_host(collection_name: str) -> str:
+    """
+    Return the host of the model from a collection name.
+    For example, if the collection name is "model-my_project-Outcome", the host is "my_project".
+    """
+    host = collection_name.split('-')[-3]
+    if host:
+        return host
+    return None
+
 def get_model(collection_name: str) -> str:
     """
     Return the model name from a collection name.
     For example, if the collection name is "model-my_project-Outcome", the model name is "model".
     """
-    model_name = '-'.join(collection_name.split('-')[:-2])
-    return model_name.replace("_--_","/")
+    model_name = '-'.join(collection_name.split('-')[:-3])
+    return model_name.replace("tc_--_","togethercomputer/")
 
-def get_collection_name(model_name: str, project_name: str, keyword_type: str) -> str:
+def get_collection_name(model: str, host: str, project: str, keyword_type: str) -> str:
     """
-    Return the collection name given a model name, a project name, and a keyword type.
-    For example, if the model name is "model", the project name is "my_project", and the keyword type is "Outcome",
-    the collection name is "model-my_project-Outcome".
+    Return the collection name given a model, a host, a project, and a keyword type.
+    For example, if the model is "model", the host is "Together", the project is "my_project", and the keyword type is "Outcome",
+    the collection name is "model-Together-my_project-Outcome".
     """
-    model = model_name.replace("/","_--_")
-    if not re.match("^[-a-zA-Z0-9_]*$", model):
-        raise ValueError(f"Error: Model name ({model_name}) can only contain characters, digits, slash, dash, or underscores.")
-    if not re.match("^[a-zA-Z0-9_]*$", project_name):
-        raise ValueError(f"Error: Project name ({project_name}) can only contain characters, digits, or underscores.")
+    model_name = model.replace("togethercomputer/","tc_--_")
+    if not re.match("^[-a-zA-Z0-9_]*$", model_name):
+        raise ValueError(f"Error: Model name ({model_name}) can only contain characters, digits, dash, or underscores.")
+    if host and not re.match("^[a-zA-Z]*$", host):
+        raise ValueError(f"Error: Host ({host}) can only contain characters.")
+    if not re.match("^[a-zA-Z0-9_]*$", project):
+        raise ValueError(f"Error: Project name ({project}) can only contain characters, digits, or underscores.")
     if keyword_type not in ["Context", "Action", "Outcome"]:
         raise ValueError(f"Error: Keyword type ({keyword_type}) can only be 'Context', 'Action', or 'Outcome'.")
-    return f"{model}-{project_name}-{keyword_type}"
+    return f"{model_name}-{host or ''}-{project}-{keyword_type}"
 
 
 
@@ -180,7 +192,7 @@ def search_keywords(db_path: str, host: str, model: str, project: str, keyword_t
     chroma_client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
 
     # Get the appropriate collection
-    collection_name = f"{get_collection_name(model, project, keyword_type)}"
+    collection_name = f"{get_collection_name(model, host, project, keyword_type)}"
 
     embedding_function = build_embedding_function(host, model)
     try:

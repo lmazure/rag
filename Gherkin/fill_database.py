@@ -21,7 +21,7 @@ def main():
         data = json.load(file)
 
     for type in ["Context", "Action", "Outcome"]:
-        collection = chroma_client.get_or_create_collection(name=f"{common.get_collection_name(model, args.project, type)}", embedding_function=embedding_function)
+        collection = chroma_client.get_or_create_collection(name=f"{common.get_collection_name(model, host, args.project, type)}", embedding_function=embedding_function)
         keywords = [item for item in data['keywords'] if item['type'] == type]
         if keywords != []:
             collection.upsert(documents=[item['keyword'] for item in keywords], ids=[f"{item['id']}-k" for item in keywords])

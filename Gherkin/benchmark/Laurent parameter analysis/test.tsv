@@ -1,0 +1,13 @@
+keyword type	looked up string	expected keyword ID
+Action	The user enters the value "John Doe" in the field <user_name>	1
+Action	The user enters the value John Doe in the field user_name	2
+Action	The user enters the value  in the field 	3
+Action	The user enters the value in the field	4
+Action	I search for the string "meadow"	11
+Action	I search for the string meadow	12
+Action	I search for the string 	13
+Action	I search for the string	14
+Action	The event <new_order> is received	21
+Action	The event new_order is received	22
+Action	The event  is received	23
+Action	The event is received	24

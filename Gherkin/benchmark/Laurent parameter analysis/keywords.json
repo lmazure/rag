@@ -1,0 +1,76 @@
+{
+  "keywords": [
+    {
+      "type": "Action",
+      "keyword": "The user enters the value \"John Doe\" in the field <user_name>",
+      "description": "",
+      "id": "1"
+    },
+    {
+      "type": "Action",
+      "keyword": "The user enters the value John Doe in the field user_name",
+      "description": "",
+      "id": "2"
+    },
+    {
+      "type": "Action",
+      "keyword": "The user enters the value  in the field ",
+      "description": "",
+      "id": "3"
+    },
+    {
+      "type": "Action",
+      "keyword": "The user enters the value in the field",
+      "description": "",
+      "id": "4"
+    },
+    {
+      "type": "Action",
+      "keyword": "I search for the string \"meadow\"",
+      "description": "",
+      "id": "11"
+    },
+    {
+      "type": "Action",
+      "keyword": "I search for the string meadow",
+      "description": "",
+      "id": "12"
+    },
+    {
+      "type": "Action",
+      "keyword": "I search for the string  ",
+      "description": "",
+      "id": "13"
+    },
+    {
+      "type": "Action",
+      "keyword": "I search for the string",
+      "description": "",
+      "id": "14"
+    },
+    {
+      "type": "Action",
+      "keyword": "The event <new_order> is received",
+      "description": "",
+      "id": "21"
+    },
+    {
+      "type": "Action",
+      "keyword": "The event new_order is received",
+      "description": "",
+      "id": "22"
+    },
+    {
+      "type": "Action",
+      "keyword": "The event  is received",
+      "description": "",
+      "id": "23"
+    },
+    {
+      "type": "Action",
+      "keyword": "The event is received",
+      "description": "",
+      "id": "24"
+    }
+  ]
+}

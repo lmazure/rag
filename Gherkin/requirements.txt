@@ -4,4 +4,3 @@ sentence_transformers
 flask
 numpy
 scikit-learn
-together

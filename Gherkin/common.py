@@ -1,10 +1,11 @@
+from os import getenv
 import re
 import chromadb
 from chromadb import Documents, EmbeddingFunction, Embeddings
 from chromadb.config import Settings
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-from together import Together
-
+import requests
+import json
 
 ### parse model@host
 
@@ -141,19 +142,43 @@ def get_internal_id_of_keyword(internal_description_id: str) -> str:
 
 ### database queries
 
+def call_server(url: str, token: str, payload: dict[str, str]) -> dict[str, str]:
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        error_message = response.text
+        print(url + "\nreturned error\n" + error_message, flush=True)
+        raise Exception("Model failed") from e
+    except Exception as e:
+        print(url + "\nfailed with exception\n" + str(e), flush=True)
+        raise Exception("An error occurred") from e
+    txt = response.text
+    jsonz = {}
+    try:
+        jsonz = json.loads(txt)
+    except BaseException as e:
+        print(f"Error while trying to extract JSON\n{e}\nThe API answer is\n{txt}", flush=True)
+        raise Exception(f"Error while trying to extract JSON from \"{txt}\", problem is: " + str(e)) from e
+    return jsonz
+
 class TogetherEmbeddingFunction(EmbeddingFunction[Documents]):
     def __init__(self, model: str):
-        self.client = Together()
         self.model = model
 
     def __call__(self, input: Documents) -> Embeddings:
-        """Embed the input documents."""
-        embeddings = []
-        response = self.client.embeddings.create(
-            input=input,
-            model=self.model
-        )
-        return [d.embedding for d in response.data]
+        url = "https://api.together.xyz/v1/embeddings"
+        token = getenv("TOGETHER_API_KEY")
+        payload = {
+             "model": self.model,
+             "input": input
+            }
+
+        result = call_server(url, token, payload)
+        return [d['embedding'] for d in result['data']]
 
 def build_embedding_function(host: str, model: str) -> SentenceTransformerEmbeddingFunction:
     if host == None:

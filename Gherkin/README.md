@@ -110,6 +110,7 @@ For local embedding models, simply use `model_name`.
 | Together | togethercomputer/m2-bert-80M-8k-retrieval                                                                     | TOGETHER_API_KEY                          |
 | Together | togethercomputer/m2-bert-80M-32k-retrieval                                                                    | TOGETHER_API_KEY                          |
 | Together | … the list is [here](https://api.together.ai/models)                                                          | TOGETHER_API_KEY                          |
+| Mistral  | mistral-embed                                                                                                 | MISTRAL_API_KEY                           |
 
 # Helpers
 

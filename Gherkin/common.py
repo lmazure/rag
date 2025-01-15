@@ -170,8 +170,24 @@ class TogetherEmbeddingFunction(EmbeddingFunction[Documents]):
         self.model = model
 
     def __call__(self, input: Documents) -> Embeddings:
+        # see https://docs.together.ai/docs/embeddings-overview#generating-multiple-embeddings
         url = "https://api.together.xyz/v1/embeddings"
         token = getenv("TOGETHER_API_KEY")
+        payload = {
+             "model": self.model,
+             "input": input
+            }
+
+        result = call_server(url, token, payload)
+        return [d['embedding'] for d in result['data']]
+
+class MistralEmbeddingFunction(EmbeddingFunction[Documents]):
+    def __init__(self, model: str):
+        self.model = model
+
+    def __call__(self, input: Documents) -> Embeddings:
+        url = "https://api.mistral.ai/v1/embeddings"
+        token = getenv("MISTRAL_API_KEY")
         payload = {
              "model": self.model,
              "input": input
@@ -185,6 +201,8 @@ def build_embedding_function(host: str, model: str) -> SentenceTransformerEmbedd
         return SentenceTransformerEmbeddingFunction(model_name=model)
     if host == "Together":
         return TogetherEmbeddingFunction(model)
+    if host == "Mistral":
+        return MistralEmbeddingFunction(model)
     raise ValueError(f"Unknown host ({host})")
 
 

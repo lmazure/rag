@@ -30,6 +30,10 @@ def get_database_content() -> dict:
         # Get all documents in the collection
         results = collection.get(include=['documents'])
 
+        # ignore the collection if it is empty
+        if len(results['documents']) == 0:
+            continue
+
         # Initialize the data structure for the model (if not already done)
         if model not in collections_data:
             embeddings = collection.get(include=['embeddings'])

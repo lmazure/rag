@@ -7,6 +7,8 @@ import os
 import webbrowser
 import numpy as np
 from sklearn.decomposition import PCA
+
+import common_database
 import common
 
 app = Flask(__name__)
@@ -22,8 +24,10 @@ def get_database_content() -> dict:
     for name in collection_names:
         # Get the collection
         collection = client.get_collection(name)
-        model = common.get_model(name)
-        host = common.get_host(name)
+        model_id = common.get_model_id(name)
+        model_info = common_database.get_model_and_host(db_path, model_id)
+        model = model_info['model']
+        host = model_info['host']
         project = common.get_project_name(name)
         keyword_type = common.get_keyword_type(name)
 
@@ -62,9 +66,10 @@ def get_database_content() -> dict:
     
     return collections_data
 
-def get_projected_vectors(model:str, host:str, project:str, keyword_type:str) -> list:
+def get_projected_vectors(db_path: str, model:str, host:str, project:str, keyword_type:str) -> list:
 
-    collection_name = common.get_collection_name(model, host, project, keyword_type)
+    model_id = common_database.get_model_id(db_path, model, host)
+    collection_name = common.get_collection_name(model_id, project, keyword_type)
     client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
     collection = client.get_collection(collection_name)
 
@@ -114,14 +119,17 @@ def get_keywords():
 def get_projections():
     model = request.args.get('model')
     host = request.args.get('host')
+    if host == '':
+        host = None
     project = request.args.get('project')
     keyword_type = request.args.get('keyword-type')
     
     if not model or not project or not keyword_type:
         return jsonify({'error': 'Both model, project, and keyword-type parameters are required'}), 400
         
+
     try:
-        projections = get_projected_vectors(model, host, project, keyword_type)
+        projections = get_projected_vectors(db_path, model, host, project, keyword_type)
         return jsonify(projections)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -130,6 +138,8 @@ def get_projections():
 def get_search_results():
     model = request.args.get('model')
     host = request.args.get('host')
+    if host == '':
+        host = None
     project = request.args.get('project')
     keyword_type = request.args.get('keyword-type')
     query = request.args.get('query')

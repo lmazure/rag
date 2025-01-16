@@ -1,6 +1,7 @@
 import re
 import chromadb
 from chromadb.config import Settings
+import common_database
 import common_embed
 
 ### parse model@host
@@ -21,53 +22,35 @@ def parse_model_and_host(model_and_host: str
 def get_keyword_type(collection_name: str) -> str:
     """
     Return the keyword typefrom a collection name.
-    For example, if the collection name is "model-my_project-Outcome", the keyword type is "Outcome".
+    For example, if the collection name is "123-my_project-Outcome", the keyword type is "Outcome".
     """
     return collection_name.split('-')[-1]
 
 def get_project_name(collection_name: str) -> str:
     """
     Return the project name from a collection name.
-    For example, if the collection name is "model-my_project-Outcome", the project name is "my_project".
+    For example, if the collection name is "123-my_project-Outcome", the project name is "my_project".
     """
     return collection_name.split('-')[-2]
 
-def get_host(collection_name: str) -> str:
-    """
-    Return the host of the model from a collection name.
-    For example, if the collection name is "model-my_project-Outcome", the host is "my_project".
-    """
-    host = collection_name.split('-')[-3]
-    if host:
-        return host
-    return None
-
-def get_model(collection_name: str) -> str:
+def get_model_id(collection_name: str) -> int:
     """
     Return the model name from a collection name.
-    For example, if the collection name is "model-my_project-Outcome", the model name is "model".
+    For example, if the collection name is "123-my_project-Outcome", the model id is 123.
     """
-    model_name = '-'.join(collection_name.split('-')[:-3])
-    return model_name.replace("tc_--_","togethercomputer/") \
-                     .replace("st_--_","sentence-transformers/")
+    return int(collection_name.split('-')[0])
 
-def get_collection_name(model: str, host: str, project: str, keyword_type: str) -> str:
+def get_collection_name(model_id: int, project: str, keyword_type: str) -> str:
     """
-    Return the collection name given a model, a host, a project, and a keyword type.
-    For example, if the model is "model", the host is "Together", the project is "my_project", and the keyword type is "Outcome",
-    the collection name is "model-Together-my_project-Outcome".
+    Return the collection name given a model id, a project, and a keyword type.
+    For example, if the model_id is 123, the project is "my_project", and the keyword type is "Outcome",
+    the collection name is "123-my_project-Outcome".
     """
-    model_name = model.replace("togethercomputer/","tc_--_") \
-                      .replace("sentence-transformers/","st_--_")
-    if not re.match("^[-a-zA-Z0-9_]*$", model_name):
-        raise ValueError(f"Error: Model name ({model_name}) can only contain characters, digits, dash, or underscores.")
-    if host and not re.match("^[a-zA-Z]*$", host):
-        raise ValueError(f"Error: Host ({host}) can only contain characters.")
     if not re.match("^[a-zA-Z0-9_]*$", project):
         raise ValueError(f"Error: Project name ({project}) can only contain characters, digits, or underscores.")
     if keyword_type not in ["Context", "Action", "Outcome"]:
         raise ValueError(f"Error: Keyword type ({keyword_type}) can only be 'Context', 'Action', or 'Outcome'.")
-    return f"{model_name}-{host or ''}-{project}-{keyword_type}"
+    return f"{model_id}-{project}-{keyword_type}"
 
 
 
@@ -140,8 +123,6 @@ def get_internal_id_of_keyword(internal_description_id: str) -> str:
 
 ### database queries
 
-
-
 def search_keywords(db_path: str, host: str, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
     """
     Extract the nearest neighbours of a keyword from a Chroma database.
@@ -167,11 +148,16 @@ def search_keywords(db_path: str, host: str, model: str, project: str, keyword_t
     Raises:
         ValueError: If the model and/or project do not exist in the database.
     """
+
+    model_id = common_database.get_model_id(db_path, model, host)
+    if not model_id:
+        raise ValueError(f"Model {model} at host {host} do not exist in database.")
+
     # Initialize Chroma client
     chroma_client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
 
     # Get the appropriate collection
-    collection_name = f"{get_collection_name(model, host, project, keyword_type)}"
+    collection_name = f"{get_collection_name(model_id, project, keyword_type)}"
 
     embedding_function = common_embed.build_embedding_function(host, model)
     try:

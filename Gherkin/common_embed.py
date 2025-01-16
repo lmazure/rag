@@ -4,6 +4,11 @@ import json
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 from os import getenv
 
+def get_envvar(name: str) -> str:
+    val = getenv(name)
+    if val is None:
+        raise Exception(f"Environment variable {name} is not set")
+    return val.strip()
 
 def call_server(url: str, token: str, payload: dict[str, str]) -> dict[str, str]:
 
@@ -35,7 +40,7 @@ class TogetherEmbeddingFunction(EmbeddingFunction[Documents]):
     def __call__(self, input: Documents) -> Embeddings:
         # see https://docs.together.ai/docs/embeddings-overview#generating-multiple-embeddings
         url = "https://api.together.xyz/v1/embeddings"
-        token = getenv("TOGETHER_API_KEY").strip()
+        token = get_envvar("TOGETHER_API_KEY")
         payload = {
              "model": self.model,
              "input": input
@@ -50,7 +55,7 @@ class MistralEmbeddingFunction(EmbeddingFunction[Documents]):
 
     def __call__(self, input: Documents) -> Embeddings:
         url = "https://api.mistral.ai/v1/embeddings"
-        token = getenv("MISTRAL_API_KEY").strip()
+        token = get_envvar("MISTRAL_API_KEY")
         payload = {
              "model": self.model,
              "input": input
@@ -65,7 +70,7 @@ class HuggingFaceEmbeddingFunction(EmbeddingFunction[Documents]):
 
     def __call__(self, input: Documents) -> Embeddings:
         url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.model}"
-        token = getenv("HUGGINGFACE_API_KEY").strip()
+        token = get_envvar("HUGGINGFACE_API_KEY")
         payload = {
              "inputs": input
             }

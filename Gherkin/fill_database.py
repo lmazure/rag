@@ -1,9 +1,9 @@
 import argparse
 import chromadb
 from chromadb.config import Settings
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 import json
 import common
+import common_embed
 
 def main():
     parser = argparse.ArgumentParser(description="Compute embedding vectors and store them in the Chroma database.")
@@ -15,7 +15,7 @@ def main():
     model, host = common.parse_model_and_host(args.model)
 
     chroma_client = chromadb.PersistentClient(path=args.db_path, settings=Settings(anonymized_telemetry=False))
-    embedding_function =  common.build_embedding_function(host, model)
+    embedding_function = common_embed.build_embedding_function(host, model)
 
     with open(args.keyword_file, 'r', encoding='utf-8') as file:
         data = json.load(file)

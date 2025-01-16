@@ -52,7 +52,8 @@ def get_model(collection_name: str) -> str:
     For example, if the collection name is "model-my_project-Outcome", the model name is "model".
     """
     model_name = '-'.join(collection_name.split('-')[:-3])
-    return model_name.replace("tc_--_","togethercomputer/")
+    return model_name.replace("tc_--_","togethercomputer/") \
+                     .replace("st_--_","sentence-transformers/")
 
 def get_collection_name(model: str, host: str, project: str, keyword_type: str) -> str:
     """
@@ -60,7 +61,8 @@ def get_collection_name(model: str, host: str, project: str, keyword_type: str) 
     For example, if the model is "model", the host is "Together", the project is "my_project", and the keyword type is "Outcome",
     the collection name is "model-Together-my_project-Outcome".
     """
-    model_name = model.replace("togethercomputer/","tc_--_")
+    model_name = model.replace("togethercomputer/","tc_--_") \
+                      .replace("sentence-transformers/","st_--_")
     if not re.match("^[-a-zA-Z0-9_]*$", model_name):
         raise ValueError(f"Error: Model name ({model_name}) can only contain characters, digits, dash, or underscores.")
     if host and not re.match("^[a-zA-Z]*$", host):
@@ -196,6 +198,20 @@ class MistralEmbeddingFunction(EmbeddingFunction[Documents]):
         result = call_server(url, token, payload)
         return [d['embedding'] for d in result['data']]
 
+class HuggingFaceEmbeddingFunction(EmbeddingFunction[Documents]):
+    def __init__(self, model: str):
+        self.model = model
+
+    def __call__(self, input: Documents) -> Embeddings:
+        url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.model}"
+        token = getenv("HUGGINGFACE_API_KEY")
+        payload = {
+             "inputs": input
+            }
+
+        result = call_server(url, token, payload)
+        return result
+
 def build_embedding_function(host: str, model: str) -> SentenceTransformerEmbeddingFunction:
     if host == None:
         return SentenceTransformerEmbeddingFunction(model_name=model)
@@ -203,6 +219,8 @@ def build_embedding_function(host: str, model: str) -> SentenceTransformerEmbedd
         return TogetherEmbeddingFunction(model)
     if host == "Mistral":
         return MistralEmbeddingFunction(model)
+    if host == "HuggingFace":
+        return HuggingFaceEmbeddingFunction(model)
     raise ValueError(f"Unknown host ({host})")
 
 

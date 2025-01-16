@@ -102,15 +102,18 @@ deletes the Chroma database.
 The name of a model is formatted as `model_name@host`, where `model_name` is the name of the model and `host` is the name of the embedding host.  
 For local embedding models, simply use `model_name`.
 
-| host     | model name                                                                                                    | environment variable defining the API key |
-| -------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-|          | all-MiniLM-L6-v2                                                                                              |                                           |
-|          | all-mpnet-base-v2                                                                                             |                                           |
-|          | … the list is [here](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html#original-models)  |                                           |
-| Together | togethercomputer/m2-bert-80M-8k-retrieval                                                                     | TOGETHER_API_KEY                          |
-| Together | togethercomputer/m2-bert-80M-32k-retrieval                                                                    | TOGETHER_API_KEY                          |
-| Together | … the list is [here](https://api.together.ai/models)                                                          | TOGETHER_API_KEY                          |
-| Mistral  | mistral-embed                                                                                                 | MISTRAL_API_KEY                           |
+| host        | model name                                                                                                   | environment variable defining the API key |
+| ----------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
+|             | all-MiniLM-L6-v2                                                                                             |                                           |
+|             | all-mpnet-base-v2                                                                                            |                                           |
+|             | … the list is [here](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html#original-models) |                                           |
+| Together    | togethercomputer/m2-bert-80M-8k-retrieval                                                                    | TOGETHER_API_KEY                          |
+| Together    | togethercomputer/m2-bert-80M-32k-retrieval                                                                   | TOGETHER_API_KEY                          |
+| Together    | … the list is [here](https://api.together.ai/models)                                                         | TOGETHER_API_KEY                          |
+| Mistral     | mistral-embed                                                                                                | MISTRAL_API_KEY                           |
+| HuggingFace | sentence-transformers/all-MiniLM-L6-v2                                                                       | HUGGINGFACE_API_KEY                       |
+| HuggingFace | sentence-transformers/all-mpnet-base-v2                                                                      | HUGGINGFACE_API_KEY                       |
+| HuggingFace | … the list is [here](https://huggingface.co/models?filter=sentence-transformers)                             | HUGGINGFACE_API_KEY                       |
 
 # Helpers
 

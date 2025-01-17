@@ -1,8 +1,13 @@
 import sqlite3
+import os
 
 database_name = "models.db"
 
 def setup_database(db_path: str):
+
+    # Create the path of directories (they may already exist)
+    os.makedirs(db_path, exist_ok=True)
+
     # Create SQLite connection
     conn = sqlite3.connect(f"{db_path}/{database_name}")
     cursor = conn.cursor()

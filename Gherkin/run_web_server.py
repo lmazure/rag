@@ -8,8 +8,9 @@ import webbrowser
 import numpy as np
 from sklearn.decomposition import PCA
 
-import common_database
 import common
+import model_db
+import vector_db
 
 app = Flask(__name__)
 db_path = None  # Will be set from command line argument
@@ -25,7 +26,7 @@ def get_database_content() -> dict:
         # Get the collection
         collection = client.get_collection(name)
         model_id = common.get_model_id(name)
-        model_info = common_database.get_model_and_host(db_path, model_id)
+        model_info = model_db.get_model_and_host(db_path, model_id)
         model = model_info['model']
         host = model_info['host']
         project = common.get_project_name(name)
@@ -68,7 +69,7 @@ def get_database_content() -> dict:
 
 def get_projected_vectors(db_path: str, model:str, host:str, project:str, keyword_type:str) -> list:
 
-    model_id = common_database.get_model_id(db_path, model, host)
+    model_id = model_db.get_model_id(db_path, model, host)
     collection_name = common.get_collection_name(model_id, project, keyword_type)
     client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
     collection = client.get_collection(collection_name)
@@ -148,7 +149,7 @@ def get_search_results():
         return jsonify({'error': 'Both model, project, keyword-type, and query parameters are required'}), 400
     
     try:
-        results = common.search_keywords(db_path, host, model, project, keyword_type, query, 5)
+        results = vector_db.search_keywords(db_path, host, model, project, keyword_type, query, 5)
         return jsonify(results)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

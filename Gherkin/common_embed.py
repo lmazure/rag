@@ -1,11 +1,12 @@
-from chromadb import Documents, EmbeddingFunction, Embeddings
 import requests
 import json
+import os
+
+from chromadb import Documents, EmbeddingFunction, Embeddings
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-from os import getenv
 
 def get_envvar(name: str) -> str:
-    val = getenv(name)
+    val = os.getenv(name)
     if val is None:
         raise Exception(f"Environment variable {name} is not set")
     return val.strip()

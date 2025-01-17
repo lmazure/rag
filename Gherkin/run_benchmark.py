@@ -1,7 +1,9 @@
 import argparse
 import csv
 import html
+
 import common
+import vector_db
 
 def process_file(file_path, hosts, models, db_path, project, nb_results):
     results = {}
@@ -16,7 +18,7 @@ def process_file(file_path, hosts, models, db_path, project, nb_results):
             search_results = {}
             
             for host, model in zip(hosts, models):
-                model_results = common.search_keywords(db_path, host, model, project, keyword_type, keyword, nb_results)
+                model_results = vector_db.search_keywords(db_path, host, model, project, keyword_type, keyword, nb_results)
                 search_results[model] = { 'matches': model_results, 'success': [result['id'] for result in model_results].index(expected_id) if expected_id in [result['id'] for result in model_results] else -1 }
             
             results[index] = {

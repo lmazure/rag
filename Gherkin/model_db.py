@@ -3,7 +3,7 @@ import os
 
 database_name = "models.db.sqlite3"
 
-def setup_database(db_path: str):
+def setup_database(db_path: str) -> None:
     """
     Set up the database by creating the necessary directories and files.
 
@@ -38,6 +38,15 @@ def setup_database(db_path: str):
     
     conn.commit()
     conn.close()
+
+def delete_database(db_path: str) -> None:
+    """
+    Delete the database.
+
+    Args:
+        db_path: The path to the database directory.
+    """
+    os.remove(f"{db_path}/{database_name}")
 
 def add_model_and_host(db_path: str, model: str, host: str) -> int:
     """

@@ -1,5 +1,5 @@
 import unittest
-from keyword_extractor import consolidate_keywords, condense_keyword
+from ..keyword_extractor import consolidate_keywords, condense_keyword
 
 class TestKeywordExtractor(unittest.TestCase):
     def test_consolidate_keywords_no_duplicates(self):

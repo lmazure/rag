@@ -7,7 +7,10 @@ import os
 import webbrowser
 import numpy as np
 from sklearn.decomposition import PCA
+
 import common
+import model_db
+import vector_db
 
 app = Flask(__name__)
 db_path = None  # Will be set from command line argument
@@ -22,18 +25,27 @@ def get_database_content() -> dict:
     for name in collection_names:
         # Get the collection
         collection = client.get_collection(name)
-        model = common.get_model(name)
+        model_id = common.get_model_id(name)
+        model_info = model_db.get_model_and_host(db_path, model_id)
+        model = model_info['model']
+        host = model_info['host']
         project = common.get_project_name(name)
         keyword_type = common.get_keyword_type(name)
 
         # Get all documents in the collection
         results = collection.get(include=['documents'])
 
+        # ignore the collection if it is empty
+        if len(results['documents']) == 0:
+            continue
+
         # Initialize the data structure for the model (if not already done)
         if model not in collections_data:
             embeddings = collection.get(include=['embeddings'])
             dimension = len(embeddings['embeddings'][0])
             collections_data[model] = {'metadata': {'dimension': dimension}, 'projects': {project: {'keywords': {}}}}
+            if host:
+                collections_data[model]['metadata']['host'] = host
 
         # Initialize the data structure for the project (if not already done)
         if project not in collections_data[model]['projects']:
@@ -55,9 +67,10 @@ def get_database_content() -> dict:
     
     return collections_data
 
-def get_projected_vectors(model:str, project:str, keyword_type:str) -> list:
+def get_projected_vectors(db_path: str, model:str, host:str, project:str, keyword_type:str) -> list:
 
-    collection_name = common.get_collection_name(model, project, keyword_type)
+    model_id = model_db.get_model_id(db_path, model, host)
+    collection_name = common.get_collection_name(model_id, project, keyword_type)
     client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
     collection = client.get_collection(collection_name)
 
@@ -106,14 +119,18 @@ def get_keywords():
 @app.route('/projections', methods=['GET'])
 def get_projections():
     model = request.args.get('model')
+    host = request.args.get('host')
+    if host == '':
+        host = None
     project = request.args.get('project')
     keyword_type = request.args.get('keyword-type')
     
     if not model or not project or not keyword_type:
         return jsonify({'error': 'Both model, project, and keyword-type parameters are required'}), 400
         
+
     try:
-        projections = get_projected_vectors(model, project, keyword_type)
+        projections = get_projected_vectors(db_path, model, host, project, keyword_type)
         return jsonify(projections)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -121,15 +138,18 @@ def get_projections():
 @app.route('/query', methods=['GET'])
 def get_search_results():
     model = request.args.get('model')
+    host = request.args.get('host')
+    if host == '':
+        host = None
     project = request.args.get('project')
     keyword_type = request.args.get('keyword-type')
     query = request.args.get('query')
     
     if not model or not project or not keyword_type or not query:
         return jsonify({'error': 'Both model, project, keyword-type, and query parameters are required'}), 400
-        
+    
     try:
-        results = common.extract_keywords(db_path, model, project, keyword_type, query, 5)
+        results = vector_db.search_keywords(db_path, host, model, project, keyword_type, query, 5)
         return jsonify(results)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -1,5 +1,3 @@
-- `run_web_server.py` - the structure of the internal IDs (`foo-k` and `foo-d`) should be hidden
-- `run_web_server.py` - create a page to test real-time pattern matching
-- `fill_database.py` - try another embedding library
+- 🐛 `run_web_server.py`- wrong search results if the user quickly types "L'utilisateur définit"
 - JSON schema - keyword cannot be empty
 - `keyword_extractor.py` - manage keywords in foreign languages

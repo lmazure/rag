@@ -5,7 +5,8 @@
 pip install -r requirements.txt
 python fill_database.py --model all-MiniLM-L6-v2 ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
 python fill_database.py --model all-mpnet-base-v2 ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
-python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
+python fill_database.py --model togethercomputer/m2-bert-80M-8k-retrieval@Together ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2,togethercomputer/m2-bert-80M-8k-retrieval@Together --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
 rm -r ./chromadb/database
 ```
 
@@ -17,7 +18,7 @@ installs the required Python ppackages.
 
 ## Fill the Chroma database with keywords
 ```sh
-python fill_database.py --model all-MiniLM-L6-v2 --db_path ./chromadb/db --project my_project my_list.json
+python fill_database.py --model togethercomputer/m2-bert-80M-8k-retrieval@Together --db_path ./chromadb/db --project my_project my_list.json
 ```
 populates the database using a given embedding model with the keywords stored in the `my_list.json` file (see [below](#schema-of-the-keyword-json)), the data is stored under the project `my_project`.  
 If the database does not exist before running the script, this one will create it.  
@@ -27,13 +28,13 @@ If an ID already exists for a given model and keyword type, the corresponding ke
 
 ## Query the Chroma database
 ```sh
-python query_database.py --model all-MiniLM-L6-v2 --db_path ./chromadb/db --project my_project --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
+python query_database.py --model togethercomputer/m2-bert-80M-8k-retrieval@Together --db_path ./chromadb/db --project my_project --keyword_type "Outcome" --nb_results 5 "I have a saved receiving address"
 ```
-looks for the `I have a saved receiving address` string in the keywords and descriptions of the Outcome keywords (in the project `my_project`) using embedding model `all-MiniLM-L6-v2`.
+looks for the `I have a saved receiving address` string in the keywords and descriptions of the Outcome keywords (in the project `my_project`) using embedding model `togethercomputer/m2-bert-80M-8k-retrieval` hosted by Together.
 
 ## Run a benchmark
 ```sh
-python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2 --db_path chromadb/db --project my_project --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
+python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2,togethercomputer/m2-bert-80M-8k-retrieval@Together --db_path chromadb/db --project my_project --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
 ```
 runs a benchmark.  
 `benchmark/Laurent\ initial\ benchmark/bench_definition.tsv` is the benchmark definition. This one is a TSV (Tab Separated Value) file. The first line contains the headers, it is ignored. Each other line must contains a keyword type, a looked-up keyword, and the ID of the expected matching keyword (the matching being via the keyword itself or via its definition).  
@@ -98,7 +99,21 @@ deletes the Chroma database.
 ```
 
 ## Usable models
-You can use the models listed [here](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html#original-models).
+The name of a model is formatted as `model_name@host`, where `model_name` is the name of the model and `host` is the name of the embedding host.  
+For local embedding models, simply use `model_name`.
+
+| host        | model name                                                                                                   | environment variable defining the API key |
+| ----------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
+|             | all-MiniLM-L6-v2                                                                                             |                                           |
+|             | all-mpnet-base-v2                                                                                            |                                           |
+|             | … the list is [here](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html#original-models) |                                           |
+| Together    | togethercomputer/m2-bert-80M-8k-retrieval                                                                    | TOGETHER_API_KEY                          |
+| Together    | togethercomputer/m2-bert-80M-32k-retrieval                                                                   | TOGETHER_API_KEY                          |
+| Together    | … the list is [here](https://api.together.ai/models)                                                         | TOGETHER_API_KEY                          |
+| Mistral     | mistral-embed                                                                                                | MISTRAL_API_KEY                           |
+| HuggingFace | sentence-transformers/all-MiniLM-L6-v2                                                                       | HUGGINGFACE_API_KEY                       |
+| HuggingFace | sentence-transformers/all-mpnet-base-v2                                                                      | HUGGINGFACE_API_KEY                       |
+| HuggingFace | … the list is [here](https://huggingface.co/models?filter=sentence-transformers)                             | HUGGINGFACE_API_KEY                       |
 
 # Helpers
 
@@ -109,7 +124,7 @@ python keyword_extractor.py [--string_delimiter "'"] Gherkin\ samples/*.feature 
 ```
 will create `my_list.json` which is the list of all keywords appearing in the `samples/*.feature` files.  
 Keywords that only differ by integer values, float values, string values, or parameter names are merged (the longest one is kept).  
-Use `--string_delimiter "'"` if the string values are delimted by single quotes (by default, they are delimted by double quotes).
+Use `--string_delimiter "'"` if the string values are delimited by single quotes (by default, they are delimited by double quotes).
 
 ## Extraction of the keywords appearing in a GitHub project
 ```sh

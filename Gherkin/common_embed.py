@@ -34,6 +34,23 @@ def call_server(url: str, token: str, payload: dict[str, str]) -> dict[str, str]
         raise Exception(f"Error while trying to extract JSON from \"{txt}\", problem is: " + str(e)) from e
     return jsonz
 
+class CohereEmbeddingFunction(EmbeddingFunction[Documents]):
+    def __init__(self, model: str):
+        self.model = model
+
+    def __call__(self, input: Documents) -> Embeddings:
+        # see https://docs.litellm.ai/docs/embedding/supported_embedding#cohere-embedding-models
+        url = "https://api.cohere.ai/v1/embed"
+        token = get_envvar("COHERE_API_KEY")
+        payload = {
+             "model": self.model,
+             "texts": input, 
+             "input_type": "search_document"
+            }
+
+        result = call_server(url, token, payload)
+        return result['embeddings']
+
 class TogetherEmbeddingFunction(EmbeddingFunction[Documents]):
     def __init__(self, model: str):
         self.model = model
@@ -82,6 +99,8 @@ class HuggingFaceEmbeddingFunction(EmbeddingFunction[Documents]):
 def build_embedding_function(host: str, model: str) -> SentenceTransformerEmbeddingFunction:
     if (host == None) or (host == ''):
         return SentenceTransformerEmbeddingFunction(model_name=model)
+    if host == "Cohere":
+        return CohereEmbeddingFunction(model)
     if host == "Together":
         return TogetherEmbeddingFunction(model)
     if host == "Mistral":

@@ -110,6 +110,9 @@ For local embedding models, simply use `model_name`.
 | Together    | togethercomputer/m2-bert-80M-8k-retrieval                                                                    | TOGETHER_API_KEY                          |
 | Together    | togethercomputer/m2-bert-80M-32k-retrieval                                                                   | TOGETHER_API_KEY                          |
 | Together    | … the list is [here](https://api.together.ai/models)                                                         | TOGETHER_API_KEY                          |
+| Cohere      | embed-multilingual-v3.0                                                                                      | COHERE_API_KEY                            |
+| Cohere      | embed-multilingual-light-v3.0                                                                                | COHERE_API_KEY                            |
+| Cohere      | … the list is [here](https://api.together.ai/models)                                                         | COHERE_API_KEY                            |
 | Mistral     | mistral-embed                                                                                                | MISTRAL_API_KEY                           |
 | HuggingFace | sentence-transformers/all-MiniLM-L6-v2                                                                       | HUGGINGFACE_API_KEY                       |
 | HuggingFace | sentence-transformers/all-mpnet-base-v2                                                                      | HUGGINGFACE_API_KEY                       |

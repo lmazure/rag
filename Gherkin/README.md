@@ -1,6 +1,6 @@
 # Running a benchmark
 
-## TL;DR -- Do everything for comparing two (or more) embedding models
+## TL;DR -- Do everything for comparing some embedding models
 ```sh
 pip install -r requirements.txt
 python fill_database.py --model all-MiniLM-L6-v2 ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json

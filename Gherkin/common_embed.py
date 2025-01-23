@@ -3,8 +3,8 @@ import json
 import os
 from typing import Any, Mapping
 
-from chromadb import Documents, EmbeddingFunction, Embeddings
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
+from chromadb.utils.embedding_functions.sentence_transformer_embedding_function import SentenceTransformerEmbeddingFunction
 
 def get_envvar(name: str) -> str:
     val = os.getenv(name)
@@ -97,7 +97,7 @@ class HuggingFaceEmbeddingFunction(EmbeddingFunction[Documents]):
         result = call_server(url, token, payload)
         return result
 
-def build_embedding_function(host: str, model: str) -> SentenceTransformerEmbeddingFunction:
+def build_embedding_function(host: str|None, model: str) -> EmbeddingFunction:
     if (host == None) or (host == ''):
         return SentenceTransformerEmbeddingFunction(model_name=model)
     if host == "Cohere":

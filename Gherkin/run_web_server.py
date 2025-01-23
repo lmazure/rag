@@ -1,3 +1,4 @@
+from chromadb.api.types import IncludeEnum
 from flask import Flask, jsonify, render_template, request
 import chromadb
 from chromadb.config import Settings
@@ -35,7 +36,7 @@ def get_database_content() -> dict:
         keyword_type = common.get_keyword_type(name)
 
         # Get all documents in the collection
-        results = collection.get(include=['documents'])
+        results = collection.get(include=[IncludeEnum.documents])
         assert results['documents'] is not None
 
         # ignore the collection if it is empty
@@ -44,7 +45,7 @@ def get_database_content() -> dict:
 
         # Initialize the data structure for the model (if not already done)
         if model not in collections_data:
-            embeddings = collection.get(include=['embeddings'])
+            embeddings = collection.get(include=[IncludeEnum.embeddings])
             assert embeddings['embeddings'] is not None
             dimension = len(embeddings['embeddings'][0])
             collections_data[model] = {'metadata': {'dimension': dimension}, 'projects': {project: {'keywords': {}}}}
@@ -81,7 +82,7 @@ def get_projected_vectors(db_path: str, model:str, host:str|None, project:str, k
     collection = client.get_collection(collection_name)
 
     # Get all items from the collection
-    results = collection.get(include=['embeddings', 'documents'])
+    results = collection.get(include=[IncludeEnum.embeddings, IncludeEnum.documents])
     assert results['embeddings'] is not None
     assert results['documents'] is not None
     

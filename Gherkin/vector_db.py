@@ -43,7 +43,7 @@ def fill_database(db_path: str, model: str, host: str, project: str, data: dict)
 
     return
 
-def search_keywords(db_path: str, host: str, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
+def search_keywords(db_path: str, host: str|None, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
     """
     Extract the nearest neighbours of a keyword from a Chroma database.
 
@@ -97,6 +97,9 @@ def search_keywords(db_path: str, host: str, model: str, project: str, keyword_t
         query_texts=[keyword],
         n_results=nb_results
     )
+    assert search_results['ids'] is not None
+    assert search_results['documents'] is not None
+    assert search_results['distances'] is not None
 
     # Process the search results
     data = []

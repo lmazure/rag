@@ -48,7 +48,7 @@ def delete_database(db_path: str) -> None:
     """
     os.remove(f"{db_path}/{database_name}")
 
-def add_model_and_host(db_path: str, model: str, host: str) -> int:
+def add_model_and_host(db_path: str, model: str, host: str|None) -> int|None:
     """
     Add a model and host to the SQLite database.
 
@@ -115,7 +115,7 @@ def get_model_and_host(db_path: str, model_id: int) -> dict[str, str]:
         }
     raise Exception(f"Model {model_id} not found")
 
-def get_model_id(db_path: str, model: str, host: str) -> int:
+def get_model_id(db_path: str, model: str, host: str|None) -> int|None:
     """
     Get the ID of a model in the SQLite database.
 

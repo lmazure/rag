@@ -2,8 +2,7 @@ import re
 
 ### parse model@host
 
-def parse_model_and_host(model_and_host: str
-                         ) -> tuple[str, str]:
+def parse_model_and_host(model_and_host: str) -> tuple[str, str|None]:
     """
     Parse a string of the form "model@host" and return a tuple of (model, host).
     If "@" is absent, the host is None.

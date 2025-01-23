@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+from typing import Any, Mapping
 
 from chromadb import Documents, EmbeddingFunction, Embeddings
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
@@ -11,7 +12,7 @@ def get_envvar(name: str) -> str:
         raise Exception(f"Environment variable {name} is not set")
     return val.strip()
 
-def call_server(url: str, token: str, payload: dict[str, str]) -> dict[str, str]:
+def call_server(url: str, token: str, payload: Mapping[str, str|Documents]) -> Any:
 
     headers = {"Authorization": f"Bearer {token}"}
 

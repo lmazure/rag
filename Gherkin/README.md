@@ -6,7 +6,11 @@ pip install -r requirements.txt
 python fill_database.py --model all-MiniLM-L6-v2 ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
 python fill_database.py --model all-mpnet-base-v2 ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
 python fill_database.py --model togethercomputer/m2-bert-80M-8k-retrieval@Together ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
-python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2,togethercomputer/m2-bert-80M-8k-retrieval@Together --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
+python fill_database.py --model embed-multilingual-v3.0@Cohere ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python fill_database.py --model mistral-embed@Mistral ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python fill_database.py --model models/text-embedding-004@Gemini ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python fill_database.py --model BAAI/bge-m3@HuggingFace ./benchmark/Laurent\ initial\ benchmark/keyword_samples.json
+python run_benchmark.py --models all-MiniLM-L6-v2,all-mpnet-base-v2,togethercomputer/m2-bert-80M-8k-retrieval@Together,embed-multilingual-v3.0@Cohere,mistral-embed@Mistral,models/text-embedding-004@Gemini,BAAI/bge-m3@HuggingFace --nb_results 3 ./benchmark/Laurent\ initial\ benchmark/bench_definition.tsv report.html
 rm -r ./chromadb/database
 ```
 
@@ -117,6 +121,9 @@ For local embedding models, simply use `model_name`.
 | HuggingFace | sentence-transformers/all-MiniLM-L6-v2                                                                       | HUGGINGFACE_API_KEY                       |
 | HuggingFace | sentence-transformers/all-mpnet-base-v2                                                                      | HUGGINGFACE_API_KEY                       |
 | HuggingFace | … the list is [here](https://huggingface.co/models?filter=sentence-transformers)                             | HUGGINGFACE_API_KEY                       |
+| Gemini      | models/text-embedding-004                                                                                    | GEMINI_API_KEY                            |
+| Gemini      | models/embedding-001                                                                                         | GEMINI_API_KEY                            |
+| Gemini      | the list is [here](https://ai.google.dev/gemini-api/docs/models/gemini#text-embedding)                       | GEMINI_API_KEY                            |
 
 # Helpers
 

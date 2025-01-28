@@ -12,9 +12,11 @@ def get_envvar(name: str) -> str:
         raise Exception(f"Environment variable {name} is not set")
     return val.strip()
 
-def call_server(url: str, token: str, payload: Mapping[str, str|Documents]) -> Any:
+def call_server(url: str, token: str|None, payload: Any) -> Any:
 
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Content-Type": "application/json"}
+    if token is not None:
+        headers["Authorization"] = f"Bearer {token}"
 
     try:
         response = requests.post(url, headers=headers, json=payload)
@@ -51,6 +53,27 @@ class CohereEmbeddingFunction(EmbeddingFunction[Documents]):
 
         result = call_server(url, token, payload)
         return result['embeddings']
+
+class GeminiEmbeddingFunction(EmbeddingFunction[Documents]):
+    def __init__(self, model: str):
+        self.model = model
+
+    def __call__(self, input: Documents) -> Embeddings:
+        # see https://ai.google.dev/gemini-api/docs/embeddings#curl
+        token = get_envvar("GEMINI_API_KEY")
+        url = f"https://generativelanguage.googleapis.com/v1beta/{self.model}:batchEmbedContents?key={token}"
+        payload = {
+            "requests": [
+                {
+                    "model": self.model,
+                    "content": {
+                        "parts":[{"text": d} ]}
+                }
+            for d in input]
+        }
+
+        result = call_server(url, None, payload)
+        return [r['values'] for r in result['embeddings']]
 
 class TogetherEmbeddingFunction(EmbeddingFunction[Documents]):
     def __init__(self, model: str):
@@ -102,6 +125,8 @@ def build_embedding_function(host: str|None, model: str) -> EmbeddingFunction:
         return SentenceTransformerEmbeddingFunction(model_name=model)
     if host == "Cohere":
         return CohereEmbeddingFunction(model)
+    if host == "Gemini":
+        return GeminiEmbeddingFunction(model)
     if host == "Together":
         return TogetherEmbeddingFunction(model)
     if host == "Mistral":

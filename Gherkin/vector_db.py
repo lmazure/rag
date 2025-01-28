@@ -1,11 +1,12 @@
 import chromadb
+from chromadb.api.types import IncludeEnum
 from chromadb.config import Settings
 
 import common
 import model_db
 import common_embed
 
-def fill_database(db_path: str, model: str, host: str, project: str, data: dict) -> None:
+def fill_database(db_path: str, model: str, host: str|None, project: str, data: dict) -> None:
     """
     Fill a Chroma database with keywords and their descriptions.
 
@@ -43,7 +44,7 @@ def fill_database(db_path: str, model: str, host: str, project: str, data: dict)
 
     return
 
-def search_keywords(db_path: str, host: str, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
+def search_keywords(db_path: str, host: str|None, model: str, project: str, keyword_type: str, keyword: str, nb_results:int) -> list[dict[str, str]]:
     """
     Extract the nearest neighbours of a keyword from a Chroma database.
 
@@ -87,16 +88,20 @@ def search_keywords(db_path: str, host: str, model: str, project: str, keyword_t
             name=collection_name,
             embedding_function=embedding_function
         )
-    except chromadb.errors.InvalidCollectionException as e:
+    except ValueError as e:
         raise ValueError(f"Error: Model {model} and/or project {project} do not exist in Chroma database {db_path}.") from e
 
-    documents = collection.get(include=['documents'])
+    documents = collection.get(include=[IncludeEnum.documents])
+    assert documents['documents'] is not None
 
     # Perform the search query
     search_results = collection.query(
         query_texts=[keyword],
         n_results=nb_results
     )
+    assert search_results['ids'] is not None
+    assert search_results['documents'] is not None
+    assert search_results['distances'] is not None
 
     # Process the search results
     data = []

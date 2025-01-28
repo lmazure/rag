@@ -44,11 +44,14 @@ def extract_keywords_from_feature_file(file_path: str, string_delimiter: str = '
         print(f"Error parsing file {file_path}: Feature not found", file=sys.stderr)
         sys.exit(1)
 
-    # Process each feature (it can either be a scenario or a background, but we does care, we can retrieve the steps the same way)
+    # Process each feature (it can either be a scenario or a background, but we do not care, we can retrieve the steps the same way)
     keywords = []
     for component in feature['feature']['children']:
         lastKeywordType = None
-        for step in next(iter(component.values()))["steps"]:
+        component_data = next(iter(component.values()))
+        assert isinstance(component_data, dict)
+        assert 'steps' in component_data
+        for step in component_data['steps']:
             step_type = step['keywordType']
             if (step_type == 'Conjunction'):
                 if (lastKeywordType == None):

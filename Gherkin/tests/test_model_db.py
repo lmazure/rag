@@ -50,6 +50,7 @@ def test_add_and_get_model(test_db_path):
     
     # Test adding a model without host
     model_id2 = add_model_and_host(test_db_path, "gpt-3.5", None)
+    assert model_id2 is not None
     model_data2 = get_model_and_host(test_db_path, model_id2)
     assert model_data2["model"] == "gpt-3.5"
     assert model_data2["host"] is None

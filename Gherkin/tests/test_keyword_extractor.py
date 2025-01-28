@@ -8,7 +8,7 @@ def consolidate(new_keywords: list[dict[str, str]], all_keywords: list[dict[str,
     consolidate_keywords(add_condensed_keywords(new_keywords), add_condensed_keywords(all_keywords))
 
 
-def add_condensed_keywords(keywords: list[dict[str, str]]) -> list[dict[str, str, str]]:
+def add_condensed_keywords(keywords: list[dict[str, str]]) -> list[dict[str, str]]:
     """Add the condensed keywords in a keyword list"""
     for kw in keywords:
         kw['condensed_keyword'] = condense_keyword(kw['keyword'])

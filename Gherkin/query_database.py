@@ -1,7 +1,7 @@
 import argparse
-from chromadb.config import Settings
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+
 import common
+import vector_db
 
 def main():
     parser = argparse.ArgumentParser(description="Query Chroma database for keyword matches.")
@@ -15,7 +15,7 @@ def main():
     args = parser.parse_args()
 
     model, host = common.parse_model_and_host(args.model)
-    results = common.search_keywords(args.db_path, host, model, args.project, args.keyword_type, args.keyword, args.nb_results)
+    results = vector_db.search_keywords(args.db_path, host, model, args.project, args.keyword_type, args.keyword, args.nb_results)
 
     # Print results
     print(f"Top {len(results)} matches for '{args.keyword}' in {args.project} project in {args.keyword_type} category:")

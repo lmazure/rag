@@ -1,3 +1,4 @@
+from chromadb.api.types import IncludeEnum
 from flask import Flask, jsonify, render_template, request
 import chromadb
 from chromadb.config import Settings
@@ -18,6 +19,8 @@ port = 5000
 
 def get_database_content() -> dict:
 
+    assert db_path is not None
+
     collections_data = {}
 
     client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
@@ -33,7 +36,8 @@ def get_database_content() -> dict:
         keyword_type = common.get_keyword_type(name)
 
         # Get all documents in the collection
-        results = collection.get(include=['documents'])
+        results = collection.get(include=[IncludeEnum.documents])
+        assert results['documents'] is not None
 
         # ignore the collection if it is empty
         if len(results['documents']) == 0:
@@ -41,7 +45,8 @@ def get_database_content() -> dict:
 
         # Initialize the data structure for the model (if not already done)
         if model not in collections_data:
-            embeddings = collection.get(include=['embeddings'])
+            embeddings = collection.get(include=[IncludeEnum.embeddings])
+            assert embeddings['embeddings'] is not None
             dimension = len(embeddings['embeddings'][0])
             collections_data[model] = {'metadata': {'dimension': dimension}, 'projects': {project: {'keywords': {}}}}
             if host:
@@ -67,15 +72,19 @@ def get_database_content() -> dict:
     
     return collections_data
 
-def get_projected_vectors(db_path: str, model:str, host:str, project:str, keyword_type:str) -> list:
+def get_projected_vectors(db_path: str, model:str, host:str|None, project:str, keyword_type:str) -> list:
 
     model_id = model_db.get_model_id(db_path, model, host)
+    if model_id is None:
+        raise Exception(f"No known model for model={model} and host={host}")
     collection_name = common.get_collection_name(model_id, project, keyword_type)
     client = chromadb.PersistentClient(path=db_path, settings=Settings(anonymized_telemetry=False))
     collection = client.get_collection(collection_name)
 
     # Get all items from the collection
-    results = collection.get(include=['embeddings', 'documents'])
+    results = collection.get(include=[IncludeEnum.embeddings, IncludeEnum.documents])
+    assert results['embeddings'] is not None
+    assert results['documents'] is not None
     
     # Extract embeddings
     vectors = np.array(results['embeddings'])
@@ -118,6 +127,9 @@ def get_keywords():
 
 @app.route('/projections', methods=['GET'])
 def get_projections():
+
+    assert db_path is not None
+
     model = request.args.get('model')
     host = request.args.get('host')
     if host == '':
@@ -137,6 +149,9 @@ def get_projections():
 
 @app.route('/query', methods=['GET'])
 def get_search_results():
+
+    assert db_path is not None
+
     model = request.args.get('model')
     host = request.args.get('host')
     if host == '':

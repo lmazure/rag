@@ -1,9 +1,10 @@
 import requests
 import json
 import os
+from typing import Any, Mapping
 
-from chromadb import Documents, EmbeddingFunction, Embeddings
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
+from chromadb.utils.embedding_functions.sentence_transformer_embedding_function import SentenceTransformerEmbeddingFunction
 
 def get_envvar(name: str) -> str:
     val = os.getenv(name)
@@ -11,9 +12,11 @@ def get_envvar(name: str) -> str:
         raise Exception(f"Environment variable {name} is not set")
     return val.strip()
 
-def call_server(url: str, token: str, payload: dict[str, str]) -> dict[str, str]:
+def call_server(url: str, token: str|None, payload: Any) -> Any:
 
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Content-Type": "application/json"}
+    if token is not None:
+        headers["Authorization"] = f"Bearer {token}"
 
     try:
         response = requests.post(url, headers=headers, json=payload)
@@ -33,6 +36,44 @@ def call_server(url: str, token: str, payload: dict[str, str]) -> dict[str, str]
         print(f"Error while trying to extract JSON\n{e}\nThe API answer is\n{txt}", flush=True)
         raise Exception(f"Error while trying to extract JSON from \"{txt}\", problem is: " + str(e)) from e
     return jsonz
+
+class CohereEmbeddingFunction(EmbeddingFunction[Documents]):
+    def __init__(self, model: str):
+        self.model = model
+
+    def __call__(self, input: Documents) -> Embeddings:
+        # see https://docs.litellm.ai/docs/embedding/supported_embedding#cohere-embedding-models
+        url = "https://api.cohere.ai/v1/embed"
+        token = get_envvar("COHERE_API_KEY")
+        payload = {
+             "model": self.model,
+             "texts": input, 
+             "input_type": "search_document"
+            }
+
+        result = call_server(url, token, payload)
+        return result['embeddings']
+
+class GeminiEmbeddingFunction(EmbeddingFunction[Documents]):
+    def __init__(self, model: str):
+        self.model = model
+
+    def __call__(self, input: Documents) -> Embeddings:
+        # see https://ai.google.dev/gemini-api/docs/embeddings#curl
+        token = get_envvar("GEMINI_API_KEY")
+        url = f"https://generativelanguage.googleapis.com/v1beta/{self.model}:batchEmbedContents?key={token}"
+        payload = {
+            "requests": [
+                {
+                    "model": self.model,
+                    "content": {
+                        "parts":[{"text": d} ]}
+                }
+            for d in input]
+        }
+
+        result = call_server(url, None, payload)
+        return [r['values'] for r in result['embeddings']]
 
 class TogetherEmbeddingFunction(EmbeddingFunction[Documents]):
     def __init__(self, model: str):
@@ -79,9 +120,13 @@ class HuggingFaceEmbeddingFunction(EmbeddingFunction[Documents]):
         result = call_server(url, token, payload)
         return result
 
-def build_embedding_function(host: str, model: str) -> SentenceTransformerEmbeddingFunction:
+def build_embedding_function(host: str|None, model: str) -> EmbeddingFunction:
     if (host == None) or (host == ''):
         return SentenceTransformerEmbeddingFunction(model_name=model)
+    if host == "Cohere":
+        return CohereEmbeddingFunction(model)
+    if host == "Gemini":
+        return GeminiEmbeddingFunction(model)
     if host == "Together":
         return TogetherEmbeddingFunction(model)
     if host == "Mistral":

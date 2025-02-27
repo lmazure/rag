@@ -1,4 +1,3 @@
-import os
 from typing import List, Tuple
 import requests
 from bs4 import BeautifulSoup
@@ -7,9 +6,9 @@ from chromadb.config import Settings
 from docling.document_converter import DocumentConverter
 from docling.chunking import HybridChunker
 from together import Together
-import together
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
+from markupsafe import escape
 
 load_dotenv()
 
@@ -120,7 +119,9 @@ def query():
     context = "\n".join(results['documents'][0])
     print("\n---------------------------------------------------------\n".join(results['documents'][0]))
     response = generate_response(user_query, context)
-    
+    response = str(escape(response))
+    response = response.replace("\n", "<br>")
+
     return jsonify({
         "answer": response,
         "sources": [m['source'] for m in results['metadatas'][0]]

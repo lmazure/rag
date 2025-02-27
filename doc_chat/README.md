@@ -13,25 +13,27 @@ A RAG (Retrieval-Augmented Generation) application that allows users to ask ques
 ## Setup
 
 1. Create a virtual environment and activate it:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    ```
 
 2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 3. Create a `.env` file with your Together AI API key:
-```
-TOGETHER_API_KEY=your_api_key_here
-```
+    ```
+    TOGETHER_API_KEY=your_api_key_here
+    ```
 
 4. Run the application:
-```bash
-python app.py
-```
+    ```bash
+    python app.py
+    ```
+
+    There will be some warnings `Token indices sequence length is longer than the specified maximum sequence length for this model (518 > 512). Running this sequence through the model will result in indexing errors`. You can ignore them, see https://github.com/DS4SD/docling-core/issues/119.
 
 5. Open a web browser and navigate to `http://localhost:5000`
 

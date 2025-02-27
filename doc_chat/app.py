@@ -6,6 +6,7 @@ import chromadb
 from chromadb.config import Settings
 from docling.document_converter import DocumentConverter
 from docling.chunking import HybridChunker
+from together import Together
 import together
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
@@ -14,7 +15,7 @@ load_dotenv()
 
 # Configure Together AI
 #together.api_key = os.getenv("TOGETHER_API_KEY")
-MODEL = "meta-llama/Meta-Llama-3-70B-Instruct-Lite"
+MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
 
 app = Flask(__name__)
 
@@ -43,12 +44,11 @@ def fetch_and_chunk_content(url: str) -> List[Tuple[str, str]]:
     chunker = HybridChunker()
     chunk_iter = chunker.chunk(doc)
     for i, chunk in enumerate(chunk_iter):
-        print(f"=== {i} ===")
-        print(f"chunk.text:\n{repr(f'{chunk.text[:300]}…')}")
-        enriched_text = chunker.serialize(chunk=chunk)
-        print(f"chunker.serialize(chunk):\n{repr(f'{enriched_text[:300]}…')}")
+        #print(f"=== {i} ===")
+        #print(f"chunk.text:\n{repr(f'{chunk.text[:300]}…')}")
+        #enriched_text = chunker.serialize(chunk=chunk)
+        #print(f"chunker.serialize(chunk):\n{repr(f'{enriched_text[:300]}…')}")
         chunks.append((chunk.text, url))
-        print()
     return chunks
 
 def setup_chroma():
@@ -68,16 +68,15 @@ def generate_response(query: str, context: str) -> str:
 
 Question: {query}
 
-Please provide a clear and concise answer based on the context above. If the context doesn't contain enough information to answer the question, please say so."""
+Please provide an answer based on the context above. If the context doesn't contain enough information to answer the question, please say so."""
+    client = Together()
 
-    response = together.Complete.create(
-        prompt=prompt,
-        model=MODEL,
-        max_tokens=512,
-        temperature=0.7,
+    response = client.chat.completions.create(
+        messages=[{"role": "user", "content": prompt}],
+        model=MODEL
     )
     print(response)
-    return response.output.text.strip()
+    return response.choices[0].message.content
 
 @app.route('/')
 def home():
@@ -85,8 +84,7 @@ def home():
 
 @app.route('/ingest', methods=['POST'])
 def ingest():
-    #base_url = "https://tm-fr.doc.squashtest.com/latest/"
-    base_url = "https://huggingface.co/"
+    base_url = "https://tm-en.doc.squashtest.com/latest/"
     collection = setup_chroma()
     
     urls = get_all_html_urls(base_url)
@@ -116,10 +114,11 @@ def query():
     
     results = collection.query(
         query_texts=[user_query],
-        n_results=3
+        n_results=10
     )
     
     context = "\n".join(results['documents'][0])
+    print("\n---------------------------------------------------------\n".join(results['documents'][0]))
     response = generate_response(user_query, context)
     
     return jsonify({

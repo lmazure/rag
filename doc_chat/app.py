@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 import chromadb
 from chromadb.config import Settings
-# from docling import Document, split_text
 from docling.document_converter import DocumentConverter
 from docling.chunking import HybridChunker
 import together
@@ -14,14 +13,14 @@ from flask import Flask, render_template, request, jsonify
 load_dotenv()
 
 # Configure Together AI
-together.api_key = os.getenv("TOGETHER_API_KEY")
+#together.api_key = os.getenv("TOGETHER_API_KEY")
 MODEL = "meta-llama/Meta-Llama-3-70B-Instruct-Lite"
 
 app = Flask(__name__)
 
 def get_all_html_urls(base_url: str) -> List[str]:
     """Get all HTML URLs from the documentation site."""
-    urls = []
+    urls = [ base_url ]
     response = requests.get(base_url)
     soup = BeautifulSoup(response.text, 'html.parser')
     
@@ -37,6 +36,7 @@ def get_all_html_urls(base_url: str) -> List[str]:
 
 def fetch_and_chunk_content(url: str) -> List[Tuple[str, str]]:
     """Fetch content from URL and split into chunks."""
+    chunks = []
     converter = DocumentConverter()
     result = converter.convert(url)
     doc = result.document
@@ -47,12 +47,13 @@ def fetch_and_chunk_content(url: str) -> List[Tuple[str, str]]:
         print(f"chunk.text:\n{repr(f'{chunk.text[:300]}…')}")
         enriched_text = chunker.serialize(chunk=chunk)
         print(f"chunker.serialize(chunk):\n{repr(f'{enriched_text[:300]}…')}")
+        chunks.append((chunk.text, url))
         print()
-    return [(chunk.text, url) for chunk in chunk_iter]
+    return chunks
 
 def setup_chroma():
     """Initialize ChromaDB."""
-    client = chromadb.PersistentClient(path="doc_chat/chromadb", settings=Settings(anonymized_telemetry=False))
+    client = chromadb.PersistentClient(path="chromadb", settings=Settings(anonymized_telemetry=False))
     
     try:
         collection = client.get_collection("squash_docs")
@@ -75,7 +76,7 @@ Please provide a clear and concise answer based on the context above. If the con
         max_tokens=512,
         temperature=0.7,
     )
-    
+    print(response)
     return response.output.text.strip()
 
 @app.route('/')
@@ -84,7 +85,8 @@ def home():
 
 @app.route('/ingest', methods=['POST'])
 def ingest():
-    base_url = "https://tm-fr.doc.squashtest.com/latest/"
+    #base_url = "https://tm-fr.doc.squashtest.com/latest/"
+    base_url = "https://huggingface.co/"
     collection = setup_chroma()
     
     urls = get_all_html_urls(base_url)
@@ -98,7 +100,7 @@ def ingest():
             all_chunks.append(chunk)
             all_metadatas.append({"source": source_url})
             all_ids.append(f"chunk_{i}_{j}")
-    
+
     collection.add(
         documents=all_chunks,
         metadatas=all_metadatas,

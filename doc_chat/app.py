@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 from typing import List, Tuple
 import requests
 from bs4 import BeautifulSoup
@@ -34,12 +36,17 @@ def get_all_html_urls(base_url: str) -> List[str]:
     
     return list(set(urls))
 
+indx = 0
 def fetch_and_chunk_content(url: str) -> List[Tuple[str, str]]:
     """Fetch content from URL and split into chunks."""
+    global indx
+    indx += 1
     chunks = []
     converter = DocumentConverter()
     result = converter.convert(url)
     doc = result.document
+    with Path(f"data/doc_{indx:05d}.json").open("w", encoding="utf-8") as fp:
+        fp.write(json.dumps(doc.export_to_dict()))
     chunker = HybridChunker()
     chunk_iter = chunker.chunk(doc)
     for i, chunk in enumerate(chunk_iter):
@@ -52,7 +59,7 @@ def fetch_and_chunk_content(url: str) -> List[Tuple[str, str]]:
 
 def setup_chroma():
     """Initialize ChromaDB."""
-    client = chromadb.PersistentClient(path="chromadb", settings=Settings(anonymized_telemetry=False))
+    client = chromadb.PersistentClient(path="data/chromadb", settings=Settings(anonymized_telemetry=False))
     
     try:
         collection = client.get_collection("squash_docs")
@@ -83,7 +90,11 @@ def home():
 
 @app.route('/ingest', methods=['POST'])
 def ingest():
-    base_url = "https://tm-en.doc.squashtest.com/latest/"
+
+    base_url = request.args.get('url')
+    if not base_url:
+        return jsonify({'error': 'url is required'}), 400
+    
     collection = setup_chroma()
     
     urls = get_all_html_urls(base_url)

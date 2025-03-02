@@ -1,3 +1,4 @@
+from typing import List, Tuple
 import sqlite3
 import os
 
@@ -91,3 +92,24 @@ def get_url(db_path: str, url_id: int) -> str:
     if url_data:
         return url_data[1]
     raise Exception(f"URL {url_id} not found")
+
+def get_urls(db_path: str) -> List[Tuple[int, str]]:
+    """
+    Get all scanned URLs from the database.
+
+    Args:
+        db_path: The path to the database directory.
+
+    Returns:
+        A list of tuples, where each tuple contains the ID and URL.
+    """
+    # Get data from SQLite 
+    conn = sqlite3.connect(f"{db_path}/{database_name}")
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM scanned_urls')
+    urls_data = cursor.fetchall()
+    conn.close()
+    
+    print(urls_data)
+    return urls_data

@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from typing import List, Tuple
+from docling_core.types.doc.document import DoclingDocument
 import requests
 from bs4 import BeautifulSoup
 import chromadb
@@ -41,23 +42,34 @@ def get_all_html_urls(base_url: str) -> List[str]:
     
     return list(set(urls))
 
-def fetch_and_chunk_content(url: str) -> List[Tuple[str, str]]:
+def fetch_content(url: str) -> None:
     """Fetch content from URL and split into chunks."""
     id = scan_db.add_url(db_path, url)
-    chunks = []
     converter = DocumentConverter()
     result = converter.convert(url)
     doc = result.document
     with Path(f"data/doc_{id:05d}.json").open("w", encoding="utf-8") as fp:
         fp.write(json.dumps(doc.export_to_dict()))
+    return
+
+def chunk_content() -> List[Tuple[str, str]]:
+    """Fetch content from URL and split into chunks."""
+    scanned_urls = scan_db.get_urls(db_path)
     chunker = HybridChunker()
-    chunk_iter = chunker.chunk(doc)
-    for i, chunk in enumerate(chunk_iter):
-        #print(f"=== {i} ===")
-        #print(f"chunk.text:\n{repr(f'{chunk.text[:300]}…')}")
-        #enriched_text = chunker.serialize(chunk=chunk)
-        #print(f"chunker.serialize(chunk):\n{repr(f'{enriched_text[:300]}…')}")
-        chunks.append((chunk.text, url))
+    chunks = []
+    for url in scanned_urls:
+        id = url[0]
+        url = url[1]
+        with Path(f"data/doc_{id:05d}.json").open("r", encoding="utf-8") as fp:
+            doc_dict = json.loads(fp.read())
+            doc = DoclingDocument.model_validate(doc_dict)
+        chunk_iter = chunker.chunk(doc)
+        for i, chunk in enumerate(chunk_iter):
+            print(f"=== {i} ===")
+            print(f"chunk.text:\n{repr(f'{chunk.text[:300]}…')}")
+            enriched_text = chunker.serialize(chunk=chunk)
+            print(f"chunker.serialize(chunk):\n{repr(f'{enriched_text[:300]}…')}")
+            chunks.append((chunk.text, url))
     return chunks
 
 def setup_chroma():
@@ -91,8 +103,8 @@ Please provide an answer based on the context above. If the context doesn't cont
 def home():
     return render_template('index.html')
 
-@app.route('/ingest', methods=['POST'])
-def ingest():
+@app.route('/fetch', methods=['POST'])
+def fetch():
 
     base_url = request.args.get('url')
     if not base_url:
@@ -101,16 +113,29 @@ def ingest():
     collection = setup_chroma()
     
     urls = get_all_html_urls(base_url)
+    
+    for i, url in enumerate(urls):
+        fetch_content(url)
+    
+    return jsonify({"message": f"Fetched {len(urls)} URLs"})
+
+
+@app.route('/chunk', methods=['POST'])
+def chunk():
+    
+    collection = setup_chroma()
+    
     all_chunks = []
     all_metadatas = []
     all_ids = []
     
-    for i, url in enumerate(urls):
-        chunks = fetch_and_chunk_content(url)
-        for j, (chunk, source_url) in enumerate(chunks):
-            all_chunks.append(chunk)
-            all_metadatas.append({"source": source_url})
-            all_ids.append(f"chunk_{i}_{j}")
+    chunks = chunk_content()
+    i = 0
+    for (chunk, url) in chunks:
+        all_chunks.append(chunk)
+        all_metadatas.append({"source": url})
+        all_ids.append(f"chunk_{i}")
+        i += 1
 
     collection.add(
         documents=all_chunks,

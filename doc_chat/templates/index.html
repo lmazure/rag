@@ -24,8 +24,13 @@
                 <input type="text" class="form-control" id="docUrl" placeholder="Enter documentation URL...">
             </div>
         </div>
-        <button id="ingestBtn" class="btn btn-primary">Ingest Documentation</button>
-        <span id="ingestStatus" class="ms-3"></span>
+        <button id="fetchBtn" class="btn btn-primary">Fetch Documentation</button>
+        <span id="fetchStatus" class="ms-3"></span>
+
+        <div class="mb-3">
+        <button id="chunkBtn" class="btn btn-primary">Chunk Documentation</button>
+        <span id="chunkStatus" class="ms-3"></span>
+    </div>
 
         <div class="mb-3">
             <label for="query" class="form-label">Ask a question about Squash:</label>
@@ -43,30 +48,56 @@
     </div>
 
     <script>
-        document.getElementById('ingestBtn').addEventListener('click', async () => {
-            const ingestStatus = document.getElementById('ingestStatus');
-            const ingestBtn = document.getElementById('ingestBtn');
+        document.getElementById('fetchBtn').addEventListener('click', async () => {
+            const fetchStatus = document.getElementById('fetchStatus');
+            const fetchBtn = document.getElementById('fetchBtn');
             const docUrl = document.getElementById('docUrl').value.trim();
             
             if (!docUrl) {
-                ingestStatus.textContent = 'Please enter a documentation URL';
+                fetchStatus.textContent = 'Please enter a documentation URL';
                 return;
             }
             
-            ingestBtn.disabled = true;
-            ingestStatus.textContent = 'Ingesting documentation...';
+            fetchBtn.disabled = true;
+            fetchStatus.textContent = 'fetching documentation...';
             
             try {
-                const response = await fetch(`/ingest?url=${encodeURIComponent(docUrl)}`, {
+                const response = await fetch(`/fetch?url=${encodeURIComponent(docUrl)}`, {
                     method: 'POST'
                 });
                 const data = await response.json();
-                ingestStatus.textContent = data.message;
+                fetchStatus.textContent = data.message;
             } catch (error) {
-                ingestStatus.textContent = 'Error ingesting documentation';
+                fetchStatus.textContent = 'Error fetching documentation';
                 console.error(error);
             } finally {
-                ingestBtn.disabled = false;
+                fetchBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('chunkBtn').addEventListener('click', async () => {
+            const chunkStatus = document.getElementById('chunkStatus');
+            const chunkBtn = document.getElementById('chunkBtn');
+            
+            if (!docUrl) {
+                chunkStatus.textContent = 'Please enter a documentation URL';
+                return;
+            }
+            
+            chunkBtn.disabled = true;
+            chunkStatus.textContent = 'chunking documentation...';
+            
+            try {
+                const response = await fetch(`/chunk`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                chunkStatus.textContent = data.message;
+            } catch (error) {
+                chunkStatus.textContent = 'Error chunking documentation';
+                console.error(error);
+            } finally {
+                chunkBtn.disabled = false;
             }
         });
 

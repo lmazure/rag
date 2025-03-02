@@ -12,11 +12,16 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 from markupsafe import escape
 
+import scan_db
+
 load_dotenv()
 
 # Configure Together AI
 #together.api_key = os.getenv("TOGETHER_API_KEY")
 MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+
+db_path = "data"
+scan_db.setup_database(db_path)
 
 app = Flask(__name__)
 
@@ -36,16 +41,14 @@ def get_all_html_urls(base_url: str) -> List[str]:
     
     return list(set(urls))
 
-indx = 0
 def fetch_and_chunk_content(url: str) -> List[Tuple[str, str]]:
     """Fetch content from URL and split into chunks."""
-    global indx
-    indx += 1
+    id = scan_db.add_url(db_path, url)
     chunks = []
     converter = DocumentConverter()
     result = converter.convert(url)
     doc = result.document
-    with Path(f"data/doc_{indx:05d}.json").open("w", encoding="utf-8") as fp:
+    with Path(f"data/doc_{id:05d}.json").open("w", encoding="utf-8") as fp:
         fp.write(json.dumps(doc.export_to_dict()))
     chunker = HybridChunker()
     chunk_iter = chunker.chunk(doc)

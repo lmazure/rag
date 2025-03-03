@@ -42,9 +42,9 @@ def get_all_html_urls(base_url: str) -> List[str]:
     
     return list(set(urls))
 
-def fetch_content(url: str) -> None:
+def fetch_content(scan_id: int, url: str) -> None:
     """Fetch content from URL and split into chunks."""
-    id = scan_db.add_url(db_path, url)
+    id = scan_db.add_scanned_url(db_path, scan_id, url)
     converter = DocumentConverter()
     result = converter.convert(url)
     doc = result.document
@@ -52,9 +52,9 @@ def fetch_content(url: str) -> None:
         fp.write(json.dumps(doc.export_to_dict()))
     return
 
-def chunk_content() -> List[Tuple[str, str]]:
-    """Fetch content from URL and split into chunks."""
-    scanned_urls = scan_db.get_urls(db_path)
+def chunk_content(scan_id: int) -> List[Tuple[str, str]]:
+    """Fetch content from URLs and split into chunks."""
+    scanned_urls = scan_db.get_all_scanned_urls(db_path, scan_id)
     chunker = HybridChunker()
     chunks = []
     for url in scanned_urls:
@@ -99,37 +99,46 @@ Please provide an answer based on the context above. If the context doesn't cont
     print(response)
     return response.choices[0].message.content
 
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/fetch', methods=['POST'])
 def fetch():
+    root_url = request.args.get('root_url')
+    if not root_url:
+        return jsonify({'error': 'root_url is required'}), 400
 
-    base_url = request.args.get('url')
-    if not base_url:
-        return jsonify({'error': 'url is required'}), 400
-    
-    collection = setup_chroma()
-    
-    urls = get_all_html_urls(base_url)
-    
-    for i, url in enumerate(urls):
-        fetch_content(url)
-    
+    scan_id = scan_db.add_scan(db_path, root_url)
+
+    urls = get_all_html_urls(root_url)
+
+    for url in urls:
+        fetch_content(scan_id, url)
+
     return jsonify({"message": f"Fetched {len(urls)} URLs"})
 
+@app.route('/scans', methods=['GET'])
+def get_all_scans():
+    """Get all scans"""
+    scans = scan_db.get_all_scans(db_path)
+    return jsonify(scans)
 
 @app.route('/chunk', methods=['POST'])
 def chunk():
-    
+    scan_id = request.args.get('scan_id')
+    if not scan_id:
+        return jsonify({'error': 'scan_id is required'}), 400
+
     collection = setup_chroma()
     
     all_chunks = []
     all_metadatas = []
     all_ids = []
     
-    chunks = chunk_content()
+    chunks = chunk_content(scan_id)
     i = 0
     for (chunk, url) in chunks:
         all_chunks.append(chunk)

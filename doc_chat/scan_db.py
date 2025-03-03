@@ -2,7 +2,7 @@ from typing import List, Tuple
 import sqlite3
 import os
 
-database_name = "scans.db.sqlite3"
+database_name = "history.db.sqlite3"
 
 def setup_database(db_path: str) -> None:
     """
@@ -17,8 +17,25 @@ def setup_database(db_path: str) -> None:
     # Create SQLite connection
     conn = sqlite3.connect(f"{db_path}/{database_name}")
     cursor = conn.cursor()
-    
-    # Create a table
+
+    # Create scans table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS scans (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            root_url TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
+    # Create scanned URLs table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS scanned_urls (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            scan_id INTEGER NOT NULL,
+            url TEXT NOT NULL,
+            FOREIGN KEY (scan_id) REFERENCES scans (id)
+        )
+    ''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS scanned_urls (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,12 +55,82 @@ def delete_database(db_path: str) -> None:
     """
     os.remove(f"{db_path}/{database_name}")
 
-def add_url(db_path: str, url: str) -> int:
+def add_scan(db_path: str, root_url: str) -> int:
+    """
+    Add a scan to the database.
+
+    Args:
+        db_path: The path to the database directory.
+        root_url: The root URL of the scan.
+
+    Returns:
+        The ID of the inserted scan.
+    """
+    # Store regular data in SQLite
+    conn = sqlite3.connect(f"{db_path}/{database_name}")
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        INSERT INTO scans (root_url) 
+        VALUES (?)
+    ''', (root_url,))
+    
+    # Get the ID of the inserted scan
+    id = cursor.lastrowid
+    conn.commit()
+    assert id is not None
+    conn.close()
+    
+    return id
+
+def get_scan(db_path: str, scan_id: int) -> Tuple[int, str]:
+    """
+    Get a scan from the database.
+
+    Args:
+        db_path: The path to the database directory.
+        scan_id: The ID of the scan.
+
+    Returns:
+        A tuple of (scan_id, root_url).
+    """
+    # Get data from SQLite
+    conn = sqlite3.connect(f"{db_path}/{database_name}")
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM scans WHERE id = ?', (scan_id,))
+    scan_data = cursor.fetchone()
+    conn.close()
+    
+    return scan_data
+
+def get_all_scans(db_path: str) -> List[Tuple[int, str]]:
+    """
+    Get all scans from the database.
+
+    Args:
+        db_path: The path to the database directory.
+
+    Returns:
+        A list of tuples, where each tuple contains the ID and root URL.
+    """
+    # Get data from SQLite
+    conn = sqlite3.connect(f"{db_path}/{database_name}")
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM scans')
+    scans_data = cursor.fetchall()
+    conn.close()
+    
+    return scans_data
+
+def add_scanned_url(db_path: str, scan_id: int, url: str) -> int:
     """
     Add a scanned URL to the database.
 
     Args:
         db_path: The path to the database directory.
+        scan_id: The ID of the scan.
         url: The URL of the scan.
 
     Returns:
@@ -54,9 +141,9 @@ def add_url(db_path: str, url: str) -> int:
     cursor = conn.cursor()
     
     cursor.execute('''
-        INSERT INTO scanned_urls (url) 
-        VALUES (?)
-    ''', (url,))
+        INSERT INTO scanned_urls (scan_id, url) 
+        VALUES (?, ?)
+    ''', (scan_id, url))
     
     # Get the ID of the inserted model
     id = cursor.lastrowid
@@ -67,13 +154,13 @@ def add_url(db_path: str, url: str) -> int:
     return id
         
 
-def get_url(db_path: str, url_id: int) -> str:
+def get_scanned_url(db_path: str, url_id: int) -> str:
     """
     Get a scanned URL from the database.
 
     Args:
         db_path: The path to the database directory.
-        url_id: The ID of the URL.
+        url_id: The ID of the scanned URL.
 
     Returns:
         The URL as a string.
@@ -93,12 +180,13 @@ def get_url(db_path: str, url_id: int) -> str:
         return url_data[1]
     raise Exception(f"URL {url_id} not found")
 
-def get_urls(db_path: str) -> List[Tuple[int, str]]:
+def get_all_scanned_urls(db_path: str, scan_id: int) -> List[Tuple[int, str]]:
     """
-    Get all scanned URLs from the database.
+    Get all scanned URLs of a scan from the database.
 
     Args:
         db_path: The path to the database directory.
+        scan_id: The ID of the scan.
 
     Returns:
         A list of tuples, where each tuple contains the ID and URL.
@@ -107,7 +195,7 @@ def get_urls(db_path: str) -> List[Tuple[int, str]]:
     conn = sqlite3.connect(f"{db_path}/{database_name}")
     cursor = conn.cursor()
     
-    cursor.execute('SELECT * FROM scanned_urls')
+    cursor.execute('SELECT * FROM scanned_urls WHERE scan_id = ?', (scan_id,))
     urls_data = cursor.fetchall()
     conn.close()
     

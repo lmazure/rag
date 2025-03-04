@@ -41,13 +41,17 @@ def get_all_html_urls(base_url: str) -> List[str]:
     
     return list(set(urls))
 
+def compute_scanned_url_filename(id: int) -> str:
+    """Compute the filename for a scanned URL."""
+    return f"{db_path}/scanned_urls/{(id%100):02d}/doc_{id:06d}.json"
+
 def fetch_content(scan_id: int, url: str) -> None:
     """Fetch content from URL and split into chunks."""
     id = db.add_scanned_url(scan_id, url)
     converter = DocumentConverter()
     result = converter.convert(url)
     doc = result.document
-    with Path(f"data/doc_{id:05d}.json").open("w", encoding="utf-8") as fp:
+    with Path(compute_scanned_url_filename(id)).open("w", encoding="utf-8") as fp:
         fp.write(json.dumps(doc.export_to_dict()))
     return
 
@@ -59,7 +63,7 @@ def chunk_content(scan_id: int) -> List[Tuple[str, str]]:
     for url in scanned_urls:
         id = url[0]
         url = url[1]
-        with Path(f"data/doc_{id:05d}.json").open("r", encoding="utf-8") as fp:
+        with Path(compute_scanned_url_filename(id)).open("r", encoding="utf-8") as fp:
             doc_dict = json.loads(fp.read())
             doc = DoclingDocument.model_validate(doc_dict)
         chunk_iter = chunker.chunk(doc)

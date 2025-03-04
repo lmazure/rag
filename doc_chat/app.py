@@ -13,16 +13,15 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 from markupsafe import escape
 
-import scan_db
+from scan_db import ScanDB
 
 load_dotenv()
 
 # Configure Together AI
-#together.api_key = os.getenv("TOGETHER_API_KEY")
 MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
 
 db_path = "data"
-scan_db.setup_database(db_path)
+db = ScanDB(db_path)
 
 app = Flask(__name__)
 
@@ -44,7 +43,7 @@ def get_all_html_urls(base_url: str) -> List[str]:
 
 def fetch_content(scan_id: int, url: str) -> None:
     """Fetch content from URL and split into chunks."""
-    id = scan_db.add_scanned_url(db_path, scan_id, url)
+    id = db.add_scanned_url(scan_id, url)
     converter = DocumentConverter()
     result = converter.convert(url)
     doc = result.document
@@ -54,7 +53,7 @@ def fetch_content(scan_id: int, url: str) -> None:
 
 def chunk_content(scan_id: int) -> List[Tuple[str, str]]:
     """Fetch content from URLs and split into chunks."""
-    scanned_urls = scan_db.get_all_scanned_urls(db_path, scan_id)
+    scanned_urls = db.get_all_scanned_urls(scan_id)
     chunker = HybridChunker()
     chunks = []
     for url in scanned_urls:
@@ -99,8 +98,6 @@ Please provide an answer based on the context above. If the context doesn't cont
     print(response)
     return response.choices[0].message.content
 
-
-
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -111,7 +108,7 @@ def fetch():
     if not root_url:
         return jsonify({'error': 'root_url is required'}), 400
 
-    scan_id = scan_db.add_scan(db_path, root_url)
+    scan_id = db.add_scan(root_url)
 
     urls = get_all_html_urls(root_url)
 
@@ -123,7 +120,7 @@ def fetch():
 @app.route('/scans', methods=['GET'])
 def get_all_scans():
     """Get all scans"""
-    scans = scan_db.get_all_scans(db_path)
+    scans = db.get_all_scans()
     return jsonify(scans)
 
 @app.route('/chunk', methods=['POST'])
@@ -152,7 +149,7 @@ def chunk():
         ids=all_ids
     )
     
-    return jsonify({"message": f"Ingested {len(all_chunks)} chunks from {len(urls)} URLs"})
+    return jsonify({"message": f"Ingested {len(all_chunks)} chunks"})
 
 @app.route('/query', methods=['POST'])
 def query():

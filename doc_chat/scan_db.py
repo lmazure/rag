@@ -36,10 +36,13 @@ def setup_database(db_path: str) -> None:
             FOREIGN KEY (scan_id) REFERENCES scans (id)
         )
     ''')
+
+    # Create chunks table
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS scanned_urls (
+        CREATE TABLE IF NOT EXISTS chunks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            url TEXT NOT NULL
+            chunk TEXT NOT NULL,
+            FOREIGN KEY (scanned_url_id) REFERENCES scanned_urls (id)
         )
     ''')
 
@@ -201,3 +204,76 @@ def get_all_scanned_urls(db_path: str, scan_id: int) -> List[Tuple[int, str]]:
     
     print(urls_data)
     return urls_data
+
+def add_chunk(db_path: str, scanned_url_id: int, chunk: str) -> int:
+    """
+    Add a chunk to the database.
+
+    Args:
+        db_path: The path to the database directory.
+        scanned_url_id: The ID of the scanned URL.
+        chunk: The chunk to add.
+
+    Returns:
+        The ID of the inserted chunk.
+    """
+    # Store regular data in SQLite
+    conn = sqlite3.connect(f"{db_path}/{database_name}")
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        INSERT INTO chunks (scanned_url_id, chunk) 
+        VALUES (?, ?)
+    ''', (scanned_url_id, chunk))
+    
+    # Get the ID of the inserted chunk
+    id = cursor.lastrowid
+    conn.commit()
+    assert id is not None
+    conn.close()
+    
+    return id
+
+def get_chunk(db_path: str, chunk_id: int) -> str:
+    """
+    Get a chunk from the database.
+
+    Args:
+        db_path: The path to the database directory.
+        chunk_id: The ID of the chunk.
+
+    Returns:
+        The chunk as a string.
+    """
+    # Get data from SQLite
+    conn = sqlite3.connect(f"{db_path}/{database_name}")
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM chunks WHERE id = ?', (chunk_id,))
+    chunk_data = cursor.fetchone()
+    conn.close()
+    
+    if chunk_data:
+        return chunk_data[1]
+    raise Exception(f"Chunk {chunk_id} not found")
+
+def get_all_chunks(db_path: str, scanned_url_id: int) -> List[int]:
+    """
+    Get all chunks of a scanned URL from the database.
+
+    Args:
+        db_path: The path to the database directory.
+        scanned_url_id: The ID of the scanned URL.
+
+    Returns:
+        A list of the IDs of the chunks.
+    """
+    # Get data from SQLite
+    conn = sqlite3.connect(f"{db_path}/{database_name}")
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM chunks WHERE scanned_url_id = ?', (scanned_url_id,))
+    chunks_data = cursor.fetchall()
+    conn.close()
+    
+    return [chunk[0] for chunk in chunks_data]

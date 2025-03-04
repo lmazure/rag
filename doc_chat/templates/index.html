@@ -3,17 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squash Documentation Chat</title>
+    <title>Documentation Chat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .loading {
-            display: none;
-        }
-        .sources {
-            font-size: 0.9em;
-            color: #666;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container mt-5">
@@ -22,7 +14,7 @@
         <h2>1 - Fetch Documentation</h2>
         <div class="mb-4">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" id="docUrl" placeholder="Enter documentation URL...">
+                <input type="text" class="form-control" id="docUrl" placeholder="Enter documentation URL…">
             </div>
         </div>
         <button id="fetchBtn" class="btn btn-primary">Fetch Documentation</button>
@@ -31,14 +23,14 @@
         <h2>2 - Display Documentation</h2>
         <div class="mb-3">
             <select id="scanSelectorForDisplay" class="form-select">
-                <option selected value="0">Choose a scan...</option>
+                <option selected value="0">Choose a scan…</option>
             </select>
         </div>
 
         <h2>3 - Chunk Documentation</h2>
         <div class="mb-3">
             <select id="scanSelectorForChunk" class="form-select">
-                <option selected value="0">Choose a scan...</option>
+                <option selected value="0">Choose a scan…</option>
             </select>
         </div>
 
@@ -49,134 +41,19 @@
 
         <h2>4 - Ask a question</h2>
         <div class="mb-3">
-            <input type="text" class="form-control" id="query" placeholder="Enter your question...">
+            <input type="text" class="form-control" id="query" placeholder="Enter your question…">
         </div>
         <button id="submitBtn" class="btn btn-success mb-4">Ask Question</button>
         
         <div class="loading" id="loading">
             <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden">Loading…</span>
             </div>
         </div>
 
         <div id="response" class="mt-4"></div>
     </div>
 
-    <script>
-        document.getElementById('fetchBtn').addEventListener('click', async () => {
-            const fetchStatus = document.getElementById('fetchStatus');
-            const fetchBtn = document.getElementById('fetchBtn');
-            const docUrl = document.getElementById('docUrl').value.trim();
-            
-            if (!docUrl) {
-                fetchStatus.textContent = 'Please enter a documentation URL';
-                return;
-            }
-            
-            fetchBtn.disabled = true;
-            fetchStatus.textContent = 'fetching documentation...';
-            
-            try {
-                const response = await fetch(`/fetch?root_url=${encodeURIComponent(docUrl)}`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                fetchStatus.textContent = data.message;
-            } catch (error) {
-                fetchStatus.textContent = 'Error fetching documentation';
-                console.error(error);
-            } finally {
-                fetchBtn.disabled = false;
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const scanSelectorForChunk = document.getElementById('scanSelectorForChunk');
-            try {
-                const response = await fetch('/scans');
-                const scans = await response.json();
-                scans.forEach(scan => {
-                        const option = document.createElement('option');
-                        option.value = scan[0];
-                        option.textContent = scan[1] + " - " + scan[2];
-                        scanSelectorForChunk.appendChild(option);
-                    });
-                } catch (error) {
-                    console.error('Error fetching scans:', error);
-                }
-            });
-
-        document.getElementById('chunkBtn').addEventListener('click', async () => {
-            const scanSelectorForChunk = document.getElementById('scanSelectorForChunk');
-            const scanId = scanSelectorForChunk.value;
-            const chunkStatus = document.getElementById('chunkStatus');
-            const chunkBtn = document.getElementById('chunkBtn');
-            
-            if (scanId == 0) {
-                chunkStatus.textContent = 'Please select a scan';
-                return;
-            }
-            
-            chunkBtn.disabled = true;
-            chunkStatus.textContent = 'chunking documentation...';
-            
-            try {
-                const response = await fetch(`/chunk?scan_id=${scanId}`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                chunkStatus.textContent = data.message;
-            } catch (error) {
-                chunkStatus.textContent = 'Error chunking documentation';
-                console.error(error);
-            } finally {
-                chunkBtn.disabled = false;
-            }
-        });
-
-        document.getElementById('submitBtn').addEventListener('click', async () => {
-            const query = document.getElementById('query').value;
-            const loading = document.getElementById('loading');
-            const response = document.getElementById('response');
-            const submitBtn = document.getElementById('submitBtn');
-            
-            if (!query) return;
-            
-            loading.style.display = 'block';
-            response.innerHTML = '';
-            submitBtn.disabled = true;
-            
-            try {
-                const res = await fetch('/query', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ query })
-                });
-                
-                const data = await res.json();
-                
-                response.innerHTML = `
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Answer:</h5>
-                            <p class="card-text">${data.answer}</p>
-                            <div class="sources">
-                                <strong>Sources:</strong><br>
-                                ${data.sources.map(source => `<a href="${source}" target="_blank">${source}</a>`).join('<br>')}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } catch (error) {
-                response.innerHTML = '<div class="alert alert-danger">Error getting response</div>';
-                console.error(error);
-            } finally {
-                loading.style.display = 'none';
-                submitBtn.disabled = false;
-            }
-        });
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

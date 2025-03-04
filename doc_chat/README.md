@@ -9,6 +9,7 @@ A RAG application that allows users to ask questions about documentation using n
 - Implements RAG using Together AI's Meta-Llama-3-70B-Instruct-Lite model
 - Web interface for easy interaction
 - Shows source documentation links for transparency
+- Clean code organization with separate CSS and JavaScript files
 
 ## Setup
 
@@ -41,9 +42,20 @@ A RAG application that allows users to ask questions about documentation using n
 
 🚧 to be updated 🚧 TBD
 
-1. Click the "Ingest Documentation" button to scrape and store the documentation
-2. Enter your question in the text input
-3. Click "Ask Question" to get an AI-generated response based on the documentation
+1. Enter a documentation URL and click "Fetch Documentation" to scrape and store the documentation
+2. Select a scan from the dropdown menu and click "Chunk Documentation" to process it
+3. Enter your question in the text input
+4. Click "Ask Question" to get an AI-generated response based on the documentation
+
+## Project Structure
+
+The application follows a clean organization pattern:
+- `app.py`: Main Flask application with API endpoints
+- `scan_db.py`: Database operations for managing documentation scans
+- `templates/index.html`: HTML structure of the web interface
+- `static/styles.css`: CSS styles for the web interface
+- `static/script.js`: JavaScript code for client-side functionality
+- `data/`: Directory (created dynamically) for storing documentation and vector database
 
 ## Testing
 

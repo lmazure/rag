@@ -76,9 +76,9 @@ def setup_chroma():
     client = chromadb.PersistentClient(path="data/chromadb", settings=Settings(anonymized_telemetry=False))
     
     try:
-        collection = client.get_collection("squash_docs")
+        collection = client.get_collection("docs")
     except:
-        collection = client.create_collection("squash_docs")
+        collection = client.create_collection("docs")
     
     return collection
 

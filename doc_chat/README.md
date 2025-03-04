@@ -1,10 +1,10 @@
-# Squash Documentation Chat
+# Documentation Chat
 
-A RAG (Retrieval-Augmented Generation) application that allows users to ask questions about Squash documentation using natural language.
+A RAG application that allows users to ask questions about documentation using natural language.
 
 ## Features
 
-- Automatically scrapes and ingests HTML documentation from Squash
+- Automatically scrapes and ingests HTML documentation from Internet using Docling
 - Uses ChromaDB for vector storage
 - Implements RAG using Together AI's Meta-Llama-3-70B-Instruct-Lite model
 - Web interface for easy interaction
@@ -15,7 +15,7 @@ A RAG (Retrieval-Augmented Generation) application that allows users to ask ques
 1. Create a virtual environment and activate it:
     ```bash
     python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    source venv/bin/activate
     ```
 
 2. Install dependencies:
@@ -39,11 +39,15 @@ A RAG (Retrieval-Augmented Generation) application that allows users to ask ques
 
 ## Usage
 
-1. Click the "Ingest Documentation" button to scrape and store the Squash documentation
+🚧 to be updated 🚧 TBD
+
+1. Click the "Ingest Documentation" button to scrape and store the documentation
 2. Enter your question in the text input
 3. Click "Ask Question" to get an AI-generated response based on the documentation
 
 ## Testing
+
+🚧 to be updated 🚧 TBD
 
 Run tests using pytest:
 ```bash

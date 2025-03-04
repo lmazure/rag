@@ -1,0 +1,2 @@
+- [`Gherkin`](Gherkin/README.md): experimentation with semantic search of Gherkin keywords
+- [`doc_chat`](doc_chat/README.md): experimentation with chating with a documentation retrieved from Internet

@@ -66,6 +66,78 @@ async function loadScans() {
 // Load scans when the page loads
 document.addEventListener('DOMContentLoaded', loadScans);
 
+document.getElementById('scanSelectorForDisplay').addEventListener('input', async () => {
+    const scan_id = document.getElementById('scanSelectorForDisplay').value;
+    const scannedUrlSelectorForDisplay = document.getElementById('scannedUrlSelectorForDisplay');
+
+    // Clear existing options except the default one
+    while (scannedUrlSelectorForDisplay.options.length > 1) {
+        scannedUrlSelectorForDisplay.remove(1);
+    }
+
+    if (scan_id == 0) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/scanned_urls?scan_id=${scan_id}`, {
+            method: 'POST'
+        });
+        const scans = await response.json();
+        scans.forEach(scan => {
+            // Add to scanned URLs selector
+            const scannedUrlOption = document.createElement('option');
+            scannedUrlOption.value = scan[0];
+            scannedUrlOption.textContent = scan[1];
+            scannedUrlSelectorForDisplay.appendChild(scannedUrlOption);
+        });
+
+    } catch (error) {
+        fetchStatus.textContent = 'Error fetching documentation';
+        console.error(error);
+    } finally {
+        fetchBtn.disabled = false;
+    }})
+
+    document.getElementById('scannedUrlSelectorForDisplay').addEventListener('input', async () => {
+        const scanned_url_id = document.getElementById('scannedUrlSelectorForDisplay').value;
+        document.getElementById('scannedUrlSelectorForDisplay').value = scanned_url_id;
+        const displayedDocumentation = document.getElementById('scannedUrlDisplay');
+
+        if (scanned_url_id == 0) {
+            displayedDocumentation.textContent = '';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/scanned_url?scanned_url_id=${scanned_url_id}`, {
+                method: 'POST'
+            });
+            const data = await response.json();
+            displayedDocumentation.textContent = data;
+        } catch (error) {
+            console.error(error);
+        }
+    })
+
+    document.getElementById('displayScannedUrlBtn').addEventListener('click', () => {
+        const scannedUrlSelectorForDisplay = document.getElementById('scannedUrlSelectorForDisplay');
+        const scanned_url_id = scannedUrlSelectorForDisplay.value;
+        const scanned_url = scannedUrlSelectorForDisplay.options[scannedUrlSelectorForDisplay.selectedIndex].text;
+
+        if (scanned_url_id == 0) {
+            return;
+        }
+
+        const newTab = window.open(scanned_url, '_blank');
+        if (newTab) {
+            newTab.focus();
+        } else {
+            console.warn('Unable to open new tab. Pop-up blocker might be enabled.');
+        }
+
+    })
+
 document.getElementById('chunkBtn').addEventListener('click', async () => {
     const scanSelectorForChunk = document.getElementById('scanSelectorForChunk');
     const scanId = scanSelectorForChunk.value;

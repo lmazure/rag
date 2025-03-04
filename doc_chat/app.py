@@ -19,6 +19,7 @@ load_dotenv()
 
 # Configure Together AI
 MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+port = 5000
 
 db_path = "data"
 db = ScanDB(db_path)
@@ -33,7 +34,7 @@ def get_all_html_urls(base_url: str) -> List[str]:
     
     for link in soup.find_all('a'):
         href = link.get('href')
-        if href and href.endswith('.html'):
+        if href and (href.endswith('.html') or href.endswith('.htm')):
             if href.startswith('http'):
                 urls.append(href)
             else:
@@ -47,12 +48,21 @@ def compute_scanned_url_filename(id: int) -> str:
 
 def fetch_content(scan_id: int, url: str) -> None:
     """Fetch content from URL and split into chunks."""
+
+    # Add the scanned URL to the database
     id = db.add_scanned_url(scan_id, url)
+
+    # Fetch the content
     converter = DocumentConverter()
     result = converter.convert(url)
     doc = result.document
-    with Path(compute_scanned_url_filename(id)).open("w", encoding="utf-8") as fp:
+
+    # Save the document to a JSON file
+    filename = compute_scanned_url_filename(id)
+    Path(filename).parent.mkdir(parents=True, exist_ok=True)
+    with Path(filename).open("w", encoding="utf-8") as fp:
         fp.write(json.dumps(doc.export_to_dict()))
+
     return
 
 def chunk_content(scan_id: int) -> List[Tuple[str, str]]:
@@ -127,6 +137,24 @@ def get_all_scans():
     scans = db.get_all_scans()
     return jsonify(scans)
 
+@app.route('/scanned_urls', methods=['POST'])
+def get_all_scanned_urls():
+    scan_id = request.args.get('scan_id')
+    if not scan_id:
+        return jsonify({'error': 'scan_id is required'}), 400
+    urls = db.get_all_scanned_urls(scan_id)
+    return jsonify(urls)
+
+@app.route('/scanned_url', methods=['POST'])
+def get_scanned_url():
+    scanned_url_id = request.args.get('scanned_url_id')
+    if not scanned_url_id:
+        return jsonify({'error': 'scanned_url_id is required'}), 400
+    with Path(compute_scanned_url_filename(int(scanned_url_id))).open("r", encoding="utf-8") as fp:
+        doc_dict = json.loads(fp.read())
+        doc = DoclingDocument.model_validate(doc_dict)
+    return jsonify(doc.export_to_markdown())
+
 @app.route('/chunk', methods=['POST'])
 def chunk():
     scan_id = request.args.get('scan_id')
@@ -139,7 +167,7 @@ def chunk():
     all_metadatas = []
     all_ids = []
     
-    chunks = chunk_content(scan_id)
+    chunks = chunk_content(int(scan_id))
     i = 0
     for (chunk, url) in chunks:
         all_chunks.append(chunk)
@@ -177,4 +205,4 @@ def query():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)

@@ -2,19 +2,19 @@ from typing import List, Tuple
 import sqlite3
 import os
 
-class ScanDB:
+class InfoDatabase:
     def __init__(self, db_path: str):
         """
-        Initialize the ScanDB with the given database path.
+        Initialize the InfoDatabase with the given database path.
 
         Args:
             db_path: The path to the database directory.
         """
         self.db_path = db_path
         self.database_name = "history.db.sqlite3"
-        self.setup_database()
+        self.setup()
 
-    def setup_database(self) -> None:
+    def setup(self) -> None:
         """Set up the database of the scanned URLs by creating the necessary directories and files."""
         # Create the directories
         os.makedirs(self.db_path, exist_ok=True)

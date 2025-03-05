@@ -4,8 +4,6 @@ from typing import List, Tuple
 from docling_core.types.doc.document import DoclingDocument
 import requests
 from bs4 import BeautifulSoup
-import chromadb
-from chromadb.config import Settings
 from docling.document_converter import DocumentConverter
 from docling.chunking import HybridChunker
 from together import Together
@@ -13,7 +11,8 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 from markupsafe import escape
 
-from scan_db import ScanDB
+from vector_database import VectorDatabase
+from info_database import InfoDatabase
 
 load_dotenv()
 
@@ -22,7 +21,8 @@ MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
 port = 5000
 
 db_path = "data"
-db = ScanDB(db_path)
+db = InfoDatabase(db_path)
+cr = VectorDatabase(db_path)
 
 app = Flask(__name__)
 
@@ -85,17 +85,6 @@ def chunk_content(scan_id: int) -> List[Tuple[str, str, int]]:
             chunk_id = db.add_chunk(scanned_url_id, chunk.text)
             chunks.append((chunk.text, scanned_url,chunk_id))
     return chunks
-
-def setup_chroma():
-    """Initialize ChromaDB."""
-    client = chromadb.PersistentClient(path="data/chromadb", settings=Settings(anonymized_telemetry=False))
-    
-    try:
-        collection = client.get_collection("docs")
-    except:
-        collection = client.create_collection("docs")
-    
-    return collection
 
 def generate_response(query: str, context: str) -> str:
     """Generate response using Together AI."""
@@ -206,23 +195,19 @@ def chunk():
     if not scan_id:
         return jsonify({'error': 'scan_id is required'}), 400
 
-    collection = setup_chroma()
+    collection = cr.setup()
     
     all_chunks = []
     all_metadatas = []
     all_ids = []
-    
+
     chunks = chunk_content(int(scan_id))
     for (chunk, url, chunk_id) in chunks:
         all_chunks.append(chunk)
         all_metadatas.append({"source": url})
         all_ids.append(str(chunk_id))
-    collection.add(
-        documents=all_chunks,
-        metadatas=all_metadatas,
-        ids=all_ids
-    )
-    
+    cr.add_chunks(all_chunks, all_metadatas, all_ids)
+
     return jsonify({"message": f"Ingested {len(all_chunks)} chunks"})
 
 @app.route('/chunks', methods=['GET'])
@@ -260,20 +245,9 @@ def get_chunk_content():
     chunk_id = request.args.get('chunk_id')
     if not chunk_id:
         return jsonify({'error': 'chunk_id is required'}), 400
-    
-    collection = setup_chroma()
-    # Get the specific chunk by ID
-    try:
-        result = collection.get(ids=[chunk_id])
-        if result['documents'] and len(result['documents']) > 0:
-            return jsonify({
-                'text': result['documents'][0],
-                'source': result['metadatas'][0]['source']
-            })
-        else:
-            return jsonify({'error': 'Chunk not found'}), 404
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+
+    chunk = db.get_chunk(int(chunk_id))
+    return jsonify({"text": chunk})
 
 @app.route('/query', methods=['POST'])
 def query():
@@ -291,13 +265,8 @@ def query():
     if not user_query:
         return jsonify({'error': 'query is required'}), 400
 
-    collection = setup_chroma()
-    
-    results = collection.query(
-        query_texts=[user_query],
-        n_results=10
-    )
-    
+    results = cr.query(user_query)
+
     context = "\n".join(results['documents'][0])
     print("\n---------------------------------------------------------\n".join(results['documents'][0]))
     response = generate_response(user_query, context)

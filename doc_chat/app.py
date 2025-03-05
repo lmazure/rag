@@ -155,7 +155,7 @@ def get_all_scans():
     scans = db.get_all_scans()
     return jsonify(scans)
 
-@app.route('/scanned_urls', methods=['POST'])
+@app.route('/scanned_urls', methods=['GET'])
 def get_all_scanned_urls():
     """
     Get all scanned URLs for a given scan ID.
@@ -170,7 +170,7 @@ def get_all_scanned_urls():
     urls = db.get_all_scanned_urls(scan_id)
     return jsonify(urls)
 
-@app.route('/scanned_url', methods=['POST'])
+@app.route('/scanned_url', methods=['GET'])
 def get_scanned_url():
     """
     Get a scanned URL from the database.
@@ -225,7 +225,7 @@ def chunk():
     
     return jsonify({"message": f"Ingested {len(all_chunks)} chunks"})
 
-@app.route('/chunks', methods=['POST'])
+@app.route('/chunks', methods=['GET'])
 def get_chunks():
     """
     Get chunks for a given scanned URL.
@@ -245,7 +245,7 @@ def get_chunks():
     
     return jsonify(chunks)
 
-@app.route('/chunk_content', methods=['POST'])
+@app.route('/chunk_content', methods=['GET'])
 def get_chunk_content():
     """
     Get the content of a specific chunk.

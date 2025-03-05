@@ -96,9 +96,7 @@ document.getElementById('scanSelectorForDisplay').addEventListener('input', asyn
     }
 
     try {
-        const response = await fetch(`/scanned_urls?scan_id=${scan_id}`, {
-            method: 'POST'
-        });
+        const response = await fetch(`/scanned_urls?scan_id=${scan_id}`);
         const scans = await response.json();
         scans.forEach(scan => {
             // Add to scanned URLs selector
@@ -127,9 +125,7 @@ document.getElementById('scannedUrlSelectorForDisplay').addEventListener('input'
     }
 
     try {
-        const response = await fetch(`/scanned_url?scanned_url_id=${scanned_url_id}`, {
-            method: 'POST'
-        });
+        const response = await fetch(`/scanned_url?scanned_url_id=${scanned_url_id}`);
         const data = await response.json();
         displayedDocumentation.textContent = data;
     } catch (error) {
@@ -250,9 +246,7 @@ document.getElementById('scanSelectorForViewChunk').addEventListener('input', as
     }
     
     try {
-        const response = await fetch(`/scanned_urls?scan_id=${scan_id}`, {
-            method: 'POST'
-        });
+        const response = await fetch(`/scanned_urls?scan_id=${scan_id}`);
         const scannedUrls = await response.json();
         scannedUrls.forEach(url => {
             // Add to scanned URLs selector
@@ -284,9 +278,7 @@ document.getElementById('scannedUrlSelectorForViewChunk').addEventListener('inpu
     }
     
     try {
-        const response = await fetch(`/chunks?scanned_url_id=${scannedUrlId}`, {
-            method: 'POST'
-        });
+        const response = await fetch(`/chunks?scanned_url_id=${scannedUrlId}`);
         const chunks = await response.json();
         
         chunks.forEach(chunk => {
@@ -311,9 +303,7 @@ document.getElementById('chunkSelector').addEventListener('input', async () => {
     }
     
     try {
-        const response = await fetch(`/chunk_content?chunk_id=${chunkId}`, {
-            method: 'POST'
-        });
+        const response = await fetch(`/chunk_content?chunk_id=${chunkId}`);
         const data = await response.json();
         chunkDisplay.textContent = data.text;
     } catch (error) {

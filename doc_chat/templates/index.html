@@ -44,7 +44,21 @@
             <span id="chunkStatus" class="ms-3"></span>
         </div>
 
-        <h2>4 - Ask a question</h2>
+        <h2>4 - View Chunks</h2>
+        <div class="mb-3">
+            <select id="scanSelectorForViewChunk" class="form-select mb-2">
+                <option selected value="0">Choose a scan…</option>
+            </select>
+            <select id="scannedUrlSelectorForViewChunk" class="form-select mb-2">
+                <option selected value="0">Choose a URL…</option>
+            </select>
+            <select id="chunkSelector" class="form-select mb-2">
+                <option selected value="0">Choose a chunk…</option>
+            </select>
+            <textarea id="chunkDisplay" class="form-control mt-3" rows="10" readonly></textarea>
+        </div>
+
+        <h2>5 - Ask a question</h2>
         <div class="mb-3">
             <input type="text" class="form-control" id="query" placeholder="Enter your question…">
         </div>

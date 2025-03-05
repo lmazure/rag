@@ -243,12 +243,12 @@ class ScanDB:
             scanned_url_id: The ID of the scanned URL.
 
         Returns:
-            A list of the chunks.
+            A list of the IDs of the chunks of the scanned URL.
         """
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
-        
-        cursor.execute('SELECT chunk FROM chunks WHERE scanned_url_id = ?', (scanned_url_id,))
+
+        cursor.execute('SELECT id FROM chunks WHERE scanned_url_id = ?', (scanned_url_id,))
         chunks_data = cursor.fetchall()
         conn.close()
         

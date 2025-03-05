@@ -5,9 +5,11 @@
 - FETCH fix crash on https://mazure.fr/perso/main.html
 - repair Pytest tests
 - FETCH fix crash on https://inspe-sciedu.gricad-pages.univ-grenoble-alpes.fr/reflexpro/init-gitlab-rtd.html
+- homonegeize error management and displa
 
 
 
 -------------
 https://tm-en.doc.squashtest.com/latest/
 https://www.tutorialspoint.com/unix/unix-vi-editor.htm
+https://www.tutorialspoint.com/watir/index.htm

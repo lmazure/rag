@@ -1,6 +1,6 @@
 from typing import List
 import chromadb
-from chromadb.api.types import QueryResult
+from chromadb.api.types import Metadata, QueryResult
 from chromadb.config import Settings
 
 class VectorDatabase:
@@ -25,10 +25,10 @@ class VectorDatabase:
     def add_chunks(self, chunks: List[str], metadatas: List[Metadata], ids: List[str]) -> None:
         """Add a chunk to the database."""
         self.collection.add(
-        documents=chunks,
-        metadatas=metadatas,
-        ids=ids
-        )
+            documents=chunks,
+            metadatas=metadatas,
+            ids=ids
+            )
 
     def query(self, query: str) -> QueryResult:
         """Query the database."""

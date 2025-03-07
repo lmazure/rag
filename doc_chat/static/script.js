@@ -14,7 +14,7 @@ function addOptionToSelect(selectElement, value, text) {
 }
 
 // Function to display error popup
-function showErrorPopup(message) {
+function showErrorPopup(message, details, stack) {
     // Create error popup container if it doesn't exist
     let errorPopup = document.getElementById('errorPopup');
     if (!errorPopup) {
@@ -30,7 +30,11 @@ function showErrorPopup(message) {
             <strong>Error</strong>
             <button class="error-popup-close" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
         </div>
-        <div class="error-popup-message">${message}</div>
+        <div class="error-popup-message">${message?message:''}</div>
+        <details>
+            <summary>${details?details:'Details'}</summary>
+            <textarea class="error-popup-stack" readonly>${stack?stack:''}</textarea>
+        </details>
     `;
     
     // Show the popup
@@ -39,12 +43,12 @@ function showErrorPopup(message) {
 }
 
 // Utility function for standardized error handling
-function handleError(error, operation, errorMessage = null) {
-    // Always log the error to console with operation context
-    console.error(`Error ${operation}:`, error);
+function handleError(errorMessage, errorDetails, stackTrace) {
+    // Always log the error to console
+    console.error(`message: ${errorMessage}\nerror details: ${errorDetails}\nstacktrace: ${stackTrace}`);
     
     // Show error popup
-    showErrorPopup(errorMessage);
+    showErrorPopup(errorMessage, errorDetails, stackTrace);
     
     return;
 }
@@ -89,21 +93,24 @@ domElements.fetchBtn.addEventListener('click', async () => {
         domElements.fetchStatus.textContent = 'Please enter a documentation URL';
         return;
     }
-    
+
     domElements.fetchBtn.disabled = true;
     domElements.fetchStatus.textContent = 'fetching documentation…';
-    
+
     try {
         const response = await fetch(`/fetch?root_url=${encodeURIComponent(docUrl)}`, {
             method: 'POST'
         });
         const data = await response.json();
-        domElements.fetchStatus.textContent = data.message;
-        
-        // Refresh the scan selectors after fetching
-        loadScans();
+        domElements.fetchStatus.textContent = "";
+        if (!data.ok) {
+            handleError('Error fetching documentation', data.errorDetails, data.stackTrace);
+        } else {
+            // Refresh the scan selectors after fetching
+            loadScans();
+        }
     } catch (error) {
-        handleError(error, 'fetching documentation', 'Error fetching documentation');
+        handleError('Error fetching documentation', error, undefined);
     } finally {
         domElements.fetchBtn.disabled = false;
     }
@@ -129,7 +136,7 @@ async function loadScans() {
             addOptionToSelect(domElements.scanSelectorForViewChunk, value, textContent);
         });
     } catch (error) {
-        handleError(error, 'fetching scans', 'Error fetching scans');
+        handleError('Error fetching scans', undefined, undefined);
     }
 }
 
@@ -157,7 +164,7 @@ domElements.scanSelectorForDisplay.addEventListener('input', async () => {
         });
 
     } catch (error) {
-        handleError(error, 'fetching scanned URLs', 'Error fetching scanned URLs');
+        handleError('Error fetching scanned URLs', undefined, undefined);
     } finally {
         domElements.fetchBtn.disabled = false;
     }}
@@ -178,7 +185,7 @@ domElements.scannedUrlSelectorForDisplay.addEventListener('input', async () => {
         const data = await response.json();
         displayedDocumentation.textContent = data;
     } catch (error) {
-        handleError(error, 'fetching scanned URL content', 'Error loading content');
+        handleError('Error fetching scanned URL content', undefined, undefined);
     }
 })
 
@@ -217,7 +224,7 @@ domElements.chunkBtn.addEventListener('click', async () => {
         const data = await response.json();
         domElements.chunkStatus.textContent = data.message;
     } catch (error) {
-        handleError(error, 'chunking documentation', 'Error chunking documentation');
+        handleError('Error chunking documentation', undefined, undefined);
     } finally {
         domElements.chunkBtn.disabled = false;
     }
@@ -256,7 +263,7 @@ domElements.submitBtn.addEventListener('click', async () => {
             </div>
         `;
     } catch (error) {
-        handleError(error, 'getting query response', 'Error getting response');
+        handleError('Error getting query response', undefined, undefined);
     } finally {
         domElements.loading.style.display = 'none';
         domElements.submitBtn.disabled = false;
@@ -286,7 +293,7 @@ domElements.scanSelectorForViewChunk.addEventListener('input', async () => {
             addOptionToSelect(domElements.scannedUrlSelectorForViewChunk, url[0], url[1]);
         });
     } catch (error) {
-        handleError(error, 'fetching scanned URLs for view chunks', 'Error fetching scanned URLs for view chunks');
+        handleError('Error fetching scanned URLs for view chunks', undefined, undefined);
     }
 });
 
@@ -311,7 +318,7 @@ domElements.scannedUrlSelectorForViewChunk.addEventListener('input', async () =>
             addOptionToSelect(domElements.chunkSelector, chunk, `Chunk ${chunk}`);
         });
     } catch (error) {
-        handleError(error, 'fetching chunks', 'Error fetching chunks');
+        handleError('Error fetching chunks', undefined, undefined);
     }
 });
 
@@ -329,6 +336,6 @@ domElements.chunkSelector.addEventListener('input', async () => {
         const data = await response.json();
         domElements.chunkDisplay.textContent = data.text;
     } catch (error) {
-        handleError(error, 'fetching chunk content', 'Error loading chunk content');
+        handleError('Error fetching chunk content', undefined, undefined);
     }
 });

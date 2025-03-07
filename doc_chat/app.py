@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import traceback
 from typing import List, Tuple
 from docling_core.types.doc.document import DoclingDocument
 import requests
@@ -124,14 +125,17 @@ def fetch():
     if not root_url:
         return jsonify({'error': 'root_url is required'}), 400
 
-    scan_id = db.add_scan(root_url)
+    try:
+        scan_id = db.add_scan(root_url)
 
-    urls = get_all_html_urls(root_url)
+        urls = get_all_html_urls(root_url)
 
-    for url in urls:
-        fetch_content(scan_id, url)
+        for url in urls:
+            fetch_content(scan_id, url)
 
-    return jsonify({"message": f"Fetched {len(urls)} URLs"})
+        return jsonify({"message": f"Fetched {len(urls)} URLs"})
+    except Exception as e:
+        return jsonify({'error': 'Failed to fetch documentation:', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/scans', methods=['GET'])
 def get_all_scans():
@@ -195,7 +199,7 @@ def chunk():
     if not scan_id:
         return jsonify({'error': 'scan_id is required'}), 400
 
-    collection = cr.setup()
+    cr.setup()
     
     all_chunks = []
     all_metadatas = []

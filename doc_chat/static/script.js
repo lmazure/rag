@@ -1,79 +1,135 @@
-document.getElementById('fetchBtn').addEventListener('click', async () => {
-    const fetchStatus = document.getElementById('fetchStatus');
-    const fetchBtn = document.getElementById('fetchBtn');
-    const docUrl = document.getElementById('docUrl').value.trim();
+// Utility function to clear select options except the first one
+function clearSelectOptions(selectElement) {
+    while (selectElement.options.length > 1) {
+        selectElement.remove(1);
+    }
+}
+
+// Utility function to add an option to a select element
+function addOptionToSelect(selectElement, value, text) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = text;
+    selectElement.appendChild(option);
+}
+
+// Function to display error popup
+function showErrorPopup(message) {
+    // Create error popup container if it doesn't exist
+    let errorPopup = document.getElementById('errorPopup');
+    if (!errorPopup) {
+        errorPopup = document.createElement('div');
+        errorPopup.id = 'errorPopup';
+        errorPopup.className = 'error-popup';
+        document.body.appendChild(errorPopup);
+    }
+
+    // Set error message
+    errorPopup.innerHTML = `
+        <div class="error-popup-header">
+            <strong>Error</strong>
+            <button class="error-popup-close" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+        </div>
+        <div class="error-popup-message">${message}</div>
+    `;
+    
+    // Show the popup
+    errorPopup.style.display = 'block';
+    errorPopup.style.opacity = '1';
+}
+
+// Utility function for standardized error handling
+function handleError(error, operation, errorMessage = null) {
+    // Always log the error to console with operation context
+    console.error(`Error ${operation}:`, error);
+    
+    // Show error popup
+    showErrorPopup(errorMessage);
+    
+    return;
+}
+
+// Cache DOM elements
+const domElements = {
+    // Fetch section
+    fetchBtn: document.getElementById('fetchBtn'),
+    fetchStatus: document.getElementById('fetchStatus'),
+    docUrl: document.getElementById('docUrl'),
+    
+    // Scan selectors
+    scanSelectorForChunk: document.getElementById('scanSelectorForChunk'),
+    scanSelectorForDisplay: document.getElementById('scanSelectorForDisplay'),
+    scanSelectorForViewChunk: document.getElementById('scanSelectorForViewChunk'),
+    
+    // Scanned URL selectors
+    scannedUrlSelectorForDisplay: document.getElementById('scannedUrlSelectorForDisplay'),
+    scannedUrlSelectorForViewChunk: document.getElementById('scannedUrlSelectorForViewChunk'),
+    scannedUrlDisplay: document.getElementById('scannedUrlDisplay'),
+    
+    // Chunk section
+    chunkBtn: document.getElementById('chunkBtn'),
+    chunkStatus: document.getElementById('chunkStatus'),
+    chunkSelector: document.getElementById('chunkSelector'),
+    chunkDisplay: document.getElementById('chunkDisplay'),
+    
+    // Display section
+    displayScannedUrlBtn: document.getElementById('displayScannedUrlBtn'),
+    
+    // Query section
+    submitBtn: document.getElementById('submitBtn'),
+    query: document.getElementById('query'),
+    loading: document.getElementById('loading'),
+    response: document.getElementById('response')
+};
+
+domElements.fetchBtn.addEventListener('click', async () => {
+    const docUrl = domElements.docUrl.value.trim();
     
     if (!docUrl) {
-        fetchStatus.textContent = 'Please enter a documentation URL';
+        domElements.fetchStatus.textContent = 'Please enter a documentation URL';
         return;
     }
     
-    fetchBtn.disabled = true;
-    fetchStatus.textContent = 'fetching documentation…';
+    domElements.fetchBtn.disabled = true;
+    domElements.fetchStatus.textContent = 'fetching documentation…';
     
     try {
         const response = await fetch(`/fetch?root_url=${encodeURIComponent(docUrl)}`, {
             method: 'POST'
         });
         const data = await response.json();
-        fetchStatus.textContent = data.message;
+        domElements.fetchStatus.textContent = data.message;
         
         // Refresh the scan selectors after fetching
         loadScans();
     } catch (error) {
-        fetchStatus.textContent = 'Error fetching documentation';
-        console.error(error);
+        handleError(error, 'fetching documentation', 'Error fetching documentation');
     } finally {
-        fetchBtn.disabled = false;
+        domElements.fetchBtn.disabled = false;
     }
 });
 
 // Function to load scans into both selectors
 async function loadScans() {
-    const scanSelectorForChunk = document.getElementById('scanSelectorForChunk');
-    const scanSelectorForDisplay = document.getElementById('scanSelectorForDisplay');
-    const scanSelectorForViewChunk = document.getElementById('scanSelectorForViewChunk');
-    
     // Clear existing options except the default one
-    while (scanSelectorForChunk.options.length > 1) {
-        scanSelectorForChunk.remove(1);
-    }
-    
-    while (scanSelectorForDisplay.options.length > 1) {
-        scanSelectorForDisplay.remove(1);
-    }
-    
-    while (scanSelectorForViewChunk.options.length > 1) {
-        scanSelectorForViewChunk.remove(1);
-    }
+    clearSelectOptions(domElements.scanSelectorForChunk);
+    clearSelectOptions(domElements.scanSelectorForDisplay);
+    clearSelectOptions(domElements.scanSelectorForViewChunk);
     
     try {
         const response = await fetch('/scans');
         const scans = await response.json();
         scans.forEach(scan => {
-            value = scan[0];
-            textContent = scan[1] + " - " + scan[2];
+            const value = scan[0];
+            const textContent = scan[1] + " - " + scan[2];
 
-            // Add to chunk selector
-            const chunkOption = document.createElement('option');
-            chunkOption.value = value;
-            chunkOption.textContent = textContent;
-            scanSelectorForChunk.appendChild(chunkOption);
-            
-            // Add to scan selector
-            const displayOption = document.createElement('option');
-            displayOption.value = value;
-            displayOption.textContent = textContent;
-            scanSelectorForDisplay.appendChild(displayOption);
-            
-            // Add to view chunk selector
-            const viewChunkOption = document.createElement('option');
-            viewChunkOption.value = value;
-            viewChunkOption.textContent = textContent;
-            scanSelectorForViewChunk.appendChild(viewChunkOption);
+            // Add to all selectors
+            addOptionToSelect(domElements.scanSelectorForChunk, value, textContent);
+            addOptionToSelect(domElements.scanSelectorForDisplay, value, textContent);
+            addOptionToSelect(domElements.scanSelectorForViewChunk, value, textContent);
         });
     } catch (error) {
-        console.error('Error fetching scans:', error);
+        handleError(error, 'fetching scans', 'Error fetching scans');
     }
 }
 
@@ -82,14 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loadScans();
 });
 
-document.getElementById('scanSelectorForDisplay').addEventListener('input', async () => {
-    const scan_id = document.getElementById('scanSelectorForDisplay').value;
-    const scannedUrlSelectorForDisplay = document.getElementById('scannedUrlSelectorForDisplay');
+domElements.scanSelectorForDisplay.addEventListener('input', async () => {
+    const scan_id = domElements.scanSelectorForDisplay.value;
 
     // Clear existing options except the default one
-    while (scannedUrlSelectorForDisplay.options.length > 1) {
-        scannedUrlSelectorForDisplay.remove(1);
-    }
+    clearSelectOptions(domElements.scannedUrlSelectorForDisplay);
 
     if (scan_id == 0) {
         return;
@@ -100,24 +153,20 @@ document.getElementById('scanSelectorForDisplay').addEventListener('input', asyn
         const scans = await response.json();
         scans.forEach(scan => {
             // Add to scanned URLs selector
-            const scannedUrlOption = document.createElement('option');
-            scannedUrlOption.value = scan[0];
-            scannedUrlOption.textContent = scan[1];
-            scannedUrlSelectorForDisplay.appendChild(scannedUrlOption);
+            addOptionToSelect(domElements.scannedUrlSelectorForDisplay, scan[0], scan[1]);
         });
 
     } catch (error) {
-        fetchStatus.textContent = 'Error fetching documentation';
-        console.error(error);
+        handleError(error, 'fetching scanned URLs', 'Error fetching scanned URLs');
     } finally {
-        fetchBtn.disabled = false;
+        domElements.fetchBtn.disabled = false;
     }}
 )
 
-document.getElementById('scannedUrlSelectorForDisplay').addEventListener('input', async () => {
-    const scanned_url_id = document.getElementById('scannedUrlSelectorForDisplay').value;
-    document.getElementById('scannedUrlSelectorForDisplay').value = scanned_url_id;
-    const displayedDocumentation = document.getElementById('scannedUrlDisplay');
+domElements.scannedUrlSelectorForDisplay.addEventListener('input', async () => {
+    const scanned_url_id = domElements.scannedUrlSelectorForDisplay.value;
+    domElements.scannedUrlSelectorForDisplay.value = scanned_url_id;
+    const displayedDocumentation = domElements.scannedUrlDisplay;
 
     if (scanned_url_id == 0) {
         displayedDocumentation.textContent = '';
@@ -129,14 +178,13 @@ document.getElementById('scannedUrlSelectorForDisplay').addEventListener('input'
         const data = await response.json();
         displayedDocumentation.textContent = data;
     } catch (error) {
-        console.error(error);
+        handleError(error, 'fetching scanned URL content', 'Error loading content');
     }
 })
 
-document.getElementById('displayScannedUrlBtn').addEventListener('click', () => {
-    const scannedUrlSelectorForDisplay = document.getElementById('scannedUrlSelectorForDisplay');
-    const scanned_url_id = scannedUrlSelectorForDisplay.value;
-    const scanned_url = scannedUrlSelectorForDisplay.options[scannedUrlSelectorForDisplay.selectedIndex].text;
+domElements.displayScannedUrlBtn.addEventListener('click', () => {
+    const scanned_url_id = domElements.scannedUrlSelectorForDisplay.value;
+    const scanned_url = domElements.scannedUrlSelectorForDisplay.options[domElements.scannedUrlSelectorForDisplay.selectedIndex].text;
 
     if (scanned_url_id == 0) {
         return;
@@ -151,45 +199,38 @@ document.getElementById('displayScannedUrlBtn').addEventListener('click', () => 
 
 })
 
-document.getElementById('chunkBtn').addEventListener('click', async () => {
-    const scanSelectorForChunk = document.getElementById('scanSelectorForChunk');
-    const scanId = scanSelectorForChunk.value;
-    const chunkStatus = document.getElementById('chunkStatus');
-    const chunkBtn = document.getElementById('chunkBtn');
+domElements.chunkBtn.addEventListener('click', async () => {
+    const scanId = domElements.scanSelectorForChunk.value;
     
     if (scanId == 0) {
-        chunkStatus.textContent = 'Please select a scan';
+        domElements.chunkStatus.textContent = 'Please select a scan';
         return;
     }
     
-    chunkBtn.disabled = true;
-    chunkStatus.textContent = 'chunking documentation…';
+    domElements.chunkBtn.disabled = true;
+    domElements.chunkStatus.textContent = 'chunking documentation…';
     
     try {
         const response = await fetch(`/perform_chunk?scan_id=${scanId}`, {
             method: 'POST'
         });
         const data = await response.json();
-        chunkStatus.textContent = data.message;
+        domElements.chunkStatus.textContent = data.message;
     } catch (error) {
-        chunkStatus.textContent = 'Error chunking documentation';
-        console.error(error);
+        handleError(error, 'chunking documentation', 'Error chunking documentation');
     } finally {
-        chunkBtn.disabled = false;
+        domElements.chunkBtn.disabled = false;
     }
 });
 
-document.getElementById('submitBtn').addEventListener('click', async () => {
-    const query = document.getElementById('query').value;
-    const loading = document.getElementById('loading');
-    const response = document.getElementById('response');
-    const submitBtn = document.getElementById('submitBtn');
+domElements.submitBtn.addEventListener('click', async () => {
+    const query = domElements.query.value;
     
     if (!query) return;
     
-    loading.style.display = 'block';
-    response.innerHTML = '';
-    submitBtn.disabled = true;
+    domElements.loading.style.display = 'block';
+    domElements.response.innerHTML = '';
+    domElements.submitBtn.disabled = true;
     
     try {
         const res = await fetch('/query', {
@@ -202,7 +243,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
         
         const data = await res.json();
         
-        response.innerHTML = `
+        domElements.response.innerHTML = `
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Answer:</h5>
@@ -215,31 +256,23 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
             </div>
         `;
     } catch (error) {
-        response.innerHTML = '<div class="alert alert-danger">Error getting response</div>';
-        console.error(error);
+        handleError(error, 'getting query response', 'Error getting response');
     } finally {
-        loading.style.display = 'none';
-        submitBtn.disabled = false;
+        domElements.loading.style.display = 'none';
+        domElements.submitBtn.disabled = false;
     }
 });
 
 // Event listener for the scan selector in the View Chunks section
-document.getElementById('scanSelectorForViewChunk').addEventListener('input', async () => {
-    const scan_id = document.getElementById('scanSelectorForViewChunk').value;
-    const scannedUrlSelectorForViewChunk = document.getElementById('scannedUrlSelectorForViewChunk');
-    const chunkSelector = document.getElementById('chunkSelector');
-    const chunkDisplay = document.getElementById('chunkDisplay');
+domElements.scanSelectorForViewChunk.addEventListener('input', async () => {
+    const scan_id = domElements.scanSelectorForViewChunk.value;
     
     // Clear existing options except the default one
-    while (scannedUrlSelectorForViewChunk.options.length > 1) {
-        scannedUrlSelectorForViewChunk.remove(1);
-    }
+    clearSelectOptions(domElements.scannedUrlSelectorForViewChunk);
     
     // Clear chunk selector and display
-    while (chunkSelector.options.length > 1) {
-        chunkSelector.remove(1);
-    }
-    chunkDisplay.textContent = '';
+    clearSelectOptions(domElements.chunkSelector);
+    domElements.chunkDisplay.textContent = '';
     
     if (scan_id == 0) {
         return;
@@ -250,28 +283,21 @@ document.getElementById('scanSelectorForViewChunk').addEventListener('input', as
         const scannedUrls = await response.json();
         scannedUrls.forEach(url => {
             // Add to scanned URLs selector
-            const scannedUrlOption = document.createElement('option');
-            scannedUrlOption.value = url[0];
-            scannedUrlOption.textContent = url[1];
-            scannedUrlSelectorForViewChunk.appendChild(scannedUrlOption);
+            addOptionToSelect(domElements.scannedUrlSelectorForViewChunk, url[0], url[1]);
         });
     } catch (error) {
-        console.error('Error fetching scanned URLs:', error);
+        handleError(error, 'fetching scanned URLs for view chunks', 'Error fetching scanned URLs for view chunks');
     }
 });
 
 // Event listener for the scanned URL selector in the View Chunks section
-document.getElementById('scannedUrlSelectorForViewChunk').addEventListener('input', async () => {
-    const scan_id = document.getElementById('scanSelectorForViewChunk').value;
-    const scannedUrlId = document.getElementById('scannedUrlSelectorForViewChunk').value;
-    const chunkSelector = document.getElementById('chunkSelector');
-    const chunkDisplay = document.getElementById('chunkDisplay');
+domElements.scannedUrlSelectorForViewChunk.addEventListener('input', async () => {
+    const scan_id = domElements.scanSelectorForViewChunk.value;
+    const scannedUrlId = domElements.scannedUrlSelectorForViewChunk.value;
     
     // Clear existing options except the default one
-    while (chunkSelector.options.length > 1) {
-        chunkSelector.remove(1);
-    }
-    chunkDisplay.textContent = '';
+    clearSelectOptions(domElements.chunkSelector);
+    domElements.chunkDisplay.textContent = '';
     
     if (scannedUrlId == 0) {
         return;
@@ -282,32 +308,27 @@ document.getElementById('scannedUrlSelectorForViewChunk').addEventListener('inpu
         const chunks = await response.json();
         
         chunks.forEach(chunk => {
-            const chunkOption = document.createElement('option');
-            chunkOption.value = chunk;
-            chunkOption.textContent = `Chunk ${chunk}`;
-            chunkSelector.appendChild(chunkOption);
+            addOptionToSelect(domElements.chunkSelector, chunk, `Chunk ${chunk}`);
         });
     } catch (error) {
-        console.error('Error fetching chunks:', error);
+        handleError(error, 'fetching chunks', 'Error fetching chunks');
     }
 });
 
 // Event listener for the chunk selector
-document.getElementById('chunkSelector').addEventListener('input', async () => {
-    const chunkId = document.getElementById('chunkSelector').value;
-    const chunkDisplay = document.getElementById('chunkDisplay');
+domElements.chunkSelector.addEventListener('input', async () => {
+    const chunkId = domElements.chunkSelector.value;
     
     if (chunkId == 0) {
-        chunkDisplay.textContent = '';
+        domElements.chunkDisplay.textContent = '';
         return;
     }
     
     try {
         const response = await fetch(`/chunk_content?chunk_id=${chunkId}`);
         const data = await response.json();
-        chunkDisplay.textContent = data.text;
+        domElements.chunkDisplay.textContent = data.text;
     } catch (error) {
-        console.error('Error fetching chunk content:', error);
-        chunkDisplay.textContent = 'Error loading chunk content';
+        handleError(error, 'fetching chunk content', 'Error loading chunk content');
     }
 });

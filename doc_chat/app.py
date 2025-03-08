@@ -135,7 +135,7 @@ def fetch():
 
         return jsonify({"message": f"Fetched {len(urls)} URLs"})
     except Exception as e:
-        return jsonify({'error': 'Failed to fetch documentation:', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+        return jsonify({'error': 'Failed to fetch documentation', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/scans', methods=['GET'])
 def get_all_scans():
@@ -269,18 +269,22 @@ def query():
     if not user_query:
         return jsonify({'error': 'query is required'}), 400
 
-    results = cr.query(user_query)
+    try:
+        results = cr.query(user_query)
 
-    context = "\n".join(results['documents'][0])
-    print("\n---------------------------------------------------------\n".join(results['documents'][0]))
-    response = generate_response(user_query, context)
-    response = str(escape(response))
-    response = response.replace("\n", "<br>")
+        context = "\n".join(results['documents'][0])
+        print("\n---------------------------------------------------------\n".join(results['documents'][0]))
+        response = generate_response(user_query, context)
+        response = str(escape(response))
+        response = response.replace("\n", "<br>")
 
-    return jsonify({
-        "answer": response,
-        "sources": [m['source'] for m in results['metadatas'][0]]
-    })
+        return jsonify({
+            "answer": response,
+            "sources": [m['source'] for m in results['metadatas'][0]]
+        })
+
+    except Exception as e:
+        return jsonify({'error': 'Failed to generate answer', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)

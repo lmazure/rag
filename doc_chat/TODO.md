@@ -6,7 +6,7 @@
 - repair Pytest tests
 - FETCH fix crash on https://inspe-sciedu.gricad-pages.univ-grenoble-alpes.fr/reflexpro/init-gitlab-rtd.html
 - CHUNK deduplicate chunks and/or clean up HTML before chunking
-
+- undisplay error popup when launching an action od an analysis
 
 -------------
 https://tm-en.doc.squashtest.com/latest/

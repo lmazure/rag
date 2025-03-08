@@ -101,9 +101,9 @@ domElements.fetchBtn.addEventListener('click', async () => {
         const response = await fetch(`/fetch?root_url=${encodeURIComponent(docUrl)}`, {
             method: 'POST'
         });
-        const data = await response.json();
         domElements.fetchStatus.textContent = "";
-        if (!data.ok) {
+        if (!response.ok) {
+            const data = await response.json();
             handleError('Error fetching documentation', data.errorDetails, data.stackTrace);
         } else {
             // Refresh the scan selectors after fetching
@@ -240,7 +240,7 @@ domElements.submitBtn.addEventListener('click', async () => {
     domElements.submitBtn.disabled = true;
     
     try {
-        const res = await fetch('/query', {
+        const response = await fetch('/query', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -248,7 +248,12 @@ domElements.submitBtn.addEventListener('click', async () => {
             body: JSON.stringify({ query })
         });
         
-        const data = await res.json();
+        if (!response.ok) {
+            const data = await response.json();
+            handleError('Error answering question', data.errorDetails, data.stackTrace);
+            return;
+        }
+        const data = await response.json();
         
         domElements.response.innerHTML = `
             <div class="card">

@@ -269,7 +269,7 @@ def get_chunk_content():
         return jsonify({'error': 'Failed to get chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/perform_embedding', methods=['POST'])
-def chunk():
+def embed():
     """
     Split content into chunks.
 

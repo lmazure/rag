@@ -16,6 +16,11 @@ class InfoDatabase:
 
     def setup(self) -> None:
         """Set up the database of the scanned URLs by creating the necessary directories and files."""
+
+        # if the database already exists, do nothing
+        if os.path.exists(f"{self.db_path}/{self.database_name}"):
+            return
+
         # Create the directories
         os.makedirs(self.db_path, exist_ok=True)
 
@@ -69,7 +74,7 @@ class InfoDatabase:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 chunk_set_id INTEGER NOT NULL,
                 embedder_description TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP;
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (scan_id) REFERENCES scans (id)
             )
         ''')

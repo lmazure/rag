@@ -21,7 +21,7 @@ The Doc Chat application provides a set of RESTful API endpoints for managing do
 
 ### Fetch Documentation
 
-- **URL**: `/fetch`
+- **URL**: `/perform_fetch`
 - **Method**: `POST`
 - **Description**: Fetches documentation from a specified URL and its linked pages
 - **Parameters**:
@@ -79,7 +79,7 @@ The Doc Chat application provides a set of RESTful API endpoints for managing do
 
 ### Perform Chunking
 
-- **URL**: `/perform_chunk`
+- **URL**: `/perform_chunking`
 - **Method**: `POST`
 - **Description**: Splits the content of a scan into chunks and stores them in the vector database
 - **Parameters**:
@@ -141,7 +141,7 @@ The Doc Chat application provides a set of RESTful API endpoints for managing do
 
 ### Query
 
-- **URL**: `/query`
+- **URL**: `generate_answer`
 - **Method**: `POST`
 - **Description**: Performs a semantic search on the chunks and generates a response using Together AI
 - **Parameters**: None (data is sent in the request body)
@@ -172,12 +172,3 @@ All endpoints return appropriate HTTP status codes:
 - `400 Bad Request` for requests with missing or invalid parameters
 - `404 Not Found` for resources that don't exist
 - `500 Internal Server Error` for server-side errors
-
-## Usage Examples
-
-### Typical Workflow
-
-1. Fetch documentation: `POST /fetch?root_url=https://example.com/docs`
-2. View available scans: `GET /scans`
-3. Chunk the documentation: `POST /perform_chunk?scan_id=1`
-4. Query the documentation: `POST /query` with body `{"query": "How do I install this library?"}`

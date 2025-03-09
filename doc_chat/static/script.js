@@ -98,7 +98,7 @@ domElements.fetchBtn.addEventListener('click', async () => {
     domElements.fetchStatus.textContent = 'fetching documentation…';
 
     try {
-        const response = await fetch(`/fetch?root_url=${encodeURIComponent(docUrl)}`, {
+        const response = await fetch(`/perform_fetch?root_url=${encodeURIComponent(docUrl)}`, {
             method: 'POST'
         });
         if (!response.ok) {
@@ -233,7 +233,7 @@ domElements.chunkBtn.addEventListener('click', async () => {
     domElements.chunkStatus.textContent = 'chunking documentation…';
     
     try {
-        const response = await fetch(`/perform_chunk?scan_id=${scanId}`, {
+        const response = await fetch(`/perform_chunking?scan_id=${scanId}`, {
             method: 'POST'
         });
         if (!response.ok) {
@@ -260,7 +260,7 @@ domElements.submitBtn.addEventListener('click', async () => {
     domElements.submitBtn.disabled = true;
     
     try {
-        const response = await fetch('/query', {
+        const response = await fetch('generate_answer', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

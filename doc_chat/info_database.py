@@ -42,13 +42,35 @@ class InfoDatabase:
             )
         ''')
 
+        # Create chunk sets table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS chunk_sets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                scan_id INTEGER NOT NULL,
+                chunker_description TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (scan_id) REFERENCES scans (id)
+            )
+        ''')
+
         # Create chunks table
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS chunks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 chunk TEXT NOT NULL,
-                scanned_url_id INTEGER NOT NULL,
-                FOREIGN KEY (scanned_url_id) REFERENCES scanned_urls (id)
+                chunk_set_id INTEGER NOT NULL,
+                FOREIGN KEY (chunk_set_id) REFERENCES chunk_sets (id)
+            )
+        ''')
+
+        # Create embedding sets table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS embedding_sets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                chunk_set_id INTEGER NOT NULL,
+                embedder_description TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP;
+                FOREIGN KEY (scan_id) REFERENCES scans (id)
             )
         ''')
 

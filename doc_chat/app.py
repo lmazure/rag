@@ -66,7 +66,7 @@ def fetch_content(scan_id: int, url: str) -> None:
 
     return
 
-def chunk_content(scan_id: int) -> List[Tuple[str, str, int]]:
+def chunk_content(scan_id: int) -> int:
     """Fetch content from URLs and split into chunks."""
     scanned_urls = db.get_all_scanned_urls(scan_id)
     chunker = HybridChunker()
@@ -78,14 +78,16 @@ def chunk_content(scan_id: int) -> List[Tuple[str, str, int]]:
             doc_dict = json.loads(fp.read())
             doc = DoclingDocument.model_validate(doc_dict)
         chunk_iter = chunker.chunk(doc)
-        for i, chunk in enumerate(chunk_iter):
+        i = 0
+        for chunk in chunk_iter:
             print(f"=== {i} ===")
             print(f"chunk.text:\n{repr(f'{chunk.text[:300]}…')}")
             enriched_text = chunker.serialize(chunk=chunk)
             print(f"chunker.serialize(chunk):\n{repr(f'{enriched_text[:300]}…')}")
             chunk_id = db.add_chunk(scanned_url_id, chunk.text)
             chunks.append((chunk.text, scanned_url,chunk_id))
-    return chunks
+            i += 1
+    return i
 
 def generate_response(query: str, context: str) -> str:
     """Generate response using Together AI."""
@@ -113,7 +115,7 @@ def home():
     except Exception as e:
         return jsonify({'error': 'Failed to render home page', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
-@app.route('/fetch', methods=['POST'])
+@app.route('/perform_fetch', methods=['POST'])
 def fetch():
     """
     Fetch content from URLs.
@@ -159,6 +161,9 @@ def get_all_scanned_urls():
     """
     Get all scanned URLs for a given scan ID.
 
+    Args:
+        scan_id: The ID of the scan.
+
     Returns:
         A JSON response with a list of tuples, where each tuple contains the ID and URL.
         Returns an error message if 'scan_id' is not provided.
@@ -197,7 +202,7 @@ def get_scanned_url():
     except Exception as e:
         return jsonify({'error': 'Failed to get scanned URL content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
-@app.route('/perform_chunk', methods=['POST'])
+@app.route('/perform_chunking', methods=['POST'])
 def chunk():
     """
     Split content into chunks.
@@ -214,20 +219,8 @@ def chunk():
         return jsonify({'error': 'scan_id is required'}), 400
 
     try:
-        cr.setup()
-        
-        all_chunks = []
-        all_metadatas = []
-        all_ids = []
-
-        chunks = chunk_content(int(scan_id))
-        for (chunk, url, chunk_id) in chunks:
-            all_chunks.append(chunk)
-            all_metadatas.append({"source": url})
-            all_ids.append(str(chunk_id))
-        cr.add_chunks(all_chunks, all_metadatas, all_ids)
-
-        return jsonify({"message": f"Ingested {len(all_chunks)} chunks"})
+        nb = chunk_content(int(scan_id))
+        return jsonify({"message": f"Created {len(nb)} chunks"})
     except Exception as e:
         return jsonify({'error': 'Failed to chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
@@ -275,13 +268,48 @@ def get_chunk_content():
     except Exception as e:
         return jsonify({'error': 'Failed to get chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
-@app.route('/query', methods=['POST'])
-def query():
+@app.route('/perform_embedding', methods=['POST'])
+def chunk():
     """
-    Generate a response using Together AI.
+    Split content into chunks.
 
     Args:
-        query: The user query.
+        scan_id: The ID of the scan.
+
+    Returns:
+        A JSON response with a message indicating the number of chunks created.
+        Returns an error message if 'scan_id' is not provided.
+    """
+    scan_id = request.args.get('scan_id')
+    if not scan_id:
+        return jsonify({'error': 'scan_id is required'}), 400
+
+    try:
+        cr.setup()
+        
+        all_chunks = []
+        all_metadatas = []
+        all_ids = []
+
+        # TBD retrieve the chunks
+        for (chunk, url, chunk_id) in chunks:
+            all_chunks.append(chunk)
+            all_metadatas.append({"source": url})
+            all_ids.append(str(chunk_id))
+        cr.add_chunks(all_chunks, all_metadatas, all_ids)
+
+        return jsonify({"message": f"Ingested {len(all_chunks)} chunks"})
+    except Exception as e:
+        return jsonify({'error': 'Failed to chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+
+
+@app.route('/generate_answer', methods=['POST'])
+def query():
+    """
+    Generate a response to a user question.
+
+    Args:
+        query: The user question.
 
     Returns:
         A JSON response with the answer and sources.

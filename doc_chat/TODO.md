@@ -1,7 +1,6 @@
-- display advancement while reaping the doc
+- FETCH isplay advancement while reaping the doc, indicate the current number of scanned URLs / the total number of URLs to scan
 - display advancement while chunking
 - FETCH when fetch is finished the selector of the chunker and the selector of the scanned URLs navigator should be updated
-- FETCH indicate the current number of scanned URLs / the total number of URLs to scan
 - FETCH fix crash on https://mazure.fr/perso/main.html
 - repair Pytest tests
 - FETCH fix crash on https://inspe-sciedu.gricad-pages.univ-grenoble-alpes.fr/reflexpro/init-gitlab-rtd.html

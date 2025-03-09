@@ -101,16 +101,16 @@ domElements.fetchBtn.addEventListener('click', async () => {
         const response = await fetch(`/fetch?root_url=${encodeURIComponent(docUrl)}`, {
             method: 'POST'
         });
-        domElements.fetchStatus.textContent = "";
         if (!response.ok) {
             const data = await response.json();
             handleError('Error fetching documentation', data.errorDetails, data.stackTrace);
-        } else {
-            // Refresh the scan selectors after fetching
-            loadScans();
+            return;
         }
+        domElements.fetchStatus.textContent = "";
+        // Refresh the scan selectors after fetching
+        loadScans();
     } catch (error) {
-        handleError('Error fetching documentation', error, undefined);
+        handleError('Error fetching documentation', error.message, error.stack);
     } finally {
         domElements.fetchBtn.disabled = false;
     }
@@ -125,6 +125,11 @@ async function loadScans() {
     
     try {
         const response = await fetch('/scans');
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching scans', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
         const scans = await response.json();
         scans.forEach(scan => {
             const value = scan[0];
@@ -136,7 +141,7 @@ async function loadScans() {
             addOptionToSelect(domElements.scanSelectorForViewChunk, value, textContent);
         });
     } catch (error) {
-        handleError('Error fetching scans', undefined, undefined);
+        handleError('Error fetching scans', error.message, error.stack);
     }
 }
 
@@ -157,6 +162,11 @@ domElements.scanSelectorForDisplay.addEventListener('input', async () => {
 
     try {
         const response = await fetch(`/scanned_urls?scan_id=${scan_id}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching scanned URLs', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
         const scans = await response.json();
         scans.forEach(scan => {
             // Add to scanned URLs selector
@@ -164,11 +174,11 @@ domElements.scanSelectorForDisplay.addEventListener('input', async () => {
         });
 
     } catch (error) {
-        handleError('Error fetching scanned URLs', undefined, undefined);
+        handleError('Error fetching scanned URLs', error.message, error.stack);
     } finally {
         domElements.fetchBtn.disabled = false;
-    }}
-)
+    }
+})
 
 domElements.scannedUrlSelectorForDisplay.addEventListener('input', async () => {
     const scanned_url_id = domElements.scannedUrlSelectorForDisplay.value;
@@ -182,10 +192,15 @@ domElements.scannedUrlSelectorForDisplay.addEventListener('input', async () => {
 
     try {
         const response = await fetch(`/scanned_url?scanned_url_id=${scanned_url_id}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching scanned URL content', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
         const data = await response.json();
         displayedDocumentation.textContent = data;
     } catch (error) {
-        handleError('Error fetching scanned URL content', undefined, undefined);
+        handleError('Error fetching scanned URL content', error.message, error.stack);
     }
 })
 
@@ -221,10 +236,15 @@ domElements.chunkBtn.addEventListener('click', async () => {
         const response = await fetch(`/perform_chunk?scan_id=${scanId}`, {
             method: 'POST'
         });
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error chunking documentation', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
         const data = await response.json();
         domElements.chunkStatus.textContent = data.message;
     } catch (error) {
-        handleError('Error chunking documentation', undefined, undefined);
+        handleError('Error chunking documentation', error.message, error.stack);
     } finally {
         domElements.chunkBtn.disabled = false;
     }
@@ -247,7 +267,6 @@ domElements.submitBtn.addEventListener('click', async () => {
             },
             body: JSON.stringify({ query })
         });
-        
         if (!response.ok) {
             const data = await response.json();
             handleError('Error answering question', data.errorDetails, data.stackTrace);
@@ -268,7 +287,7 @@ domElements.submitBtn.addEventListener('click', async () => {
             </div>
         `;
     } catch (error) {
-        handleError('Error getting query response', undefined, undefined);
+        handleError('Error getting query response', error.message, error.stack);
     } finally {
         domElements.loading.style.display = 'none';
         domElements.submitBtn.disabled = false;
@@ -292,13 +311,18 @@ domElements.scanSelectorForViewChunk.addEventListener('input', async () => {
     
     try {
         const response = await fetch(`/scanned_urls?scan_id=${scan_id}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching scanned URLs for view chunks', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
         const scannedUrls = await response.json();
         scannedUrls.forEach(url => {
             // Add to scanned URLs selector
             addOptionToSelect(domElements.scannedUrlSelectorForViewChunk, url[0], url[1]);
         });
     } catch (error) {
-        handleError('Error fetching scanned URLs for view chunks', undefined, undefined);
+        handleError('Error fetching scanned URLs for view chunks', error.message, error.stack);
     }
 });
 
@@ -317,13 +341,18 @@ domElements.scannedUrlSelectorForViewChunk.addEventListener('input', async () =>
     
     try {
         const response = await fetch(`/chunks?scanned_url_id=${scannedUrlId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching chunks', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
         const chunks = await response.json();
         
         chunks.forEach(chunk => {
             addOptionToSelect(domElements.chunkSelector, chunk, `Chunk ${chunk}`);
         });
     } catch (error) {
-        handleError('Error fetching chunks', undefined, undefined);
+        handleError('Error fetching chunks', error.message, error.stack);
     }
 });
 
@@ -338,9 +367,14 @@ domElements.chunkSelector.addEventListener('input', async () => {
     
     try {
         const response = await fetch(`/chunk_content?chunk_id=${chunkId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching chunk content', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
         const data = await response.json();
         domElements.chunkDisplay.textContent = data.text;
     } catch (error) {
-        handleError('Error fetching chunk content', undefined, undefined);
+        handleError('Error fetching chunk content', error.message, error.stack);
     }
 });

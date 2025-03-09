@@ -108,7 +108,10 @@ def home():
     """
     Show the home page.
     """
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        return jsonify({'error': 'Failed to render home page', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/fetch', methods=['POST'])
 def fetch():
@@ -145,8 +148,11 @@ def get_all_scans():
     Returns:
         A JSON response with a list of all scans.
     """
-    scans = db.get_all_scans()
-    return jsonify(scans)
+    try:
+        scans = db.get_all_scans()
+        return jsonify(scans)
+    except Exception as e:
+        return jsonify({'error': 'Failed to get scans', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/scanned_urls', methods=['GET'])
 def get_all_scanned_urls():
@@ -160,8 +166,12 @@ def get_all_scanned_urls():
     scan_id = request.args.get('scan_id')
     if not scan_id:
         return jsonify({'error': 'scan_id is required'}), 400
-    urls = db.get_all_scanned_urls(scan_id)
-    return jsonify(urls)
+    
+    try:
+        urls = db.get_all_scanned_urls(scan_id)
+        return jsonify(urls)
+    except Exception as e:
+        return jsonify({'error': 'Failed to get scanned URLs', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/scanned_url', methods=['GET'])
 def get_scanned_url():
@@ -178,10 +188,14 @@ def get_scanned_url():
     scanned_url_id = request.args.get('scanned_url_id')
     if not scanned_url_id:
         return jsonify({'error': 'scanned_url_id is required'}), 400
-    with Path(compute_scanned_url_filename(int(scanned_url_id))).open("r", encoding="utf-8") as fp:
-        doc_dict = json.loads(fp.read())
-        doc = DoclingDocument.model_validate(doc_dict)
-    return jsonify(doc.export_to_markdown())
+    
+    try:
+        with Path(compute_scanned_url_filename(int(scanned_url_id))).open("r", encoding="utf-8") as fp:
+            doc_dict = json.loads(fp.read())
+            doc = DoclingDocument.model_validate(doc_dict)
+        return jsonify(doc.export_to_markdown())
+    except Exception as e:
+        return jsonify({'error': 'Failed to get scanned URL content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/perform_chunk', methods=['POST'])
 def chunk():
@@ -199,20 +213,23 @@ def chunk():
     if not scan_id:
         return jsonify({'error': 'scan_id is required'}), 400
 
-    cr.setup()
-    
-    all_chunks = []
-    all_metadatas = []
-    all_ids = []
+    try:
+        cr.setup()
+        
+        all_chunks = []
+        all_metadatas = []
+        all_ids = []
 
-    chunks = chunk_content(int(scan_id))
-    for (chunk, url, chunk_id) in chunks:
-        all_chunks.append(chunk)
-        all_metadatas.append({"source": url})
-        all_ids.append(str(chunk_id))
-    cr.add_chunks(all_chunks, all_metadatas, all_ids)
+        chunks = chunk_content(int(scan_id))
+        for (chunk, url, chunk_id) in chunks:
+            all_chunks.append(chunk)
+            all_metadatas.append({"source": url})
+            all_ids.append(str(chunk_id))
+        cr.add_chunks(all_chunks, all_metadatas, all_ids)
 
-    return jsonify({"message": f"Ingested {len(all_chunks)} chunks"})
+        return jsonify({"message": f"Ingested {len(all_chunks)} chunks"})
+    except Exception as e:
+        return jsonify({'error': 'Failed to chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/chunks', methods=['GET'])
 def get_chunks():
@@ -230,9 +247,11 @@ def get_chunks():
     if not scanned_url_id:
         return jsonify({'error': 'scanned_url_id is required'}), 400
     
-    chunks = db.get_all_chunks(int(scanned_url_id))
-    
-    return jsonify(chunks)
+    try:
+        chunks = db.get_all_chunks(int(scanned_url_id))
+        return jsonify(chunks)
+    except Exception as e:
+        return jsonify({'error': 'Failed to get chunks', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/chunk_content', methods=['GET'])
 def get_chunk_content():
@@ -250,8 +269,11 @@ def get_chunk_content():
     if not chunk_id:
         return jsonify({'error': 'chunk_id is required'}), 400
 
-    chunk = db.get_chunk(int(chunk_id))
-    return jsonify({"text": chunk})
+    try:
+        chunk = db.get_chunk(int(chunk_id))
+        return jsonify({"text": chunk})
+    except Exception as e:
+        return jsonify({'error': 'Failed to get chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/query', methods=['POST'])
 def query():

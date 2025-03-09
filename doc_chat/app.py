@@ -11,6 +11,7 @@ from together import Together
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 from markupsafe import escape
+from urllib.parse import urljoin
 
 from vector_database import VectorDatabase
 from info_database import InfoDatabase
@@ -36,10 +37,7 @@ def get_all_html_urls(base_url: str) -> List[str]:
     for link in soup.find_all('a'):
         href = link.get('href')
         if href and (href.endswith('.html') or href.endswith('.htm')):
-            if href.startswith('http'):
-                urls.append(href)
-            else:
-                urls.append(base_url.rstrip('/') + '/' + href.lstrip('/'))
+            urls.append(urljoin(base_url, href))
     
     return list(set(urls))
 
@@ -50,13 +48,17 @@ def compute_scanned_url_filename(id: int) -> str:
 def fetch_content(scan_id: int, url: str) -> None:
     """Fetch content from URL."""
 
-    # Add the scanned URL to the database
-    id = db.add_scanned_url(scan_id, url)
-
     # Fetch the content
     converter = DocumentConverter()
-    result = converter.convert(url)
-    doc = result.document
+    try:
+        result = converter.convert(url)
+        doc = result.document
+    except Exception as e:
+        print(f"Failed to fetch content from {url}: {str(e)}", flush=True)
+        return
+
+    # Add the scanned URL to the database
+    id = db.add_scanned_url(scan_id, url)
 
     # Save the document to a JSON file
     filename = compute_scanned_url_filename(id)

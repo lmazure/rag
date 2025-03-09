@@ -309,20 +309,20 @@ class InfoDatabase:
             return chunk_data[0]
         raise Exception(f"Chunk {chunk_id} not found")
 
-    def get_all_chunks(self, scanned_url_id: int) -> List[str]:
+    def get_all_chunks(self, chunk_set_id: int) -> List[str]:
         """
-        Get all chunks of a scanned URL.
+        Get all chunks of a chunk set.
 
         Args:
-            scanned_url_id: The ID of the scanned URL.
+            chunk_set_id: The ID of the chunk set.
 
         Returns:
-            A list of the IDs of the chunks of the scanned URL.
+            A list of the IDs of the chunks of the chunk set.
         """
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
 
-        cursor.execute('SELECT id FROM chunks WHERE scanned_url_id = ?', (scanned_url_id,))
+        cursor.execute('SELECT id FROM chunks WHERE chunk_set_id = ?', (chunk_set_id,))
         chunks_data = cursor.fetchall()
         conn.close()
         

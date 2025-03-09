@@ -64,6 +64,7 @@ class InfoDatabase:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 chunk TEXT NOT NULL,
                 chunk_set_id INTEGER NOT NULL,
+                scanned_url_id INTEGER NOT NULL,
                 FOREIGN KEY (chunk_set_id) REFERENCES chunk_sets (id)
             )
         ''')
@@ -75,7 +76,7 @@ class InfoDatabase:
                 chunk_set_id INTEGER NOT NULL,
                 embedder_description TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (scan_id) REFERENCES scans (id)
+                FOREIGN KEY (chunk_set_id) REFERENCES chunk_sets (id)
             )
         ''')
 
@@ -88,7 +89,7 @@ class InfoDatabase:
 
     def add_scan(self, root_url: str) -> int:
         """
-        Add a scan to the database.
+        Add a scan.
 
         Args:
             root_url: The root URL of the scan.
@@ -113,7 +114,7 @@ class InfoDatabase:
 
     def get_scan(self, scan_id: int) -> Tuple[int, str]:
         """
-        Get a scan from the database.
+        Get a scan.
 
         Args:
             scan_id: The ID of the scan.
@@ -132,7 +133,7 @@ class InfoDatabase:
 
     def get_all_scans(self) -> List[Tuple[int, str]]:
         """
-        Get all scans from the database.
+        Get all scans.
 
         Returns:
             A list of tuples, where each tuple contains the ID and root URL.
@@ -148,7 +149,7 @@ class InfoDatabase:
 
     def add_scanned_url(self, scan_id: int, url: str) -> int:
         """
-        Add a scanned URL to the database.
+        Add a scanned URL.
 
         Args:
             scan_id: The ID of the scan.
@@ -174,7 +175,7 @@ class InfoDatabase:
 
     def get_scanned_url(self, url_id: int) -> str:
         """
-        Get a scanned URL from the database.
+        Get a scanned URL.
 
         Args:
             url_id: The ID of the scanned URL.
@@ -198,7 +199,7 @@ class InfoDatabase:
 
     def get_all_scanned_urls(self, scan_id: int) -> List[Tuple[int, str]]:
         """
-        Get all scanned URLs of a scan from the database.
+        Get all scanned URLs of a scan.
 
         Args:
             scan_id: The ID of the scan.
@@ -215,11 +216,57 @@ class InfoDatabase:
         
         return [(url[0], url[2]) for url in urls_data]
 
-    def add_chunk(self, scanned_url_id: int, chunk: str) -> int:
+    def add_chunk_set(self, scan_id: int, chunker_description: str) -> int:
         """
-        Add a chunk to the database.
+        Add a chunk set.
 
         Args:
+            scan_id: The ID of the scan.
+            chunker_description: The description of the chunker.
+
+        Returns:
+            The ID of the inserted chunk set.
+        """
+        conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO chunk_sets (scan_id, chunker_description) 
+            VALUES (?, ?)
+        ''', (scan_id, chunker_description))
+        
+        id = cursor.lastrowid
+        conn.commit()
+        assert id is not None
+        conn.close()
+        
+        return id
+
+    def get_all_chunk_sets(self, scan_id: int) -> List[Tuple[int, str]]:
+        """
+        Get all chunk sets for a given scan.
+
+        Args:
+            scan_id: The ID of the scan.
+
+        Returns:
+            A list of tuples, where each tuple contains the ID and chunker description.
+        """
+        conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT * FROM chunk_sets WHERE scan_id = ?', (scan_id,))
+        chunk_sets_data = cursor.fetchall()
+        conn.close()
+        
+        return chunk_sets_data
+
+    def add_chunk(self, chunk_set_id: int, scanned_url_id: int, chunk: str) -> int:
+        """
+        Add a chunk.
+
+        Args:
+            chunk_set_id: The ID of the chunk set.
             scanned_url_id: The ID of the scanned URL.
             chunk: The chunk to add.
 
@@ -230,9 +277,9 @@ class InfoDatabase:
         cursor = conn.cursor()
         
         cursor.execute('''
-            INSERT INTO chunks (scanned_url_id, chunk) 
-            VALUES (?, ?)
-        ''', (scanned_url_id, chunk))
+            INSERT INTO chunks (chunk_set_id, scanned_url_id, chunk) 
+            VALUES (?, ?, ?)
+        ''', (chunk_set_id, scanned_url_id, chunk))
         
         id = cursor.lastrowid
         conn.commit()
@@ -243,7 +290,7 @@ class InfoDatabase:
 
     def get_chunk(self, chunk_id: int) -> str:
         """
-        Get a chunk from the database.
+        Get a chunk.
 
         Args:
             chunk_id: The ID of the chunk.
@@ -264,7 +311,7 @@ class InfoDatabase:
 
     def get_all_chunks(self, scanned_url_id: int) -> List[str]:
         """
-        Get all chunks of a scanned URL from the database.
+        Get all chunks of a scanned URL.
 
         Args:
             scanned_url_id: The ID of the scanned URL.
@@ -276,6 +323,26 @@ class InfoDatabase:
         cursor = conn.cursor()
 
         cursor.execute('SELECT id FROM chunks WHERE scanned_url_id = ?', (scanned_url_id,))
+        chunks_data = cursor.fetchall()
+        conn.close()
+        
+        return [chunk[0] for chunk in chunks_data]
+
+    def get_all_chunks_of_scanned_url(self, chunk_set_id: int, scanned_url_id: int) -> List[str]:
+        """
+        Get all chunks of a scanned URL in a given chunk set.
+
+        Args:
+            chunk_set_id: The ID of the chunk set.
+            scanned_url_id: The ID of the scanned URL.
+
+        Returns:
+            A list of the IDs of the chunks of the scanned URL.
+        """
+        conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT id FROM chunks WHERE chunk_set_id = ? AND scanned_url_id = ?', (chunk_set_id, scanned_url_id))
         chunks_data = cursor.fetchall()
         conn.close()
         

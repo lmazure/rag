@@ -68,24 +68,22 @@ def fetch_content(scan_id: int, url: str) -> None:
 
 def chunk_content(scan_id: int) -> int:
     """Fetch content from URLs and split into chunks."""
+    chunk_set_id = db.add_chunk_set(scan_id, "HybridChunker")
     scanned_urls = db.get_all_scanned_urls(scan_id)
     chunker = HybridChunker()
-    chunks = []
+    i = 0
     for scanned in scanned_urls:
         scanned_url_id = scanned[0]
-        scanned_url = scanned[1]
         with Path(compute_scanned_url_filename(scanned_url_id)).open("r", encoding="utf-8") as fp:
             doc_dict = json.loads(fp.read())
             doc = DoclingDocument.model_validate(doc_dict)
         chunk_iter = chunker.chunk(doc)
-        i = 0
         for chunk in chunk_iter:
             print(f"=== {i} ===")
             print(f"chunk.text:\n{repr(f'{chunk.text[:300]}…')}")
             enriched_text = chunker.serialize(chunk=chunk)
             print(f"chunker.serialize(chunk):\n{repr(f'{enriched_text[:300]}…')}")
-            chunk_id = db.add_chunk(scanned_url_id, chunk.text)
-            chunks.append((chunk.text, scanned_url,chunk_id))
+            db.add_chunk(chunk_set_id, scanned_url_id, chunk.text)
             i += 1
     return i
 
@@ -159,7 +157,7 @@ def get_all_scans():
 @app.route('/scanned_urls', methods=['GET'])
 def get_all_scanned_urls():
     """
-    Get all scanned URLs for a given scan ID.
+    Get the list of scanned URLs for a given scan.
 
     Args:
         scan_id: The ID of the scan.
@@ -220,28 +218,56 @@ def chunk():
 
     try:
         nb = chunk_content(int(scan_id))
-        return jsonify({"message": f"Created {len(nb)} chunks"})
+        return jsonify({"message": f"Created {nb} chunks"})
     except Exception as e:
         return jsonify({'error': 'Failed to chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+
+
+@app.route('/chunk_sets', methods=['GET'])
+def get_chunk_sets():
+    """
+    Get the list of chunk sets for a given scan.
+
+    Args:
+        scan_id: The ID of the scan.
+
+    Returns:
+        A JSON response with a list of chunk sets.
+        Returns an error message if 'scan_id' is not provided.
+    """
+    scan_id = request.args.get('scan_id')
+    if not scan_id:
+        return jsonify({'error': 'scan_id is required'}), 400
+    
+    try:
+        chunk_sets = db.get_all_chunk_sets(int(scan_id))
+        return jsonify(chunk_sets)
+    except Exception as e:
+        return jsonify({'error': 'Failed to get chunk sets', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/chunks', methods=['GET'])
 def get_chunks():
     """
-    Get chunks for a given scanned URL.
+    Get the list of chunks for a given chunk set and, optionally, a scanned URL.
 
     Args:
+        chunk_set_id: The ID of the chunk set.
         scanned_url_id: The ID of the scanned URL.
 
     Returns:
         A JSON response with a list of chunks.
-        Returns an error message if 'scanned_url_id' is not provided.
+        Returns an error message if 'chunk_set_id' is not provided.
     """
-    scanned_url_id = request.args.get('scanned_url_id')
-    if not scanned_url_id:
-        return jsonify({'error': 'scanned_url_id is required'}), 400
+    chunk_set_id = request.args.get('chunk_set_id')
+    if not chunk_set_id:
+        return jsonify({'error': 'chunk_set_id is required'}), 400
     
     try:
-        chunks = db.get_all_chunks(int(scanned_url_id))
+        scanned_url_id = request.args.get('scanned_url_id')
+        if scanned_url_id:
+            chunks = db.get_all_chunks_of_scanned_url(int(chunk_set_id), int(scanned_url_id))
+        else:
+            chunks = db.get_all_chunks(int(chunk_set_id))
         return jsonify(chunks)
     except Exception as e:
         return jsonify({'error': 'Failed to get chunks', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500

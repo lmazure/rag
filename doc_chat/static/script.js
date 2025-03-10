@@ -74,7 +74,7 @@ const domElements = {
     // Chunk section
     chunkBtn: document.getElementById('chunkBtn'),
     chunkStatus: document.getElementById('chunkStatus'),
-    chunkSelector: document.getElementById('chunkSelector'),
+    chunkSelectorForViewChunk: document.getElementById('chunkSelectorForViewChunk'),
     chunkDisplay: document.getElementById('chunkDisplay'),
     
     // Display section
@@ -295,6 +295,38 @@ domElements.submitBtn.addEventListener('click', async () => {
     }
 });
 
+async function populateChunkSelectorForChunkDisplay() {
+
+    // Clear existing options except the default one
+    clearSelectOptions(domElements.chunkSelectorForViewChunk);
+    domElements.chunkDisplay.textContent = '';
+    
+    const chunkSetId = domElements.chunkSetSelectorForViewChunk.value;
+    const scannedUrlId = domElements.scannedUrlSelectorForViewChunk.value;
+    
+    if (chunkSetId == 0) {
+        return;
+    }
+    if (scannedUrlId == 0) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/chunks?scanned_url_id=${scannedUrlId}&chunk_set_id=${chunkSetId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching chunks for view chunks', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const chunks = await response.json();
+        chunks.forEach(chunk => {
+            // Add to chunk selector
+            addOptionToSelect(domElements.chunkSelectorForViewChunk, chunk, `Chunk ${chunk}`);
+        });
+    } catch (error) {
+        handleError('Error fetching chunks for view chunks', error.message, error.stack);
+    }
+}
 // Event listener for the scan selector in the View Chunks section
 domElements.scanSelectorForViewChunk.addEventListener('input', async () => {
     const scan_id = domElements.scanSelectorForViewChunk.value;
@@ -306,7 +338,7 @@ domElements.scanSelectorForViewChunk.addEventListener('input', async () => {
     clearSelectOptions(domElements.scannedUrlSelectorForViewChunk);
     
     // Clear chunk selector and display
-    clearSelectOptions(domElements.chunkSelector);
+    clearSelectOptions(domElements.chunkSelectorForViewChunk);
     domElements.chunkDisplay.textContent = '';
     
     if (scan_id == 0) {
@@ -347,74 +379,14 @@ domElements.scanSelectorForViewChunk.addEventListener('input', async () => {
 });
 
 // Event listener for the chunk set selector in the View Chunks section
-domElements.chunkSetSelectorForViewChunk.addEventListener('input', async () => {
-    const chunkSetId = domElements.chunkSetSelectorForViewChunk.value;
-    const scannedUrlId = domElements.scannedUrlSelectorForViewChunk.value;
-    
-    // Clear existing options except the default one
-    clearSelectOptions(domElements.chunkSelector);
-    domElements.chunkDisplay.textContent = '';
-    
-    if (chunkSetId == 0) {
-        return;
-    }
-    if (scannedUrlId == 0) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/chunks?scanned_url_id=${scannedUrlId}&chunk_set_id=${chunkSetId}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            handleError('Error fetching chunks for view chunks', errorData.errorDetails, errorData.stackTrace);
-            return;
-        }
-        const chunks = await response.json();
-        chunks.forEach(chunk => {
-            // Add to chunk selector
-            addOptionToSelect(domElements.chunkSelector, chunk[0], `Chunk ${chunk[0]}`);
-        });
-    } catch (error) {
-        handleError('Error fetching chunks for view chunks', error.message, error.stack);
-    }
-});
+domElements.chunkSetSelectorForViewChunk.addEventListener('input', populateChunkSelectorForChunkDisplay);
 
 // Event listener for the scanned URL selector in the View Chunks section
-domElements.scannedUrlSelectorForViewChunk.addEventListener('input', async () => {
-    const scannedUrlId = domElements.scannedUrlSelectorForViewChunk.value;
-    const chunkSetId = domElements.chunkSetSelectorForViewChunk.value;
-    
-    // Clear existing options except the default one
-    clearSelectOptions(domElements.chunkSelector);
-    domElements.chunkDisplay.textContent = '';
-    
-    if (chunkSetId == 0) {
-        return;
-    }
-    if (scannedUrlId == 0) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/chunks?scanned_url_id=${scannedUrlId}&chunk_set_id=${chunkSetId}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            handleError('Error fetching chunks for view chunks', errorData.errorDetails, errorData.stackTrace);
-            return;
-        }
-        const chunks = await response.json();
-        
-        chunks.forEach(chunk => {
-            addOptionToSelect(domElements.chunkSelector, chunk, `Chunk ${chunk}`);
-        });
-    } catch (error) {
-        handleError('Error fetching chunks for view chunks', error.message, error.stack);
-    }
-});
+domElements.scannedUrlSelectorForViewChunk.addEventListener('input', populateChunkSelectorForChunkDisplay);
 
-// Event listener for the chunk selector
-domElements.chunkSelector.addEventListener('input', async () => {
-    const chunkId = domElements.chunkSelector.value;
+// Event listener for the chunk selector in the View Chunks section
+domElements.chunkSelectorForViewChunk.addEventListener('input', async () => {
+    const chunkId = domElements.chunkSelectorForViewChunk.value;
     
     if (chunkId == 0) {
         domElements.chunkDisplay.textContent = '';

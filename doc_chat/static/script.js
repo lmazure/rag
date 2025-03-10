@@ -64,6 +64,7 @@ const domElements = {
     scanSelectorForChunk: document.getElementById('scanSelectorForChunk'),
     scanSelectorForDisplay: document.getElementById('scanSelectorForDisplay'),
     scanSelectorForViewChunk: document.getElementById('scanSelectorForViewChunk'),
+    scanSelectorForEmbedding: document.getElementById('scanSelectorForEmbedding'),
     
     // Scanned URL selectors
     scannedUrlSelectorForDisplay: document.getElementById('scannedUrlSelectorForDisplay'),
@@ -79,6 +80,11 @@ const domElements = {
     
     // Display section
     displayScannedUrlBtn: document.getElementById('displayScannedUrlBtn'),
+    
+    // Embed section
+    embdedBtn: document.getElementById('embdedBtn'),
+    chunkSetSelectorForEmbedding: document.getElementById('chunkSetSelectorForEmbedding'),
+    embedStatus: document.getElementById('embedStatus'),
     
     // Query section
     submitBtn: document.getElementById('submitBtn'),
@@ -117,12 +123,13 @@ domElements.fetchBtn.addEventListener('click', async () => {
     }
 });
 
-// Function to load scans into both selectors
+// Function to load scans into all scan selectors
 async function loadScans() {
     // Clear existing options except the default one
     clearSelectOptions(domElements.scanSelectorForChunk);
     clearSelectOptions(domElements.scanSelectorForDisplay);
     clearSelectOptions(domElements.scanSelectorForViewChunk);
+    clearSelectOptions(domElements.scanSelectorForEmbedding);
     
     try {
         const response = await fetch('/scans');
@@ -140,6 +147,7 @@ async function loadScans() {
             addOptionToSelect(domElements.scanSelectorForChunk, value, textContent);
             addOptionToSelect(domElements.scanSelectorForDisplay, value, textContent);
             addOptionToSelect(domElements.scanSelectorForViewChunk, value, textContent);
+            addOptionToSelect(domElements.scanSelectorForEmbedding, value, textContent);
         });
     } catch (error) {
         handleError('Error fetching scans', error.message, error.stack);
@@ -404,5 +412,62 @@ domElements.chunkSelectorForViewChunk.addEventListener('input', async () => {
         domElements.chunkDisplay.textContent = data.text;
     } catch (error) {
         handleError('Error fetching chunk content', error.message, error.stack);
+    }
+});
+
+// Event listener for the scan selector in the Embed section
+domElements.scanSelectorForEmbedding.addEventListener('input', async () => {
+    const scanId = domElements.scanSelectorForEmbedding.value;
+    
+    // Clear existing options except the default one
+    clearSelectOptions(domElements.chunkSetSelectorForEmbedding);
+    
+    if (scanId == 0) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/chunk_sets?scan_id=${scanId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching chunk sets for embedding', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const chunkSets = await response.json();
+        chunkSets.forEach(chunkSet => {
+            // Add to chunk set selector
+            addOptionToSelect(domElements.chunkSetSelectorForEmbedding, chunkSet[0], chunkSet[1]);
+        });
+    } catch (error) {
+        handleError('Error fetching chunk sets for embedding', error.message, error.stack);
+    }
+});
+
+// Embed documentation
+domElements.embdedBtn.addEventListener('click', async () => {
+    const chunkSetId = domElements.chunkSetSelectorForEmbedding.value;
+    
+    if (chunkSetId == 0) {
+        return;
+    }
+    
+    domElements.embdedBtn.disabled = true;
+    domElements.embedStatus.textContent = 'embedding documentation…';
+    
+    try {
+        const response = await fetch(`/perform_embedding?chunk_set_id=${chunkSetId}`, {
+            method: 'POST'
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error embedding documentation', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const data = await response.json();
+        domElements.embedStatus.textContent = data.message;
+    } catch (error) {
+        handleError('Error embedding documentation', error.message, error.stack);
+    } finally {
+        domElements.embdedBtn.disabled = false;
     }
 });

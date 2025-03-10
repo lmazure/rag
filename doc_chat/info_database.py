@@ -288,7 +288,7 @@ class InfoDatabase:
         
         return id
 
-    def get_chunk(self, chunk_id: int) -> str:
+    def get_chunk(self, chunk_id: int) -> Tuple[str, int]:
         """
         Get a chunk.
 
@@ -296,20 +296,20 @@ class InfoDatabase:
             chunk_id: The ID of the chunk.
 
         Returns:
-            The chunk as a string.
+            The chunk as a string and the ID of the scanned URL.
         """
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
         
-        cursor.execute('SELECT chunk FROM chunks WHERE id = ?', (chunk_id,))
+        cursor.execute('SELECT chunk, scanned_url_id FROM chunks WHERE id = ?', (chunk_id,))
         chunk_data = cursor.fetchone()
         conn.close()
         
         if chunk_data:
-            return chunk_data[0]
+            return chunk_data[0], chunk_data[1]
         raise Exception(f"Chunk {chunk_id} not found")
 
-    def get_all_chunks(self, chunk_set_id: int) -> List[str]:
+    def get_all_chunks(self, chunk_set_id: int) -> List[int]:
         """
         Get all chunks of a chunk set.
 

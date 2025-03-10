@@ -302,15 +302,15 @@ def embed():
     Split content into chunks.
 
     Args:
-        scan_id: The ID of the scan.
+        chunk_set_id: The ID of the chunk set.
 
     Returns:
         A JSON response with a message indicating the number of chunks created.
-        Returns an error message if 'scan_id' is not provided.
+        Returns an error message if 'chunk_set_id' is not provided.
     """
-    scan_id = request.args.get('scan_id')
-    if not scan_id:
-        return jsonify({'error': 'scan_id is required'}), 400
+    chunk_set_id = request.args.get('chunk_set_id')
+    if not chunk_set_id:
+        return jsonify({'error': 'chunk_set_id is required'}), 400
 
     try:
         cr.setup()
@@ -319,16 +319,21 @@ def embed():
         all_metadatas = []
         all_ids = []
 
-        # TBD retrieve the chunks
-        for (chunk, url, chunk_id) in chunks:
+        # retrieve the chunks
+        chunk_ids = db.get_all_chunks(int(chunk_set_id))
+
+        # embed the chunks
+        for chunk_id in chunk_ids:
+            chunk, scanned_url_id = db.get_chunk(chunk_id)
+            scanned_url = db.get_scanned_url(scanned_url_id)
             all_chunks.append(chunk)
-            all_metadatas.append({"source": url})
+            all_metadatas.append({"source": scanned_url})
             all_ids.append(str(chunk_id))
         cr.add_chunks(all_chunks, all_metadatas, all_ids)
 
-        return jsonify({"message": f"Ingested {len(all_chunks)} chunks"})
+        return jsonify({"message": f"Embedded {len(all_chunks)} chunks"})
     except Exception as e:
-        return jsonify({'error': 'Failed to chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+        return jsonify({'error': 'Failed to embed chunks', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 
 @app.route('/generate_answer', methods=['POST'])

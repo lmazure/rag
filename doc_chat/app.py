@@ -322,12 +322,15 @@ def embed():
         # retrieve the chunks
         chunk_ids = db.get_all_chunks(int(chunk_set_id))
 
+        # create an embedding set
+        embedding_set_id = db.add_embedding_set(int(chunk_set_id), "")
+
         # embed the chunks
         for chunk_id in chunk_ids:
             chunk, scanned_url_id = db.get_chunk(chunk_id)
             scanned_url = db.get_scanned_url(scanned_url_id)
             all_chunks.append(chunk)
-            all_metadatas.append({"source": scanned_url})
+            all_metadatas.append({"source": scanned_url, "embedding_set_id": embedding_set_id})
             all_ids.append(str(chunk_id))
         cr.add_chunks(all_chunks, all_metadatas, all_ids)
 
@@ -335,6 +338,50 @@ def embed():
     except Exception as e:
         return jsonify({'error': 'Failed to embed chunks', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
+@app.route('/embedding_sets', methods=['GET'])
+def get_embedding_sets():
+    """
+    Get the list of embedding sets for a given chunk set.
+
+    Args:
+        chunk_set_id: The ID of the chunk set.
+
+    Returns:
+        A JSON response with a list of embedding sets.
+        Returns an error message if 'chunk_set_id' is not provided.
+    """
+    chunk_set_id = request.args.get('chunk_set_id')
+    if not chunk_set_id:
+        return jsonify({'error': 'chunk_set_id is required'}), 400
+    
+    try:
+        embedding_sets = db.get_all_embedding_sets(int(chunk_set_id))
+        return jsonify(embedding_sets)
+    except Exception as e:
+        return jsonify({'error': 'Failed to get embedding sets', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+
+@app.route('/embeddings', methods=['GET'])
+def get_embeddings():
+    """
+    Get the list of embeddings for a given embedding set.
+
+    Args:
+        embedding_set_id: The ID of the embedding set.
+
+    Returns:
+        A JSON response with a list of embeddings.
+        Returns an error message if 'embedding_set_id' is not provided.
+    """
+    embedding_set_id = request.args.get('embedding_set_id')
+    if not embedding_set_id:
+        return jsonify({'error': 'embedding_set_id is required'}), 400
+    
+    try:
+        cr.setup()
+        embeddings = cr.get_all_embeddings(int(embedding_set_id))
+        return jsonify(embeddings)
+    except Exception as e:
+        return jsonify({'error': 'Failed to get embeddings', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/generate_answer', methods=['POST'])
 def query():

@@ -347,3 +347,48 @@ class InfoDatabase:
         conn.close()
         
         return [chunk[0] for chunk in chunks_data]
+
+    def add_embedding_set(self, chunk_set_id: int, embedder_description: str) -> int:
+        """
+        Add an embedding set.
+
+        Args:
+            chunk_set_id: The ID of the chunk set.
+            embedder_description: The description of the embedder.
+
+        Returns:
+            The ID of the inserted embedding set.
+        """
+        conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT INTO embedding_sets (chunk_set_id, embedder_description) 
+            VALUES (?, ?)
+        ''', (chunk_set_id, embedder_description))
+        
+        id = cursor.lastrowid
+        conn.commit()
+        assert id is not None
+        conn.close()
+        
+        return id
+
+    def get_all_embedding_sets(self, chunk_set_id: int) -> List[int]:
+        """
+        Get all embedding sets of a chunk set.
+
+        Args:
+            chunk_set_id: The ID of the chunk set.
+
+        Returns:
+            A list of the IDs of the embedding sets of the chunk set.
+        """
+        conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT id FROM embedding_sets WHERE chunk_set_id = ?', (chunk_set_id,))
+        embedding_sets_data = cursor.fetchall()
+        conn.close()
+        
+        return [embedding_set[0] for embedding_set in embedding_sets_data]

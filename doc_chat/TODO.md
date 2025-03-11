@@ -1,5 +1,8 @@
-- FETCH isplay advancement while reaping the doc, indicate the current number of scanned URLs / the total number of URLs to scan
-- display advancement while chunking
+- create a method populate for each selector
+- properly format chunk set names and embedding set names
+- FETCH display advancement while reaping the doc, indicate the current number of scanned URLs / the total number of URLs to scan
+- CHUNK display advancement, indicate the current number of chunks / the total number of chunks
+- EMBED display advancement , indicate the current number of embeddings / the total number of embeddings
 - FETCH when fetch is finished the selector of the chunker and the selector of the scanned URLs navigator should be updated
 - repair Pytest tests
 - CHUNK deduplicate chunks and/or clean up HTML before chunking

@@ -30,6 +30,12 @@ class VectorDatabase:
             ids=ids
             )
 
+    def get_all_embeddings(self, embedding_set_id: int) -> List[str]:
+        """Get all embeddings for a given embedding set."""
+        return self.collection.get(
+            where={"embedding_set_id": embedding_set_id}
+        )
+
     def query(self, query: str) -> QueryResult:
         """Query the database."""
         results = self.collection.query(

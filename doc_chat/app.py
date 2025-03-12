@@ -1,20 +1,16 @@
 import json
 from pathlib import Path
 import traceback
-from typing import List, Tuple
 from docling_core.types.doc.document import DoclingDocument
-import requests
-from bs4 import BeautifulSoup
-from docling.document_converter import DocumentConverter
 from docling.chunking import HybridChunker
 from together import Together
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 from markupsafe import escape
-from urllib.parse import urljoin
 
 from vector_database import VectorDatabase
 from info_database import InfoDatabase
+from site_reaper import SiteReaper
 
 load_dotenv()
 
@@ -28,31 +24,16 @@ cr = VectorDatabase(db_path)
 
 app = Flask(__name__)
 
-def get_all_html_urls(base_url: str) -> List[str]:
-    """Get all HTML URLs from the documentation site."""
-    urls = [ base_url ]
-    response = requests.get(base_url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    
-    for link in soup.find_all('a'):
-        href = link.get('href')
-        if href and (href.endswith('.html') or href.endswith('.htm')):
-            urls.append(urljoin(base_url, href))
-    
-    return list(set(urls))
-
 def compute_scanned_url_filename(id: int) -> str:
     """Compute the filename for a scanned URL."""
     return f"{db_path}/scanned_urls/{(id%100):02d}/doc_{id:06d}.json"
 
-def fetch_content(scan_id: int, url: str) -> None:
+def fetch_content(scan_id: int, url: str, reaper: SiteReaper) -> None:
     """Fetch content from URL."""
 
     # Fetch the content
-    converter = DocumentConverter()
     try:
-        result = converter.convert(url)
-        doc = result.document
+        doc = reaper.get_url_content(url)
     except Exception as e:
         print(f"Failed to fetch content from {url}: {str(e)}", flush=True)
         return
@@ -133,10 +114,12 @@ def fetch():
     try:
         scan_id = db.add_scan(root_url)
 
-        urls = get_all_html_urls(root_url)
+        reaper = SiteReaper(root_url)
+        urls = reaper.get_urls()
 
         for url in urls:
-            fetch_content(scan_id, url)
+            print(f"URL={url}", flush=True)
+            fetch_content(scan_id, url, reaper)
 
         return jsonify({"message": f"Fetched {len(urls)} URLs"})
     except Exception as e:

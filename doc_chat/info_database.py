@@ -242,7 +242,7 @@ class InfoDatabase:
         
         return id
 
-    def get_all_chunk_sets(self, scan_id: int) -> List[Tuple[int, str]]:
+    def get_all_chunk_sets(self, scan_id: int) -> List[Tuple[int, str, str]]:
         """
         Get all chunk sets for a given scan.
 
@@ -255,7 +255,7 @@ class InfoDatabase:
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
         
-        cursor.execute('SELECT * FROM chunk_sets WHERE scan_id = ?', (scan_id,))
+        cursor.execute('SELECT id, chunker_description, created_at FROM chunk_sets WHERE scan_id = ?', (scan_id,))
         chunk_sets_data = cursor.fetchall()
         conn.close()
         
@@ -374,7 +374,7 @@ class InfoDatabase:
         
         return id
 
-    def get_all_embedding_sets(self, chunk_set_id: int) -> List[int]:
+    def get_all_embedding_sets(self, chunk_set_id: int) -> List[Tuple[int, str, str]]:
         """
         Get all embedding sets of a chunk set.
 
@@ -387,8 +387,8 @@ class InfoDatabase:
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
 
-        cursor.execute('SELECT id FROM embedding_sets WHERE chunk_set_id = ?', (chunk_set_id,))
+        cursor.execute('SELECT id, embedder_description, created_at FROM embedding_sets WHERE chunk_set_id = ?', (chunk_set_id,))
         embedding_sets_data = cursor.fetchall()
         conn.close()
         
-        return [embedding_set[0] for embedding_set in embedding_sets_data]
+        return embedding_sets_data

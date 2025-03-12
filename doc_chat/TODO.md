@@ -1,5 +1,4 @@
-- create a method populate for each selector
-- properly format chunk set names and embedding set names
+- chen chunking abd embedding, indicate the id of the new created chunk set and embedding set
 - FETCH display advancement while reaping the doc, indicate the current number of scanned URLs / the total number of URLs to scan
 - CHUNK display advancement, indicate the current number of chunks / the total number of chunks
 - EMBED display advancement , indicate the current number of embeddings / the total number of embeddings

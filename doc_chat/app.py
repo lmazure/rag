@@ -243,7 +243,8 @@ def get_chunk_sets():
     
     try:
         chunk_sets = db.get_all_chunk_sets(int(scan_id))
-        return jsonify(chunk_sets)
+        answer = [ { "id": chunk_set[0], "chunker_description": chunk_set[1], "created_at": chunk_set[2] } for chunk_set in chunk_sets ]
+        return jsonify(answer)
     except Exception as e:
         return jsonify({'error': 'Failed to get chunk sets', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
@@ -292,7 +293,7 @@ def get_chunk_content():
 
     try:
         chunk = db.get_chunk(int(chunk_id))
-        return jsonify({"text": chunk})
+        return jsonify({"text": chunk[0]})
     except Exception as e:
         return jsonify({'error': 'Failed to get chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
@@ -323,7 +324,7 @@ def embed():
         chunk_ids = db.get_all_chunks(int(chunk_set_id))
 
         # create an embedding set
-        embedding_set_id = db.add_embedding_set(int(chunk_set_id), "")
+        embedding_set_id = db.add_embedding_set(int(chunk_set_id), "default embedder")
 
         # embed the chunks
         for chunk_id in chunk_ids:
@@ -356,7 +357,8 @@ def get_embedding_sets():
     
     try:
         embedding_sets = db.get_all_embedding_sets(int(chunk_set_id))
-        return jsonify(embedding_sets)
+        answer = [ { "id": embedding_set[0], "embedder_description": embedding_set[1], "created_at": embedding_set[2] } for embedding_set in embedding_sets ]
+        return jsonify(answer)
     except Exception as e:
         return jsonify({'error': 'Failed to get embedding sets', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 

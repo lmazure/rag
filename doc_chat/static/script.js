@@ -97,6 +97,118 @@ const domElements = {
     response: document.getElementById('response')
 };
 
+async function populateScannedUrlSelector(scanSelector, scannedUrlSelector) {
+    const scan_id = scanSelector.value;
+
+    // Clear existing options except the default one
+    clearSelectOptions(scannedUrlSelector);
+
+    if (scan_id == 0) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/scanned_urls?scan_id=${scan_id}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching scanned URLs', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const scans = await response.json();
+        scans.forEach(scan => {
+            // Add to scanned URLs selector
+            addOptionToSelect(scannedUrlSelector, scan[0], scan[1]);
+        });
+
+    } catch (error) {
+        handleError('Error fetching scanned URLs', error.message, error.stack);
+    }
+}
+
+async function populateChunkSetSelector(scanSelector, chunkSetSelector) {
+
+    // Clear existing options except the default one
+    clearSelectOptions(chunkSetSelector);
+    
+    const scan_id = scanSelector.value;
+    if (scan_id == 0) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/chunk_sets?scan_id=${scan_id}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching chunk sets', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const chunkSets = await response.json();
+        chunkSets.forEach(chunkSet => {
+            // Add to chunk set selector
+            addOptionToSelect(chunkSetSelector, chunkSet.id, `Chunk Set ${chunkSet.id} - ${chunkSet.chunker_description} - ${chunkSet.created_at}`);
+        });
+    } catch (error) {
+        handleError('Error fetching chunk sets', error.message, error.stack);
+    }
+}
+
+async function populateChunkSelector(scannedUrlSelector, chunkSetSelector, chunkSelector) {
+
+    // Clear existing options except the default one
+    clearSelectOptions(chunkSelector);
+
+    const chunkSetId = chunkSetSelector.value;
+    if (chunkSetId == 0) {
+        return;
+    }
+
+    const scannedUrlId = scannedUrlSelector.value;
+    if (scannedUrlId == 0) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/chunks?scanned_url_id=${scannedUrlId}&chunk_set_id=${chunkSetId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching chunks for view chunks', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const chunks = await response.json();
+        chunks.forEach(chunk => {
+            // Add to chunk selector
+            addOptionToSelect(chunkSelector, chunk, `Chunk ${chunk}`);
+        });
+    } catch (error) {
+        handleError('Error fetching chunks for view chunks', error.message, error.stack);
+    }
+}
+
+async function populateEmbeddingSetSelector(chunkSetSelector, embeddingSetSelector) {
+
+    const chunkSetId = chunkSetSelector.value;
+    if (chunkSetId == 0) {
+        return;
+    }
+
+    clearSelectOptions(embeddingSetSelector);
+    try {
+        const response = await fetch(`/embedding_sets?chunk_set_id=${chunkSetId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching embedding sets', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const embeddingSets = await response.json();
+        embeddingSets.forEach(embeddingSet => {
+            // Add to embedding set selector
+            addOptionToSelect(embeddingSetSelector, embeddingSet.id, `Embedding Set ${embeddingSet.id} - ${embeddingSet.embedder_description} - ${embeddingSet.created_at}`);
+        });
+    } catch (error) {
+        handleError('Error fetching embedding sets', error.message, error.stack);
+    }
+}
+
 domElements.fetchBtn.addEventListener('click', async () => {
     const docUrl = domElements.docUrl.value.trim();
     
@@ -127,7 +239,7 @@ domElements.fetchBtn.addEventListener('click', async () => {
     }
 });
 
-// Function to load scans into all scan selectors
+// load scans into all scan selectors
 async function loadScans() {
     // Clear existing options except the default one
     clearSelectOptions(domElements.scanSelectorForChunk);
@@ -160,44 +272,17 @@ async function loadScans() {
     }
 }
 
-// Load scans when the page loads
+// load scans when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     loadScans();
 });
-
-async function populateScannedUrlSelector(scanSelector, scannedUrlSelector) {
-    const scan_id = scanSelector.value;
-
-    // Clear existing options except the default one
-    clearSelectOptions(scannedUrlSelector);
-
-    if (scan_id == 0) {
-        return;
-    }
-
-    try {
-        const response = await fetch(`/scanned_urls?scan_id=${scan_id}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            handleError('Error fetching scanned URLs', errorData.errorDetails, errorData.stackTrace);
-            return;
-        }
-        const scans = await response.json();
-        scans.forEach(scan => {
-            // Add to scanned URLs selector
-            addOptionToSelect(scannedUrlSelector, scan[0], scan[1]);
-        });
-
-    } catch (error) {
-        handleError('Error fetching scanned URLs', error.message, error.stack);
-    }
-}
 
 domElements.scanSelectorForDisplay.addEventListener('input', async () => {
     populateScannedUrlSelector(domElements.scanSelectorForDisplay, domElements.scannedUrlSelectorForDisplay);
     domElements.fetchBtn.disabled = false;
 })
 
+// display content of scanned URL
 domElements.scannedUrlSelectorForDisplay.addEventListener('input', async () => {
     const scanned_url_id = domElements.scannedUrlSelectorForDisplay.value;
     domElements.scannedUrlSelectorForDisplay.value = scanned_url_id;
@@ -222,6 +307,7 @@ domElements.scannedUrlSelectorForDisplay.addEventListener('input', async () => {
     }
 })
 
+// open a scanned URL in a new Browser tab
 domElements.displayScannedUrlBtn.addEventListener('click', () => {
     const scanned_url_id = domElements.scannedUrlSelectorForDisplay.value;
     const scanned_url = domElements.scannedUrlSelectorForDisplay.options[domElements.scannedUrlSelectorForDisplay.selectedIndex].text;
@@ -239,6 +325,7 @@ domElements.displayScannedUrlBtn.addEventListener('click', () => {
 
 })
 
+// chunk content of a scan
 domElements.chunkBtn.addEventListener('click', async () => {
     const scanId = domElements.scanSelectorForChunk.value;
     
@@ -268,6 +355,118 @@ domElements.chunkBtn.addEventListener('click', async () => {
     }
 });
 
+// Event listener for the scan selector in the View Chunks section
+domElements.scanSelectorForViewChunk.addEventListener('input', async () => {
+
+    populateScannedUrlSelector(domElements.scanSelectorForViewChunk, domElements.scannedUrlSelectorForViewChunk);
+
+    populateChunkSetSelector(domElements.scanSelectorForViewChunk, domElements.chunkSetSelectorForViewChunk);
+
+    // Clear chunk selector and display
+    clearSelectOptions(domElements.chunkSelectorForViewChunk);
+
+    domElements.chunkDisplay.textContent = '';
+});
+
+async function populateChunkSelectorForDisplay() {
+    
+    domElements.chunkDisplay.textContent = '';
+    populateChunkSelector(domElements.scannedUrlSelectorForViewChunk, domElements.chunkSetSelectorForViewChunk, domElements.chunkSelectorForViewChunk);
+}
+
+// Event listener for the chunk set selector in the View Chunks section
+domElements.chunkSetSelectorForViewChunk.addEventListener('input', populateChunkSelectorForDisplay);
+
+// Event listener for the scanned URL selector in the View Chunks section
+domElements.scannedUrlSelectorForViewChunk.addEventListener('input', populateChunkSelectorForDisplay);
+
+// Event listener for the chunk selector in the View Chunks section
+domElements.chunkSelectorForViewChunk.addEventListener('input', async () => {
+    const chunkId = domElements.chunkSelectorForViewChunk.value;
+    
+    if (chunkId == 0) {
+        domElements.chunkDisplay.textContent = '';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/chunk_content?chunk_id=${chunkId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching chunk content', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const data = await response.json();
+        domElements.chunkDisplay.textContent = data.text;
+    } catch (error) {
+        handleError('Error fetching chunk content', error.message, error.stack);
+    }
+});
+
+// Event listener for the scan selector in the Embed section
+domElements.scanSelectorForEmbedding.addEventListener('input', async () => {
+    populateChunkSetSelector(domElements.scanSelectorForEmbedding, domElements.chunkSetSelectorForEmbedding);
+});
+
+// embed documentation
+domElements.embdedBtn.addEventListener('click', async () => {
+    const chunkSetId = domElements.chunkSetSelectorForEmbedding.value;
+    
+    if (chunkSetId == 0) {
+        return;
+    }
+    
+    domElements.embdedBtn.disabled = true;
+    domElements.embedStatus.textContent = 'embedding documentation…';
+    
+    try {
+        const response = await fetch(`/perform_embedding?chunk_set_id=${chunkSetId}`, {
+            method: 'POST'
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error embedding documentation', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const data = await response.json();
+        domElements.embedStatus.textContent = data.message;
+    } catch (error) {
+        handleError('Error embedding documentation', error.message, error.stack);
+    } finally {
+        domElements.embdedBtn.disabled = false;
+    }
+});
+
+domElements.scanSelectorForViewEmbeddings.addEventListener('input', async () => {
+    populateChunkSetSelector(domElements.scanSelectorForViewEmbeddings, domElements.chunkSetSelectorForViewEmbeddings);
+});
+
+domElements.chunkSetSelectorForViewEmbeddings.addEventListener('input', async () => {
+    populateEmbeddingSetSelector(domElements.chunkSetSelectorForViewEmbeddings, domElements.embeddingSetSelectorForViewEmbeddings);
+});
+
+domElements.embeddingSetSelectorForViewEmbeddings.addEventListener('input', async () => {
+    const embeddingSetId = domElements.embeddingSetSelectorForViewEmbeddings.value;
+    
+    if (embeddingSetId == 0) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/embeddings?embedding_set_id=${embeddingSetId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching embeddings', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        const embeddings = await response.json();
+        domElements.embeddingDisplay.textContent = JSON.stringify(embeddings, null, 2);
+    } catch (error) {
+        handleError('Error fetching embeddings', error.message, error.stack);
+    }
+});
+
+// answer question
 domElements.submitBtn.addEventListener('click', async () => {
     const query = domElements.query.value;
     
@@ -309,196 +508,5 @@ domElements.submitBtn.addEventListener('click', async () => {
     } finally {
         domElements.loading.style.display = 'none';
         domElements.submitBtn.disabled = false;
-    }
-});
-
-async function populateChunkSelectorForChunkDisplay() {
-
-    // Clear existing options except the default one
-    clearSelectOptions(domElements.chunkSelectorForViewChunk);
-    domElements.chunkDisplay.textContent = '';
-
-    const chunkSetId = domElements.chunkSetSelectorForViewChunk.value;
-    if (chunkSetId == 0) {
-        return;
-    }
-
-    const scannedUrlId = domElements.scannedUrlSelectorForViewChunk.value;
-    if (scannedUrlId == 0) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/chunks?scanned_url_id=${scannedUrlId}&chunk_set_id=${chunkSetId}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            handleError('Error fetching chunks for view chunks', errorData.errorDetails, errorData.stackTrace);
-            return;
-        }
-        const chunks = await response.json();
-        chunks.forEach(chunk => {
-            // Add to chunk selector
-            addOptionToSelect(domElements.chunkSelectorForViewChunk, chunk, `Chunk ${chunk}`);
-        });
-    } catch (error) {
-        handleError('Error fetching chunks for view chunks', error.message, error.stack);
-    }
-}
-
-async function populateChunkSetSelector(scanSelector, chunkSetSelector) {
-
-    // Clear existing options except the default one
-    clearSelectOptions(chunkSetSelector);
-    
-    const scan_id = scanSelector.value;
-    if (scan_id == 0) {
-        return;
-    }
-
-    try {
-        const response = await fetch(`/chunk_sets?scan_id=${scan_id}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            handleError('Error fetching chunk sets', errorData.errorDetails, errorData.stackTrace);
-            return;
-        }
-        const chunkSets = await response.json();
-        chunkSets.forEach(chunkSet => {
-            // Add to chunk set selector
-            addOptionToSelect(chunkSetSelector, chunkSet[0], chunkSet[1]);
-        });
-    } catch (error) {
-        handleError('Error fetching chunk sets', error.message, error.stack);
-    }
-}
-
-// Event listener for the scan selector in the View Chunks section
-domElements.scanSelectorForViewChunk.addEventListener('input', async () => {
-    const scan_id = domElements.scanSelectorForViewChunk.value;
-
-    populateScannedUrlSelector(domElements.scanSelectorForViewChunk, domElements.scannedUrlSelectorForViewChunk);
-
-    populateChunkSetSelector(domElements.scanSelectorForViewChunk, domElements.chunkSetSelectorForViewChunk);
-
-    // Clear chunk selector and display
-    clearSelectOptions(domElements.chunkSelectorForViewChunk);
-
-    domElements.chunkDisplay.textContent = '';
-});
-
-// Event listener for the chunk set selector in the View Chunks section
-domElements.chunkSetSelectorForViewChunk.addEventListener('input', populateChunkSelectorForChunkDisplay);
-
-// Event listener for the scanned URL selector in the View Chunks section
-domElements.scannedUrlSelectorForViewChunk.addEventListener('input', populateChunkSelectorForChunkDisplay);
-
-// Event listener for the chunk selector in the View Chunks section
-domElements.chunkSelectorForViewChunk.addEventListener('input', async () => {
-    const chunkId = domElements.chunkSelectorForViewChunk.value;
-    
-    if (chunkId == 0) {
-        domElements.chunkDisplay.textContent = '';
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/chunk_content?chunk_id=${chunkId}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            handleError('Error fetching chunk content', errorData.errorDetails, errorData.stackTrace);
-            return;
-        }
-        const data = await response.json();
-        domElements.chunkDisplay.textContent = data.text;
-    } catch (error) {
-        handleError('Error fetching chunk content', error.message, error.stack);
-    }
-});
-
-// Event listener for the scan selector in the Embed section
-domElements.scanSelectorForEmbedding.addEventListener('input', async () => {
-    populateChunkSetSelector(domElements.scanSelectorForEmbedding, domElements.chunkSetSelectorForEmbedding);
-});
-
-// Embed documentation
-domElements.embdedBtn.addEventListener('click', async () => {
-    const chunkSetId = domElements.chunkSetSelectorForEmbedding.value;
-    
-    if (chunkSetId == 0) {
-        return;
-    }
-    
-    domElements.embdedBtn.disabled = true;
-    domElements.embedStatus.textContent = 'embedding documentation…';
-    
-    try {
-        const response = await fetch(`/perform_embedding?chunk_set_id=${chunkSetId}`, {
-            method: 'POST'
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            handleError('Error embedding documentation', errorData.errorDetails, errorData.stackTrace);
-            return;
-        }
-        const data = await response.json();
-        domElements.embedStatus.textContent = data.message;
-    } catch (error) {
-        handleError('Error embedding documentation', error.message, error.stack);
-    } finally {
-        domElements.embdedBtn.disabled = false;
-    }
-});
-
-domElements.scanSelectorForViewEmbeddings.addEventListener('input', async () => {
-    populateChunkSetSelector(domElements.scanSelectorForViewEmbeddings, domElements.chunkSetSelectorForViewEmbeddings);
-});
-
-async function populateEmbeddingSetSelector(chunkSetSelector, embeddingSetSelector) {
-
-    const chunkSetId = chunkSetSelector.value;
-    if (chunkSetId == 0) {
-        return;
-    }
-
-    clearSelectOptions(embeddingSetSelector);
-    try {
-        const response = await fetch(`/embedding_sets?chunk_set_id=${chunkSetId}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            handleError('Error fetching embedding sets', errorData.errorDetails, errorData.stackTrace);
-            return;
-        }
-        const embeddingSets = await response.json();
-        embeddingSets.forEach(embeddingSet => {
-            // Add to embedding set selector
-            addOptionToSelect(embeddingSetSelector, embeddingSet, `Embedding Set ${embeddingSet}`);
-        });
-    } catch (error) {
-        handleError('Error fetching embedding sets', error.message, error.stack);
-    }
-}
-
-domElements.chunkSetSelectorForViewEmbeddings.addEventListener('input', async () => {
-    populateEmbeddingSetSelector(domElements.chunkSetSelectorForViewEmbeddings, domElements.embeddingSetSelectorForViewEmbeddings);
-});
-
-domElements.embeddingSetSelectorForViewEmbeddings.addEventListener('input', async () => {
-    const embeddingSetId = domElements.embeddingSetSelectorForViewEmbeddings.value;
-    
-    if (embeddingSetId == 0) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/embeddings?embedding_set_id=${embeddingSetId}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            handleError('Error fetching embeddings', errorData.errorDetails, errorData.stackTrace);
-            return;
-        }
-        const embeddings = await response.json();
-        domElements.embeddingDisplay.textContent = JSON.stringify(embeddings, null, 2);
-    } catch (error) {
-        handleError('Error fetching embeddings', error.message, error.stack);
     }
 });

@@ -53,8 +53,72 @@ function handleError(errorMessage, errorDetails, stackTrace) {
     return;
 }
 
+// Logs functionality
+let lastLogId = 0;
+let logsRefreshInterval = null;
+
+// Function to fetch and display logs
+async function fetchLogs() {
+    try {
+        const response = await fetch(`/logs?id=${lastLogId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching logs', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        
+        const logs = await response.json();
+        if (logs.length > 0) {
+            const logsContent = document.getElementById('logsContent');
+            
+            logs.forEach(log => {
+                const logEntry = document.createElement('div');
+                logEntry.className = `log-entry log-${log.log_type.toLowerCase()}`;
+                logEntry.innerHTML = `<strong>[${log.created_at}] [${log.log_type}]:</strong> ${log.log}`;
+                logsContent.appendChild(logEntry);
+                
+                // Update the last log ID
+                lastLogId = Math.max(lastLogId, log.id);
+            });
+            
+            // Auto-scroll to the bottom
+            logsContent.scrollTop = logsContent.scrollHeight;
+        }
+    } catch (error) {
+        handleError('Error fetching logs', error.message, error.stack);
+    }
+}
+
+// Function to start logs refresh interval
+function startLogsRefresh() {
+    // Clear any existing interval
+    if (logsRefreshInterval) {
+        clearInterval(logsRefreshInterval);
+    }
+    
+    // Fetch logs immediately
+    fetchLogs();
+    
+    // Set up interval to refresh logs every 2 seconds
+    logsRefreshInterval = setInterval(fetchLogs, 2000);
+}
+
+// Function to stop logs refresh interval
+function stopLogsRefresh() {
+    if (logsRefreshInterval) {
+        clearInterval(logsRefreshInterval);
+        logsRefreshInterval = null;
+    }
+}
+
 // Cache DOM elements
 const domElements = {
+    // Logs section
+    logsButton: document.getElementById('logsButton'),
+    logsModal: document.getElementById('logsModal'),
+    logsClose: document.querySelector('.logs-close'),
+    logsContent: document.getElementById('logsContent'),
+    
     // Fetch section
     docUrl: document.getElementById('docUrl'),
     fetchBtn: document.getElementById('fetchBtn'),
@@ -96,6 +160,25 @@ const domElements = {
     loading: document.getElementById('loading'),
     response: document.getElementById('response')
 };
+
+// Event listeners for logs modal
+domElements.logsButton.addEventListener('click', () => {
+    domElements.logsModal.style.display = 'block';
+    startLogsRefresh();
+});
+
+domElements.logsClose.addEventListener('click', () => {
+    domElements.logsModal.style.display = 'none';
+    stopLogsRefresh();
+});
+
+// Close modal when clicking outside of it
+window.addEventListener('click', (event) => {
+    if (event.target === domElements.logsModal) {
+        domElements.logsModal.style.display = 'none';
+        stopLogsRefresh();
+    }
+});
 
 async function populateScannedUrlSelector(scanSelector, scannedUrlSelector) {
     const scan_id = scanSelector.value;

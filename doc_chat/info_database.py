@@ -11,11 +11,11 @@ class InfoDatabase:
             db_path: The path to the database directory.
         """
         self.db_path = db_path
-        self.database_name = "history.db.sqlite3"
-        self.setup()
+        self.database_name = "info.db.sqlite3"
+        self.__setup()
 
-    def setup(self) -> None:
-        """Set up the database of the scanned URLs by creating the necessary directories and files."""
+    def __setup(self) -> None:
+        """Set up the database by creating the necessary directories and files."""
 
         # if the database already exists, do nothing
         if os.path.exists(f"{self.db_path}/{self.database_name}"):
@@ -82,10 +82,6 @@ class InfoDatabase:
 
         conn.commit()
         conn.close()
-
-    def delete_database(self) -> None:
-        """Delete the database."""
-        os.remove(f"{self.db_path}/{self.database_name}")
 
     def add_scan(self, root_url: str) -> int:
         """

@@ -11,16 +11,17 @@ from markupsafe import escape
 from vector_database import VectorDatabase
 from info_database import InfoDatabase
 from site_reaper import SiteReaper
+from logger import Logger
 
 load_dotenv()
 
-# Configure Together AI
 MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
 port = 5000
 
 db_path = "data"
 db = InfoDatabase(db_path)
 cr = VectorDatabase(db_path)
+logger = Logger(db_path)
 
 app = Flask(__name__)
 
@@ -117,9 +118,9 @@ def fetch():
         reaper = SiteReaper(root_url)
         urls = reaper.get_urls()
 
-        for url in urls:
-            print(f"URL={url}", flush=True)
+        for i, url in enumerate(urls):
             fetch_content(scan_id, url, reaper)
+            logger.log('info', f"Fetched content from {url} ({i+1}/{len(urls)})")
 
         return jsonify({"message": f"Fetched {len(urls)} URLs"})
     except Exception as e:
@@ -400,6 +401,28 @@ def query():
 
     except Exception as e:
         return jsonify({'error': 'Failed to generate answer', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+
+@app.route('/logs', methods=['GET'])
+def get_logs():
+    """
+    Get the list of logs.
+
+    Args:
+        id: The ID of the last log already received.
+
+    Returns:
+        A JSON response with a list of logs.
+    """
+    id = request.args.get('id')
+    if not id:
+        return jsonify({'error': 'id is required'}), 400
+
+    try:
+        logs = logger.get_logs_after_id(int(id))
+        answer = [ { "id": log[0], "log_type": log[2], "log": log[1], "created_at": log[3] } for log in logs ]
+        return jsonify(answer)
+    except Exception as e:
+        return jsonify({'error': 'Failed to get logs', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=True)

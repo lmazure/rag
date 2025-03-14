@@ -55,20 +55,16 @@ def chunk_content(scan_id: int) -> int:
     chunk_set_id = db.add_chunk_set(scan_id, "HybridChunker")
     scanned_urls = db.get_all_scanned_urls(scan_id)
     chunker = HybridChunker()
-    i = 0
-    for scanned in scanned_urls:
+    for i, scanned in enumerate(scanned_urls):
         scanned_url_id = scanned[0]
         with Path(compute_scanned_url_filename(scanned_url_id)).open("r", encoding="utf-8") as fp:
             doc_dict = json.loads(fp.read())
             doc = DoclingDocument.model_validate(doc_dict)
         chunk_iter = chunker.chunk(doc)
         for chunk in chunk_iter:
-            print(f"=== {i} ===")
-            print(f"chunk.text:\n{repr(f'{chunk.text[:300]}…')}")
-            enriched_text = chunker.serialize(chunk=chunk)
-            print(f"chunker.serialize(chunk):\n{repr(f'{enriched_text[:300]}…')}")
+            # enriched_text = chunker.serialize(chunk=chunk)
             db.add_chunk(chunk_set_id, scanned_url_id, chunk.text)
-            i += 1
+        logger.log('info', f"Chunked content of {scanned[1]} ({i+1}/{len(scanned_urls)})")
     return i
 
 def generate_response(query: str, context: str) -> str:
@@ -95,6 +91,7 @@ def home():
     try:
         return render_template('index.html')
     except Exception as e:
+        logger.log('error', f"/ - Failed to render home page: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to render home page', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/perform_fetch', methods=['POST'])
@@ -124,6 +121,7 @@ def fetch():
 
         return jsonify({"message": f"Fetched {len(urls)} URLs"})
     except Exception as e:
+        logger.log('error', f"/perform_fetch - Failed to fetch documentation: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to fetch documentation', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/scans', methods=['GET'])
@@ -138,6 +136,7 @@ def get_all_scans():
         scans = db.get_all_scans()
         return jsonify(scans)
     except Exception as e:
+        logger.log('error', f"/scans - Failed to get scans: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get scans', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/scanned_urls', methods=['GET'])
@@ -155,11 +154,16 @@ def get_all_scanned_urls():
     scan_id = request.args.get('scan_id')
     if not scan_id:
         return jsonify({'error': 'scan_id is required'}), 400
+    try:
+        scan_id = int(scan_id)
+    except ValueError:
+        return jsonify({'error': 'scan_id must be an integer'}), 400
     
     try:
         urls = db.get_all_scanned_urls(scan_id)
         return jsonify(urls)
     except Exception as e:
+        logger.log('error', f"/scanned_urls - Failed to get scanned URLs: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get scanned URLs', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/scanned_url', methods=['GET'])
@@ -177,13 +181,18 @@ def get_scanned_url():
     scanned_url_id = request.args.get('scanned_url_id')
     if not scanned_url_id:
         return jsonify({'error': 'scanned_url_id is required'}), 400
+    try:
+        scanned_url_id = int(scanned_url_id)
+    except ValueError:
+        return jsonify({'error': 'scanned_url_id must be an integer'}), 400
     
     try:
-        with Path(compute_scanned_url_filename(int(scanned_url_id))).open("r", encoding="utf-8") as fp:
+        with Path(compute_scanned_url_filename(scanned_url_id)).open("r", encoding="utf-8") as fp:
             doc_dict = json.loads(fp.read())
             doc = DoclingDocument.model_validate(doc_dict)
         return jsonify(doc.export_to_markdown())
     except Exception as e:
+        logger.log('error', f"/scanned_url - Failed to get scanned URL content: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get scanned URL content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/perform_chunking', methods=['POST'])
@@ -201,11 +210,16 @@ def chunk():
     scan_id = request.args.get('scan_id')
     if not scan_id:
         return jsonify({'error': 'scan_id is required'}), 400
+    try:
+        scan_id = int(scan_id)
+    except ValueError:
+        return jsonify({'error': 'scan_id must be an integer'}), 400
 
     try:
-        nb = chunk_content(int(scan_id))
+        nb = chunk_content(scan_id)
         return jsonify({"message": f"Created {nb} chunks"})
     except Exception as e:
+        logger.log('error', f"/perform_chunking - Failed to chunk content: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 
@@ -224,12 +238,17 @@ def get_chunk_sets():
     scan_id = request.args.get('scan_id')
     if not scan_id:
         return jsonify({'error': 'scan_id is required'}), 400
-    
     try:
-        chunk_sets = db.get_all_chunk_sets(int(scan_id))
+        scan_id = int(scan_id)
+    except ValueError:
+        return jsonify({'error': 'scan_id must be an integer'}), 400
+
+    try:
+        chunk_sets = db.get_all_chunk_sets(scan_id)
         answer = [ { "id": chunk_set[0], "chunker_description": chunk_set[1], "created_at": chunk_set[2] } for chunk_set in chunk_sets ]
         return jsonify(answer)
     except Exception as e:
+        logger.log('error', f"/chunk_sets - Failed to get chunk sets: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get chunk sets', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/chunks', methods=['GET'])
@@ -248,15 +267,24 @@ def get_chunks():
     chunk_set_id = request.args.get('chunk_set_id')
     if not chunk_set_id:
         return jsonify({'error': 'chunk_set_id is required'}), 400
-    
+    try:
+        chunk_set_id = int(chunk_set_id)
+    except ValueError:
+        return jsonify({'error': 'chunk_set_id must be an integer'}), 400
+
     try:
         scanned_url_id = request.args.get('scanned_url_id')
         if scanned_url_id:
-            chunks = db.get_all_chunks_of_scanned_url(int(chunk_set_id), int(scanned_url_id))
+            try:
+                scanned_url_id = int(scanned_url_id)
+            except ValueError:
+                return jsonify({'error': 'scanned_url_id must be an integer'}), 400
+            chunks = db.get_all_chunks_of_scanned_url(chunk_set_id, scanned_url_id)
         else:
-            chunks = db.get_all_chunks(int(chunk_set_id))
+            chunks = db.get_all_chunks(chunk_set_id)
         return jsonify(chunks)
     except Exception as e:
+        logger.log('error', f"/chunks - Failed to get chunks: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get chunks', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/chunk_content', methods=['GET'])
@@ -274,11 +302,16 @@ def get_chunk_content():
     chunk_id = request.args.get('chunk_id')
     if not chunk_id:
         return jsonify({'error': 'chunk_id is required'}), 400
+    try:
+        chunk_id = int(chunk_id)
+    except ValueError:
+        return jsonify({'error': 'chunk_id must be an integer'}), 400
 
     try:
-        chunk = db.get_chunk(int(chunk_id))
+        chunk = db.get_chunk(chunk_id)
         return jsonify({"text": chunk[0]})
     except Exception as e:
+        logger.log('error', f"/chunk_content - Failed to get chunk content: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/perform_embedding', methods=['POST'])
@@ -296,6 +329,10 @@ def embed():
     chunk_set_id = request.args.get('chunk_set_id')
     if not chunk_set_id:
         return jsonify({'error': 'chunk_set_id is required'}), 400
+    try:
+        chunk_set_id = int(chunk_set_id)
+    except ValueError:
+        return jsonify({'error': 'chunk_set_id must be an integer'}), 400
 
     try:
         cr.setup()
@@ -305,10 +342,10 @@ def embed():
         all_ids = []
 
         # retrieve the chunks
-        chunk_ids = db.get_all_chunks(int(chunk_set_id))
+        chunk_ids = db.get_all_chunks(chunk_set_id)
 
         # create an embedding set
-        embedding_set_id = db.add_embedding_set(int(chunk_set_id), "default embedder")
+        embedding_set_id = db.add_embedding_set(chunk_set_id, "default embedder")
 
         # embed the chunks
         for chunk_id in chunk_ids:
@@ -317,10 +354,12 @@ def embed():
             all_chunks.append(chunk)
             all_metadatas.append({"source": scanned_url, "embedding_set_id": embedding_set_id})
             all_ids.append(str(chunk_id))
+            logger.log('info', f"Embedded chunk {chunk_id} ({len(all_chunks)}/{len(chunk_ids)})")
         cr.add_chunks(all_chunks, all_metadatas, all_ids)
 
         return jsonify({"message": f"Embedded {len(all_chunks)} chunks"})
     except Exception as e:
+        logger.log('error', f"/perform_embedding - Failed to embed chunks: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to embed chunks', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/embedding_sets', methods=['GET'])
@@ -338,12 +377,17 @@ def get_embedding_sets():
     chunk_set_id = request.args.get('chunk_set_id')
     if not chunk_set_id:
         return jsonify({'error': 'chunk_set_id is required'}), 400
+    try:
+        chunk_set_id = int(chunk_set_id)
+    except ValueError:
+        return jsonify({'error': 'chunk_set_id must be an integer'}), 400
     
     try:
-        embedding_sets = db.get_all_embedding_sets(int(chunk_set_id))
+        embedding_sets = db.get_all_embedding_sets(chunk_set_id)
         answer = [ { "id": embedding_set[0], "embedder_description": embedding_set[1], "created_at": embedding_set[2] } for embedding_set in embedding_sets ]
         return jsonify(answer)
     except Exception as e:
+        logger.log('error', f"/embedding_sets - Failed to get embedding sets: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get embedding sets', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/embeddings', methods=['GET'])
@@ -361,12 +405,17 @@ def get_embeddings():
     embedding_set_id = request.args.get('embedding_set_id')
     if not embedding_set_id:
         return jsonify({'error': 'embedding_set_id is required'}), 400
-    
+    try:
+        embedding_set_id = int(embedding_set_id)
+    except ValueError:
+        return jsonify({'error': 'embedding_set_id must be an integer'}), 400
+
     try:
         cr.setup()
-        embeddings = cr.get_all_embeddings(int(embedding_set_id))
+        embeddings = cr.get_all_embeddings(embedding_set_id)
         return jsonify(embeddings)
     except Exception as e:
+        logger.log('error', f"/embeddings - Failed to get embeddings: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get embeddings', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/generate_answer', methods=['POST'])
@@ -400,6 +449,7 @@ def query():
         })
 
     except Exception as e:
+        logger.log('error', f"/generate_answer - Failed to generate answer: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to generate answer', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/logs', methods=['GET'])
@@ -416,12 +466,17 @@ def get_logs():
     id = request.args.get('id')
     if not id:
         return jsonify({'error': 'id is required'}), 400
+    try:
+        id = int(id)
+    except ValueError:
+        return jsonify({'error': 'id must be an integer'}), 400
 
     try:
-        logs = logger.get_logs_after_id(int(id))
+        logs = logger.get_logs_after_id(id)
         answer = [ { "id": log[0], "log_type": log[2], "log": log[1], "created_at": log[3] } for log in logs ]
         return jsonify(answer)
     except Exception as e:
+        logger.log('error', f"/logs - Failed to get logs: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get logs', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 if __name__ == '__main__':

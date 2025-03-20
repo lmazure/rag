@@ -33,11 +33,7 @@ def fetch_content(scan_id: int, url: str, reaper: SiteReaper) -> None:
     """Fetch content from URL."""
 
     # Fetch the content
-    try:
-        doc = reaper.get_url_content(url)
-    except Exception as e:
-        print(f"Failed to fetch content from {url}: {str(e)}", flush=True)
-        return
+    doc = reaper.get_url_content_mkdocs(url)
 
     # Add the scanned URL to the database
     id = db.add_scanned_url(scan_id, url)

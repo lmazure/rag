@@ -11,6 +11,9 @@ class MkdocsSiteReaper(SiteReaper):
     def __init__(self, base_url: str):
         super().__init__(base_url)
 
+    def get_name(self) -> str:
+        return "Mkdocs reaper"
+
     def get_url_content(self, url: str) -> DoclingDocument:
         """Get the content of a URL of a site generated with mkdocs."""
         response = requests.get(url)

@@ -30,28 +30,37 @@ def compute_scanned_url_filename(id: int) -> str:
     """Compute the filename for a scanned URL."""
     return f"{db_path}/scanned_urls/{(id%100):02d}/doc_{id:06d}.json"
 
-def fetch_content(scan_id: int, url: str, reaper: SiteReaper) -> None:
+def fetch_content(url: str, reaper: SiteReaper) -> int:
     """Fetch content from URL."""
 
-    # Fetch the content
-    doc = reaper.get_url_content(url)
+    scan_id = db.add_scan(url, reaper.get_name())
 
-    # Add the scanned URL to the database
-    id = db.add_scanned_url(scan_id, url)
+    urls = reaper.get_urls()
 
-    # Save the document to a JSON file
-    filename = compute_scanned_url_filename(id)
-    Path(filename).parent.mkdir(parents=True, exist_ok=True)
-    with Path(filename).open("w", encoding="utf-8") as fp:
-        fp.write(json.dumps(doc.export_to_dict()))
+    for i, url in enumerate(urls):
+        logger.log('info', f"Fetched content from {url} ({i+1}/{len(urls)})")
 
-    return
+        # Fetch the content
+        doc = reaper.get_url_content(url)
 
-def chunk_content(scan_id: int) -> int:
+        # Add the scanned URL to the database
+        id = db.add_scanned_url(scan_id, url)
+
+        # Save the document to a JSON file
+        filename = compute_scanned_url_filename(id)
+        Path(filename).parent.mkdir(parents=True, exist_ok=True)
+        with Path(filename).open("w", encoding="utf-8") as fp:
+            fp.write(json.dumps(doc.export_to_dict()))
+
+    return len(urls)
+
+def chunk_content(scan_id: int) -> tuple[int, int]:
     """Fetch content from URLs and split into chunks."""
+
     chunk_set_id = db.add_chunk_set(scan_id, "HybridChunker")
     scanned_urls = db.get_all_scanned_urls(scan_id)
     chunker = HybridChunker()
+    total = 0
     for i, scanned in enumerate(scanned_urls):
         scanned_url_id = scanned[0]
         with Path(compute_scanned_url_filename(scanned_url_id)).open("r", encoding="utf-8") as fp:
@@ -61,8 +70,35 @@ def chunk_content(scan_id: int) -> int:
         for chunk in chunk_iter:
             # enriched_text = chunker.serialize(chunk=chunk)
             db.add_chunk(chunk_set_id, scanned_url_id, chunk.text)
+            total += 1
         logger.log('info', f"Chunked content of {scanned[1]} ({i+1}/{len(scanned_urls)})")
-    return i
+    return chunk_set_id, total
+
+def embed_chunks(chunk_set_id: int) -> tuple[int, int]:
+    """Embed the chunks of a cheunk set"""
+    cr.setup()
+    
+    all_chunks = []
+    all_metadatas = []
+    all_ids = []
+
+    # retrieve the chunks
+    chunk_ids = db.get_all_chunks(chunk_set_id)
+
+    # create an embedding set
+    embedding_set_id = db.add_embedding_set(chunk_set_id, "default embedder")
+
+    # embed the chunks
+    for chunk_id in chunk_ids:
+        chunk, scanned_url_id = db.get_chunk(chunk_id)
+        scanned_url = db.get_scanned_url(scanned_url_id)
+        all_chunks.append(chunk)
+        all_metadatas.append({"source": scanned_url, "embedding_set_id": embedding_set_id})
+        all_ids.append(str(chunk_id))
+        logger.log('info', f"Embedded chunk {chunk_id} ({len(all_chunks)}/{len(chunk_ids)})")
+    cr.add_chunks(all_chunks, all_metadatas, all_ids)
+
+    return embedding_set_id, len(all_chunks)
 
 def generate_response(query: str, context: str) -> str:
     """Generate response using Together AI."""
@@ -109,24 +145,16 @@ def fetch():
     if not reaper_type:
         return jsonify({'error': 'reaper is required'}), 400
 
+    if reaper_type == 'mkdocs':
+        reaper = MkdocsSiteReaper(root_url)
+    elif reaper_type == 'default':
+        reaper = SiteReaper(root_url)
+    else:
+        return jsonify({'error': 'Invalid reaper type'}), 400
+
     try:
-
-        if reaper_type == 'mkdocs':
-            reaper = MkdocsSiteReaper(root_url)
-        elif reaper_type == 'default':
-            reaper = SiteReaper(root_url)
-        else:
-            return jsonify({'error': 'Invalid reaper type'}), 400
-
-        scan_id = db.add_scan(root_url, reaper_type + " reaper")
-
-        urls = reaper.get_urls()
-
-        for i, url in enumerate(urls):
-            fetch_content(scan_id, url, reaper)
-            logger.log('info', f"Fetched content from {url} ({i+1}/{len(urls)})")
-
-        return jsonify({"message": f"Fetched {len(urls)} URLs"})
+        nb = fetch_content(root_url, reaper)
+        return jsonify({"message": f"Fetched {nb} URLs"})
     except Exception as e:
         logger.log('error', f"/perform_fetch - Failed to fetch documentation: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to fetch documentation', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
@@ -157,7 +185,6 @@ def get_all_scanned_urls():
 
     Returns:
         A JSON response with a list of tuples, where each tuple contains the ID and URL.
-        Returns an error message if 'scan_id' is not provided.
     """
     scan_id = request.args.get('scan_id')
     if not scan_id:
@@ -185,7 +212,6 @@ def get_scanned_url():
 
     Returns:
         A JSON response with the text of the scanned URL.
-        Returns an error message if 'scanned_url_id' is not provided.
     """
     scanned_url_id = request.args.get('scanned_url_id')
     if not scanned_url_id:
@@ -214,7 +240,6 @@ def chunk():
 
     Returns:
         A JSON response with a message indicating the number of chunks created.
-        Returns an error message if 'scan_id' is not provided.
     """
     scan_id = request.args.get('scan_id')
     if not scan_id:
@@ -225,8 +250,8 @@ def chunk():
         return jsonify({'error': 'scan_id must be an integer'}), 400
 
     try:
-        nb = chunk_content(scan_id)
-        return jsonify({"message": f"Created {nb} chunks"})
+        id, nb = chunk_content(scan_id)
+        return jsonify({"message": f"Created chunk set {id} containing {nb} chunks"})
     except Exception as e:
         logger.log('error', f"/perform_chunking - Failed to chunk content: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
@@ -242,7 +267,6 @@ def get_chunk_sets():
 
     Returns:
         A JSON response with a list of chunk sets.
-        Returns an error message if 'scan_id' is not provided.
     """
     scan_id = request.args.get('scan_id')
     if not scan_id:
@@ -271,7 +295,6 @@ def get_chunks():
 
     Returns:
         A JSON response with a list of chunks.
-        Returns an error message if 'chunk_set_id' is not provided.
     """
     chunk_set_id = request.args.get('chunk_set_id')
     if not chunk_set_id:
@@ -306,7 +329,6 @@ def get_chunk_content():
 
     Returns:
         A JSON response with the text of the chunk.
-        Returns an error message if 'chunk_id' is not provided.
     """
     chunk_id = request.args.get('chunk_id')
     if not chunk_id:
@@ -333,7 +355,6 @@ def embed():
 
     Returns:
         A JSON response with a message indicating the number of chunks created.
-        Returns an error message if 'chunk_set_id' is not provided.
     """
     chunk_set_id = request.args.get('chunk_set_id')
     if not chunk_set_id:
@@ -344,29 +365,8 @@ def embed():
         return jsonify({'error': 'chunk_set_id must be an integer'}), 400
 
     try:
-        cr.setup()
-        
-        all_chunks = []
-        all_metadatas = []
-        all_ids = []
-
-        # retrieve the chunks
-        chunk_ids = db.get_all_chunks(chunk_set_id)
-
-        # create an embedding set
-        embedding_set_id = db.add_embedding_set(chunk_set_id, "default embedder")
-
-        # embed the chunks
-        for chunk_id in chunk_ids:
-            chunk, scanned_url_id = db.get_chunk(chunk_id)
-            scanned_url = db.get_scanned_url(scanned_url_id)
-            all_chunks.append(chunk)
-            all_metadatas.append({"source": scanned_url, "embedding_set_id": embedding_set_id})
-            all_ids.append(str(chunk_id))
-            logger.log('info', f"Embedded chunk {chunk_id} ({len(all_chunks)}/{len(chunk_ids)})")
-        cr.add_chunks(all_chunks, all_metadatas, all_ids)
-
-        return jsonify({"message": f"Embedded {len(all_chunks)} chunks"})
+        id, nb = embed_chunks(chunk_set_id)
+        return jsonify({"message": f"Created embedding set {id} containing {nb} embeddings"})
     except Exception as e:
         logger.log('error', f"/perform_embedding - Failed to embed chunks: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to embed chunks', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
@@ -381,7 +381,6 @@ def get_embedding_sets():
 
     Returns:
         A JSON response with a list of embedding sets.
-        Returns an error message if 'chunk_set_id' is not provided.
     """
     chunk_set_id = request.args.get('chunk_set_id')
     if not chunk_set_id:
@@ -409,7 +408,6 @@ def get_embeddings():
 
     Returns:
         A JSON response with a list of embeddings.
-        Returns an error message if 'embedding_set_id' is not provided.
     """
     embedding_set_id = request.args.get('embedding_set_id')
     if not embedding_set_id:
@@ -437,7 +435,6 @@ def query():
 
     Returns:
         A JSON response with the answer and sources.
-        Returns an error message if 'query' is not provided.
     """
     user_query = request.json.get('query')
     if not user_query:

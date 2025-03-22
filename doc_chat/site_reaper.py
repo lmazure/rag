@@ -12,6 +12,9 @@ class SiteReaper:
     def __init__(self, base_url: str):
         self.base_url = base_url
 
+    def get_name(self) -> str:
+        return "Default reaper"
+
     def get_urls(self) -> List[str]:
         """Get all HTML URLs from the documentation site."""
         urls = [ self.base_url ]

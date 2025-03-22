@@ -202,6 +202,7 @@ async function populateScannedUrlSelector(scanSelector, scannedUrlSelector) {
             return;
         }
         const scans = await response.json();
+        scans.sort((a, b) => a.url.localeCompare(b.url));
         scans.forEach(scan => {
             // Add to scanned URLs selector
             addOptionToSelect(scannedUrlSelector, scan.id, scan.url);
@@ -317,7 +318,8 @@ domElements.fetchBtn.addEventListener('click', async () => {
             handleError('Error fetching documentation', data.errorDetails, data.stackTrace);
             return;
         }
-        domElements.fetchStatus.textContent = "";
+        const data = await response.json();
+        domElements.fetchStatus.textContent = data.message;
         // Refresh the scan selectors after fetching
         populateScanSelectors();
     } catch (error) {

@@ -32,9 +32,16 @@
             <div class="input-group mb-3">
                 <input type="text" class="form-control" id="docUrl" placeholder="Enter documentation URL…">
             </div>
+            <div class="input-group mb-3">
+                Reaper:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select id="reaper" class="form-select">
+                    <option selected value="default">Default</option>
+                    <option value="mkdocs">MkDocs</option>
+                </select>
+            </div>
+            <button id="fetchBtn" class="btn btn-primary">Fetch Documentation</button>
+            <span id="fetchStatus" class="ms-3"></span>
         </div>
-        <button id="fetchBtn" class="btn btn-primary">Fetch Documentation</button>
-        <span id="fetchStatus" class="ms-3"></span>
 
         <h2>2 - 🔍 Display scanned URLs</h2>
         <div class="mb-3">

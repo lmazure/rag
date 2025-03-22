@@ -33,6 +33,7 @@ class InfoDatabase:
             CREATE TABLE IF NOT EXISTS scans (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 root_url TEXT NOT NULL,
+                reaper_type TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ''')
@@ -83,12 +84,13 @@ class InfoDatabase:
         conn.commit()
         conn.close()
 
-    def add_scan(self, root_url: str) -> int:
+    def add_scan(self, root_url: str, reaper_type: str) -> int:
         """
         Add a scan.
 
         Args:
             root_url: The root URL of the scan.
+            reaper_type: The type of reaper to use.
 
         Returns:
             The ID of the inserted scan.
@@ -97,9 +99,9 @@ class InfoDatabase:
         cursor = conn.cursor()
         
         cursor.execute('''
-            INSERT INTO scans (root_url) 
-            VALUES (?)
-        ''', (root_url,))
+            INSERT INTO scans (root_url, reaper_type) 
+            VALUES (?, ?)
+        ''', (root_url, reaper_type))
         
         id = cursor.lastrowid
         conn.commit()
@@ -108,7 +110,7 @@ class InfoDatabase:
         
         return id
 
-    def get_scan(self, scan_id: int) -> Tuple[int, str]:
+    def get_scan(self, scan_id: int) -> Tuple[int, str, str, str]:
         """
         Get a scan.
 
@@ -116,28 +118,28 @@ class InfoDatabase:
             scan_id: The ID of the scan.
 
         Returns:
-            A tuple of (scan_id, root_url).
+            A tuple of (scan_id, root_url, reaper_type, created_at).
         """
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
         
-        cursor.execute('SELECT * FROM scans WHERE id = ?', (scan_id,))
+        cursor.execute('SELECT id, root_url, reaper_type, created_at FROM scans WHERE id = ?', (scan_id,))
         scan_data = cursor.fetchone()
         conn.close()
         
         return scan_data
 
-    def get_all_scans(self) -> List[Tuple[int, str]]:
+    def get_all_scans(self) -> List[Tuple[int, str, str, str]]:
         """
         Get all scans.
 
         Returns:
-            A list of tuples, where each tuple contains the ID and root URL.
+            A list of tuples, where each tuple contains the ID, root URL, reaper type, and created at.
         """
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
         
-        cursor.execute('SELECT * FROM scans')
+        cursor.execute('SELECT id, root_url, reaper_type, created_at FROM scans')
         scans_data = cursor.fetchall()
         conn.close()
         
@@ -185,12 +187,12 @@ class InfoDatabase:
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
         
-        cursor.execute('SELECT * FROM scanned_urls WHERE id = ?', (url_id,))
+        cursor.execute('SELECT id, url FROM scanned_urls WHERE id = ?', (url_id,))
         url_data = cursor.fetchone()
         conn.close()
         
         if url_data:
-            return url_data[2]
+            return url_data[1]
         raise Exception(f"URL {url_id} not found")
 
     def get_all_scanned_urls(self, scan_id: int) -> List[Tuple[int, str]]:
@@ -206,11 +208,11 @@ class InfoDatabase:
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
         
-        cursor.execute('SELECT * FROM scanned_urls WHERE scan_id = ?', (scan_id,))
+        cursor.execute('SELECT id, url FROM scanned_urls WHERE scan_id = ?', (scan_id,))
         urls_data = cursor.fetchall()
         conn.close()
         
-        return [(url[0], url[2]) for url in urls_data]
+        return urls_data
 
     def add_chunk_set(self, scan_id: int, chunker_description: str) -> int:
         """

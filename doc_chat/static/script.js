@@ -121,6 +121,7 @@ const domElements = {
     
     // Fetch section
     docUrl: document.getElementById('docUrl'),
+    reaper: document.getElementById('reaper'),
     fetchBtn: document.getElementById('fetchBtn'),
     fetchStatus: document.getElementById('fetchStatus'),
     
@@ -155,8 +156,11 @@ const domElements = {
     embeddingDisplay: document.getElementById('viewEmbeddings'),
     
     // Query section
+    scanSelectorAnswerQuestion: document.getElementById('scanSelectorAnswerQuestion'),
+    chunkSetSelectorAnswerQuestion: document.getElementById('chunkSetSelectorAnswerQuestion'),
+    embeddingSetForSelectorAnswerQuestion: document.getElementById('embeddingSetForSelectorAnswerQuestion'),
+    question: document.getElementById('question'),
     submitBtn: document.getElementById('submitBtn'),
-    query: document.getElementById('query'),
     loading: document.getElementById('loading'),
     response: document.getElementById('response')
 };
@@ -200,7 +204,7 @@ async function populateScannedUrlSelector(scanSelector, scannedUrlSelector) {
         const scans = await response.json();
         scans.forEach(scan => {
             // Add to scanned URLs selector
-            addOptionToSelect(scannedUrlSelector, scan[0], scan[1]);
+            addOptionToSelect(scannedUrlSelector, scan.id, scan.url);
         });
 
     } catch (error) {
@@ -294,6 +298,7 @@ async function populateEmbeddingSetSelector(chunkSetSelector, embeddingSetSelect
 
 domElements.fetchBtn.addEventListener('click', async () => {
     const docUrl = domElements.docUrl.value.trim();
+    const reaper = domElements.reaper.value;
     
     if (!docUrl) {
         domElements.fetchStatus.textContent = 'Please enter a documentation URL';
@@ -304,7 +309,7 @@ domElements.fetchBtn.addEventListener('click', async () => {
     domElements.fetchStatus.textContent = 'fetching documentation…';
 
     try {
-        const response = await fetch(`/perform_fetch?root_url=${encodeURIComponent(docUrl)}`, {
+        const response = await fetch(`/perform_fetch?root_url=${encodeURIComponent(docUrl)}&reaper=${reaper}`, {
             method: 'POST'
         });
         if (!response.ok) {
@@ -314,7 +319,7 @@ domElements.fetchBtn.addEventListener('click', async () => {
         }
         domElements.fetchStatus.textContent = "";
         // Refresh the scan selectors after fetching
-        loadScans();
+        populateScanSelectors();
     } catch (error) {
         handleError('Error fetching documentation', error.message, error.stack);
     } finally {
@@ -323,13 +328,14 @@ domElements.fetchBtn.addEventListener('click', async () => {
 });
 
 // load scans into all scan selectors
-async function loadScans() {
+async function populateScanSelectors() {
     // Clear existing options except the default one
     clearSelectOptions(domElements.scanSelectorForChunk);
     clearSelectOptions(domElements.scanSelectorForDisplay);
     clearSelectOptions(domElements.scanSelectorForViewChunk);
     clearSelectOptions(domElements.scanSelectorForEmbedding);
     clearSelectOptions(domElements.scanSelectorForViewEmbeddings);
+    clearSelectOptions(domElements.scanSelectorAnswerQuestion);
     
     try {
         const response = await fetch('/scans');
@@ -340,8 +346,8 @@ async function loadScans() {
         }
         const scans = await response.json();
         scans.forEach(scan => {
-            const value = scan[0];
-            const textContent = scan[1] + " - " + scan[2];
+            const value = scan.id;
+            const textContent = scan.root_url + " - " + scan.reaper_type + " - " + scan.created_at;
 
             // Add to all selectors
             addOptionToSelect(domElements.scanSelectorForChunk, value, textContent);
@@ -349,6 +355,7 @@ async function loadScans() {
             addOptionToSelect(domElements.scanSelectorForViewChunk, value, textContent);
             addOptionToSelect(domElements.scanSelectorForEmbedding, value, textContent);
             addOptionToSelect(domElements.scanSelectorForViewEmbeddings, value, textContent);
+            addOptionToSelect(domElements.scanSelectorAnswerQuestion, value, textContent);
         });
     } catch (error) {
         handleError('Error fetching scans', error.message, error.stack);
@@ -357,7 +364,7 @@ async function loadScans() {
 
 // load scans when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    loadScans();
+    populateScanSelectors();
 });
 
 domElements.scanSelectorForDisplay.addEventListener('input', async () => {
@@ -551,7 +558,7 @@ domElements.embeddingSetSelectorForViewEmbeddings.addEventListener('input', asyn
 
 // answer question
 domElements.submitBtn.addEventListener('click', async () => {
-    const query = domElements.query.value;
+    const query = domElements.question.value;
     
     if (!query) return;
     

@@ -11,6 +11,7 @@ from markupsafe import escape
 from vector_database import VectorDatabase
 from info_database import InfoDatabase
 from site_reaper import SiteReaper
+from mkdocs_site_reaper import MkdocsSiteReaper
 from logger import Logger
 
 load_dotenv()
@@ -33,7 +34,7 @@ def fetch_content(scan_id: int, url: str, reaper: SiteReaper) -> None:
     """Fetch content from URL."""
 
     # Fetch the content
-    doc = reaper.get_url_content_mkdocs(url)
+    doc = reaper.get_url_content(url)
 
     # Add the scanned URL to the database
     id = db.add_scanned_url(scan_id, url)
@@ -104,11 +105,21 @@ def fetch():
     root_url = request.args.get('root_url')
     if not root_url:
         return jsonify({'error': 'root_url is required'}), 400
+    reaper_type = request.args.get('reaper')
+    if not reaper_type:
+        return jsonify({'error': 'reaper is required'}), 400
 
     try:
-        scan_id = db.add_scan(root_url)
 
-        reaper = SiteReaper(root_url)
+        if reaper_type == 'mkdocs':
+            reaper = MkdocsSiteReaper(root_url)
+        elif reaper_type == 'default':
+            reaper = SiteReaper(root_url)
+        else:
+            return jsonify({'error': 'Invalid reaper type'}), 400
+
+        scan_id = db.add_scan(root_url, reaper_type + " reaper")
+
         urls = reaper.get_urls()
 
         for i, url in enumerate(urls):
@@ -130,7 +141,8 @@ def get_all_scans():
     """
     try:
         scans = db.get_all_scans()
-        return jsonify(scans)
+        answer = [ { "id": scan[0], "root_url": scan[1], "reaper_type": scan[2], "created_at": scan[3] } for scan in scans ]
+        return jsonify(answer)
     except Exception as e:
         logger.log('error', f"/scans - Failed to get scans: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get scans', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
@@ -157,7 +169,8 @@ def get_all_scanned_urls():
     
     try:
         urls = db.get_all_scanned_urls(scan_id)
-        return jsonify(urls)
+        answer = [ { "id": url[0], "url": url[1] } for url in urls ]
+        return jsonify(answer)
     except Exception as e:
         logger.log('error', f"/scanned_urls - Failed to get scanned URLs: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get scanned URLs', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500

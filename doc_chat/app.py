@@ -140,17 +140,17 @@ def fetch():
     """
     root_url = request.args.get('root_url')
     if not root_url:
-        return jsonify({'error': 'root_url is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'root_url is required'}), 400
     reaper_type = request.args.get('reaper')
     if not reaper_type:
-        return jsonify({'error': 'reaper is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'reaper is required'}), 400
 
     if reaper_type == 'mkdocs':
         reaper = MkdocsSiteReaper(root_url)
     elif reaper_type == 'default':
         reaper = SiteReaper(root_url)
     else:
-        return jsonify({'error': 'Invalid reaper type'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'Invalid reaper type'}), 400
 
     try:
         nb = fetch_content(root_url, reaper)
@@ -188,11 +188,11 @@ def get_all_scanned_urls():
     """
     scan_id = request.args.get('scan_id')
     if not scan_id:
-        return jsonify({'error': 'scan_id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'scan_id is required'}), 400
     try:
         scan_id = int(scan_id)
     except ValueError:
-        return jsonify({'error': 'scan_id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'scan_id must be an integer'}), 400
     
     try:
         urls = db.get_all_scanned_urls(scan_id)
@@ -215,11 +215,11 @@ def get_scanned_url():
     """
     scanned_url_id = request.args.get('scanned_url_id')
     if not scanned_url_id:
-        return jsonify({'error': 'scanned_url_id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'scanned_url_id is required'}), 400
     try:
         scanned_url_id = int(scanned_url_id)
     except ValueError:
-        return jsonify({'error': 'scanned_url_id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'scanned_url_id must be an integer'}), 400
     
     try:
         with Path(compute_scanned_url_filename(scanned_url_id)).open("r", encoding="utf-8") as fp:
@@ -243,11 +243,11 @@ def chunk():
     """
     scan_id = request.args.get('scan_id')
     if not scan_id:
-        return jsonify({'error': 'scan_id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'scan_id is required'}), 400
     try:
         scan_id = int(scan_id)
     except ValueError:
-        return jsonify({'error': 'scan_id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'scan_id must be an integer'}), 400
 
     try:
         id, nb = chunk_content(scan_id)
@@ -270,11 +270,11 @@ def get_chunk_sets():
     """
     scan_id = request.args.get('scan_id')
     if not scan_id:
-        return jsonify({'error': 'scan_id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'scan_id is required'}), 400
     try:
         scan_id = int(scan_id)
     except ValueError:
-        return jsonify({'error': 'scan_id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'scan_id must be an integer'}), 400
 
     try:
         chunk_sets = db.get_all_chunk_sets(scan_id)
@@ -298,11 +298,11 @@ def get_chunks():
     """
     chunk_set_id = request.args.get('chunk_set_id')
     if not chunk_set_id:
-        return jsonify({'error': 'chunk_set_id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id is required'}), 400
     try:
         chunk_set_id = int(chunk_set_id)
     except ValueError:
-        return jsonify({'error': 'chunk_set_id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id must be an integer'}), 400
 
     try:
         scanned_url_id = request.args.get('scanned_url_id')
@@ -310,7 +310,7 @@ def get_chunks():
             try:
                 scanned_url_id = int(scanned_url_id)
             except ValueError:
-                return jsonify({'error': 'scanned_url_id must be an integer'}), 400
+                return jsonify({'error': 'bad request', 'errorDetails': 'scanned_url_id must be an integer'}), 400
             chunks = db.get_all_chunks_of_scanned_url(chunk_set_id, scanned_url_id)
         else:
             chunks = db.get_all_chunks(chunk_set_id)
@@ -332,11 +332,11 @@ def get_chunk_content():
     """
     chunk_id = request.args.get('chunk_id')
     if not chunk_id:
-        return jsonify({'error': 'chunk_id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_id is required'}), 400
     try:
         chunk_id = int(chunk_id)
     except ValueError:
-        return jsonify({'error': 'chunk_id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_id must be an integer'}), 400
 
     try:
         chunk = db.get_chunk(chunk_id)
@@ -358,11 +358,11 @@ def embed():
     """
     chunk_set_id = request.args.get('chunk_set_id')
     if not chunk_set_id:
-        return jsonify({'error': 'chunk_set_id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id is required'}), 400
     try:
         chunk_set_id = int(chunk_set_id)
     except ValueError:
-        return jsonify({'error': 'chunk_set_id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id must be an integer'}), 400
 
     try:
         id, nb = embed_chunks(chunk_set_id)
@@ -384,11 +384,11 @@ def get_embedding_sets():
     """
     chunk_set_id = request.args.get('chunk_set_id')
     if not chunk_set_id:
-        return jsonify({'error': 'chunk_set_id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id is required'}), 400
     try:
         chunk_set_id = int(chunk_set_id)
     except ValueError:
-        return jsonify({'error': 'chunk_set_id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id must be an integer'}), 400
     
     try:
         embedding_sets = db.get_all_embedding_sets(chunk_set_id)
@@ -411,11 +411,11 @@ def get_embeddings():
     """
     embedding_set_id = request.args.get('embedding_set_id')
     if not embedding_set_id:
-        return jsonify({'error': 'embedding_set_id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'embedding_set_id is required'}), 400
     try:
         embedding_set_id = int(embedding_set_id)
     except ValueError:
-        return jsonify({'error': 'embedding_set_id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'embedding_set_id must be an integer'}), 400
 
     try:
         cr.setup()
@@ -431,17 +431,31 @@ def query():
     Generate a response to a user question.
 
     Args:
-        query: The user question.
+        embedding_set_id: The ID of the embedding set.
+
+    Payload:
+        {
+            "query": "The user question."
+        }
 
     Returns:
         A JSON response with the answer and sources.
     """
     user_query = request.json.get('query')
     if not user_query:
-        return jsonify({'error': 'query is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'query is required'}), 400
+
+    embedding_set_id = request.args.get('embedding_set_id')
+    if not embedding_set_id:
+        return jsonify({'error': 'bad request', 'errorDetails': 'embedding_set_id is required'}), 400
+    try:
+        embedding_set_id = int(embedding_set_id)
+    except ValueError:
+        return jsonify({'error': 'bad request', 'errorDetails': 'embedding_set_id must be an integer'}), 400
 
     try:
-        results = cr.query(user_query)
+        cr.setup()
+        results = cr.query(user_query, embedding_set_id)
 
         context = "\n".join(results['documents'][0])
         print("\n---------------------------------------------------------\n".join(results['documents'][0]))
@@ -471,11 +485,11 @@ def get_logs():
     """
     id = request.args.get('id')
     if not id:
-        return jsonify({'error': 'id is required'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'id is required'}), 400
     try:
         id = int(id)
     except ValueError:
-        return jsonify({'error': 'id must be an integer'}), 400
+        return jsonify({'error': 'bad request', 'errorDetails': 'id must be an integer'}), 400
 
     try:
         logs = logger.get_logs_after_id(id)

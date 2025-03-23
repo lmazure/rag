@@ -36,10 +36,11 @@ class VectorDatabase:
             where={"embedding_set_id": embedding_set_id}
         )
 
-    def query(self, query: str) -> QueryResult:
+    def query(self, query: str, embedding_set_id: int) -> QueryResult:
         """Query the database."""
         results = self.collection.query(
             query_texts=[query],
-            n_results=10
+            where={"embedding_set_id": embedding_set_id},
+            n_results=5
         )
         return results

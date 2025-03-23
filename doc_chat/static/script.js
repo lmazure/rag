@@ -156,9 +156,9 @@ const domElements = {
     embeddingDisplay: document.getElementById('viewEmbeddings'),
     
     // Query section
-    scanSelectorAnswerQuestion: document.getElementById('scanSelectorAnswerQuestion'),
-    chunkSetSelectorAnswerQuestion: document.getElementById('chunkSetSelectorAnswerQuestion'),
-    embeddingSetForSelectorAnswerQuestion: document.getElementById('embeddingSetForSelectorAnswerQuestion'),
+    scanSelectorForQuestionAnswering: document.getElementById('scanSelectorForQuestionAnswering'),
+    chunkSetSelectorForQuestionAnswering: document.getElementById('chunkSetSelectorForQuestionAnswering'),
+    embeddingSetForSelectorForQuestionAnswering: document.getElementById('embeddingSetForSelectorForQuestionAnswering'),
     question: document.getElementById('question'),
     submitBtn: document.getElementById('submitBtn'),
     loading: document.getElementById('loading'),
@@ -337,7 +337,7 @@ async function populateScanSelectors() {
     clearSelectOptions(domElements.scanSelectorForViewChunk);
     clearSelectOptions(domElements.scanSelectorForEmbedding);
     clearSelectOptions(domElements.scanSelectorForViewEmbeddings);
-    clearSelectOptions(domElements.scanSelectorAnswerQuestion);
+    clearSelectOptions(domElements.scanSelectorForQuestionAnswering);
     
     try {
         const response = await fetch('/scans');
@@ -357,7 +357,7 @@ async function populateScanSelectors() {
             addOptionToSelect(domElements.scanSelectorForViewChunk, value, textContent);
             addOptionToSelect(domElements.scanSelectorForEmbedding, value, textContent);
             addOptionToSelect(domElements.scanSelectorForViewEmbeddings, value, textContent);
-            addOptionToSelect(domElements.scanSelectorAnswerQuestion, value, textContent);
+            addOptionToSelect(domElements.scanSelectorForQuestionAnswering, value, textContent);
         });
     } catch (error) {
         handleError('Error fetching scans', error.message, error.stack);
@@ -558,8 +558,17 @@ domElements.embeddingSetSelectorForViewEmbeddings.addEventListener('input', asyn
     }
 });
 
+domElements.scanSelectorForQuestionAnswering.addEventListener('input', async () => {
+    populateChunkSetSelector(domElements.scanSelectorForQuestionAnswering, domElements.chunkSetSelectorForQuestionAnswering);
+});
+
+domElements.chunkSetSelectorForQuestionAnswering.addEventListener('input', async () => {
+    populateEmbeddingSetSelector(domElements.chunkSetSelectorForQuestionAnswering, domElements.embeddingSetForSelectorForQuestionAnswering);
+});
+
 // answer question
 domElements.submitBtn.addEventListener('click', async () => {
+    const embeddingSetId = domElements.embeddingSetForSelectorForQuestionAnswering.value;
     const query = domElements.question.value;
     
     if (!query) return;
@@ -569,7 +578,7 @@ domElements.submitBtn.addEventListener('click', async () => {
     domElements.submitBtn.disabled = true;
     
     try {
-        const response = await fetch('generate_answer', {
+        const response = await fetch(`generate_answer?embedding_set_id=${embeddingSetId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

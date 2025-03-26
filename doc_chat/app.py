@@ -26,10 +26,6 @@ logger = Logger(db_path)
 
 app = Flask(__name__)
 
-def compute_scanned_url_filename(id: int) -> str:
-    """Compute the filename for a scanned URL."""
-    return f"{db_path}/scanned_urls/{(id%100):02d}/doc_{id:06d}.json"
-
 def fetch_content(url: str, reaper: SiteReaper) -> int:
     """Fetch content from URL."""
 
@@ -40,17 +36,12 @@ def fetch_content(url: str, reaper: SiteReaper) -> int:
     for i, url in enumerate(urls):
         logger.log('info', f"Fetched content from {url} ({i+1}/{len(urls)})")
 
-        # Fetch the content
+        # Fetch and serialize the content
         doc = reaper.get_url_content(url)
+        js = json.dumps(doc.export_to_dict())
 
         # Add the scanned URL to the database
-        id = db.add_scanned_url(scan_id, url)
-
-        # Save the document to a JSON file
-        filename = compute_scanned_url_filename(id)
-        Path(filename).parent.mkdir(parents=True, exist_ok=True)
-        with Path(filename).open("w", encoding="utf-8") as fp:
-            fp.write(json.dumps(doc.export_to_dict()))
+        id = db.add_scanned_url(scan_id, url, js)
 
     return len(urls)
 
@@ -63,9 +54,8 @@ def chunk_content(scan_id: int) -> tuple[int, int]:
     total = 0
     for i, scanned in enumerate(scanned_urls):
         scanned_url_id = scanned[0]
-        with Path(compute_scanned_url_filename(scanned_url_id)).open("r", encoding="utf-8") as fp:
-            doc_dict = json.loads(fp.read())
-            doc = DoclingDocument.model_validate(doc_dict)
+        doc_dict = json.loads(db.get_scanned_url_content(scanned_url_id))
+        doc = DoclingDocument.model_validate(doc_dict)
         chunk_iter = chunker.chunk(doc)
         for chunk in chunk_iter:
             # enriched_text = chunker.serialize(chunk=chunk)
@@ -76,7 +66,7 @@ def chunk_content(scan_id: int) -> tuple[int, int]:
 
 def embed_chunks(chunk_set_id: int) -> tuple[int, int]:
     """Embed the chunks of a cheunk set"""
-    cr.setup()
+    cr.setup("all-MiniLM-L6-v2", None)
     
     all_chunks = []
     all_metadatas = []
@@ -91,7 +81,7 @@ def embed_chunks(chunk_set_id: int) -> tuple[int, int]:
     # embed the chunks
     for chunk_id in chunk_ids:
         chunk, scanned_url_id = db.get_chunk(chunk_id)
-        scanned_url = db.get_scanned_url(scanned_url_id)
+        scanned_url = db.get_scanned_url_url(scanned_url_id)
         all_chunks.append(chunk)
         all_metadatas.append({"source": scanned_url, "embedding_set_id": embedding_set_id})
         all_ids.append(str(chunk_id))
@@ -222,9 +212,8 @@ def get_scanned_url():
         return jsonify({'error': 'bad request', 'errorDetails': 'scanned_url_id must be an integer'}), 400
     
     try:
-        with Path(compute_scanned_url_filename(scanned_url_id)).open("r", encoding="utf-8") as fp:
-            doc_dict = json.loads(fp.read())
-            doc = DoclingDocument.model_validate(doc_dict)
+        doc_dict = json.loads(db.get_scanned_url_content(scanned_url_id))
+        doc = DoclingDocument.model_validate(doc_dict)
         return jsonify(doc.export_to_markdown())
     except Exception as e:
         logger.log('error', f"/scanned_url - Failed to get scanned URL content: {str(e)}\n{traceback.format_exc()}")
@@ -418,7 +407,7 @@ def get_embeddings():
         return jsonify({'error': 'bad request', 'errorDetails': 'embedding_set_id must be an integer'}), 400
 
     try:
-        cr.setup()
+        cr.setup("all-MiniLM-L6-v2", None)
         embeddings = cr.get_all_embeddings(embedding_set_id)
         return jsonify(embeddings)
     except Exception as e:
@@ -454,7 +443,7 @@ def query():
         return jsonify({'error': 'bad request', 'errorDetails': 'embedding_set_id must be an integer'}), 400
 
     try:
-        cr.setup()
+        cr.setup("all-MiniLM-L6-v2", None)
         results = cr.query(user_query, embedding_set_id)
 
         context = "\n".join(results['documents'][0])

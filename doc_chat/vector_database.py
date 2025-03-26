@@ -3,6 +3,8 @@ import chromadb
 from chromadb.api.types import Metadata, QueryResult
 from chromadb.config import Settings
 
+import common_embed
+
 class VectorDatabase:
     def __init__(self, db_path: str):
         """
@@ -13,14 +15,11 @@ class VectorDatabase:
         """
         self.db_path = db_path
 
-    def setup(self) -> None:
+    def setup(self, model_name: str, host: str|None) -> None:
         """Initialize ChromaDB."""
         client = chromadb.PersistentClient(path=self.db_path, settings=Settings(anonymized_telemetry=False))
-        
-        try:
-            self.collection = client.get_collection("docs")
-        except:
-            self.collection = client.create_collection("docs")
+        embedding_function = common_embed.build_embedding_function(host, model_name)
+        self.collection = client.get_or_create_collection(name=f"docs_{model_name}", embedding_function=embedding_function)
 
     def add_chunks(self, chunks: List[str], metadatas: List[Metadata], ids: List[str]) -> None:
         """Add a chunk to the database."""

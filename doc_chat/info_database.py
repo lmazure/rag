@@ -44,6 +44,7 @@ class InfoDatabase:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 scan_id INTEGER NOT NULL,
                 url TEXT NOT NULL,
+                content TEXT NOT NULL,
                 FOREIGN KEY (scan_id) REFERENCES scans (id)
             )
         ''')
@@ -145,7 +146,7 @@ class InfoDatabase:
         
         return scans_data
 
-    def add_scanned_url(self, scan_id: int, url: str) -> int:
+    def add_scanned_url(self, scan_id: int, url: str, content: str) -> int:
         """
         Add a scanned URL.
 
@@ -160,9 +161,9 @@ class InfoDatabase:
         cursor = conn.cursor()
         
         cursor.execute('''
-            INSERT INTO scanned_urls (scan_id, url) 
-            VALUES (?, ?)
-        ''', (scan_id, url))
+            INSERT INTO scanned_urls (scan_id, url, content) 
+            VALUES (?, ?, ?)
+        ''', (scan_id, url, content))
         
         id = cursor.lastrowid
         conn.commit()
@@ -171,9 +172,9 @@ class InfoDatabase:
         
         return id
 
-    def get_scanned_url(self, url_id: int) -> str:
+    def get_scanned_url_url(self, url_id: int) -> str:
         """
-        Get a scanned URL.
+        Get URL of a scanned URL.
 
         Args:
             url_id: The ID of the scanned URL.
@@ -187,12 +188,36 @@ class InfoDatabase:
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
         
-        cursor.execute('SELECT id, url FROM scanned_urls WHERE id = ?', (url_id,))
+        cursor.execute('SELECT url FROM scanned_urls WHERE id = ?', (url_id,))
         url_data = cursor.fetchone()
         conn.close()
         
         if url_data:
-            return url_data[1]
+            return url_data[0]
+        raise Exception(f"URL {url_id} not found")
+
+    def get_scanned_url_content(self, url_id: int) -> str:
+        """
+        Get content of a scanned URL.
+
+        Args:
+            url_id: The ID of the scanned URL.
+
+        Returns:
+            The URL as a string.
+
+        Raises:
+            Exception: If the URL is not found.
+        """
+        conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT content FROM scanned_urls WHERE id = ?', (url_id,))
+        url_data = cursor.fetchone()
+        conn.close()
+        
+        if url_data:
+            return url_data[0]
         raise Exception(f"URL {url_id} not found")
 
     def get_all_scanned_urls(self, scan_id: int) -> List[Tuple[int, str]]:

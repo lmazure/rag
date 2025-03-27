@@ -13,6 +13,12 @@ from info_database import InfoDatabase
 from site_reaper import SiteReaper
 from mkdocs_site_reaper import MkdocsSiteReaper
 from logger import Logger
+from embedding_model_cohere import EmbeddingModelCohere
+from embedding_model_gemini import EmbeddingModelGemini
+from embedding_model_hugging_face import EmbeddingModelHuggingFace
+from embedding_model_local import EmbeddingModelLocal
+from embedding_model_mistral import EmbeddingModelMistral
+from embedding_model_together import EmbeddingModelTogether
 
 load_dotenv()
 
@@ -386,6 +392,44 @@ def get_embedding_sets():
     except Exception as e:
         logger.log('error', f"/embedding_sets - Failed to get embedding sets: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get embedding sets', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+
+@app.route('/embedding_models', methods=['GET'])
+def get_embedding_models():
+    """
+    Get a list of all available embedding models.
+
+    Returns:
+        A JSON array with information about each model including host, model name, and URL.
+    """
+    try:
+        embedding_models = []
+        
+        # Get models from each embedding model class
+        embedding_classes = [
+            EmbeddingModelCohere,
+            EmbeddingModelGemini,
+            EmbeddingModelHuggingFace,
+            EmbeddingModelLocal,
+            EmbeddingModelMistral,
+            EmbeddingModelTogether
+        ]
+        
+        for embedding_class in embedding_classes:
+            class_name = embedding_class.__name__
+            host = class_name.replace("EmbeddingModel", "")
+            
+            models = embedding_class.get_available_models()
+            for model in models:
+                embedding_models.append({
+                    "host": host,
+                    "model": model["name"],
+                    "url": model["url"]
+                })
+        
+        return jsonify(embedding_models)
+    except Exception as e:
+        logger.log('error', f"/embedding_models - Failed to get embedding models: {str(e)}\n{traceback.format_exc()}")
+        return jsonify({'error': 'Failed to get embedding models', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
 @app.route('/embeddings', methods=['GET'])
 def get_embeddings():

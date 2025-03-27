@@ -146,6 +146,7 @@ const domElements = {
     // Embed section
     scanSelectorForEmbedding: document.getElementById('scanSelectorForEmbedding'),
     chunkSetSelectorForEmbedding: document.getElementById('chunkSetSelectorForEmbedding'),
+    embeddingModelSelector: document.getElementById('embeddingModelSelector'),
     embdedBtn: document.getElementById('embedBtn'),
     embedStatus: document.getElementById('embedStatus'),
     
@@ -367,6 +368,7 @@ async function populateScanSelectors() {
 // load scans when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     populateScanSelectors();
+    populateEmbeddingModelSelector();
 });
 
 domElements.scanSelectorForDisplay.addEventListener('input', async () => {
@@ -500,11 +502,42 @@ domElements.scanSelectorForEmbedding.addEventListener('input', async () => {
     populateChunkSetSelector(domElements.scanSelectorForEmbedding, domElements.chunkSetSelectorForEmbedding);
 });
 
+// Function to populate the embedding model selector
+async function populateEmbeddingModelSelector() {
+    // Clear existing options except the default one
+    clearSelectOptions(domElements.embeddingModelSelector);
+    
+    try {
+        const response = await fetch('/embedding_models');
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching embedding models', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        
+        const models = await response.json();
+        
+        models.forEach(model => {
+            const displayText = `${model.host} - ${model.model}`;
+            const value = JSON.stringify({ host: model.host, model: model.model, url: model.url });
+            addOptionToSelect(domElements.embeddingModelSelector, value, displayText);
+        });
+    } catch (error) {
+        handleError('Error fetching embedding models', error.message, error.stack);
+    }
+}
+
 // embed documentation
 domElements.embdedBtn.addEventListener('click', async () => {
     const chunkSetId = domElements.chunkSetSelectorForEmbedding.value;
+    const embeddingModelValue = domElements.embeddingModelSelector.value;
     
     if (chunkSetId == 0) {
+        return;
+    }
+    
+    if (embeddingModelValue == 0) {
+        handleError('Error embedding documentation', 'Please select an embedding model', '');
         return;
     }
     
@@ -512,6 +545,11 @@ domElements.embdedBtn.addEventListener('click', async () => {
     domElements.embedStatus.textContent = 'embedding documentation…';
     
     try {
+        // For now, we're just storing the selected model but not using it in the API call
+        // The backend API will be updated later to use this value
+        const selectedModel = JSON.parse(embeddingModelValue);
+        console.log('Selected embedding model:', selectedModel);
+        
         const response = await fetch(`/perform_embedding?chunk_set_id=${chunkSetId}`, {
             method: 'POST'
         });

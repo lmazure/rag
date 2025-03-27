@@ -3,7 +3,12 @@ import chromadb
 from chromadb.api.types import Metadata, QueryResult
 from chromadb.config import Settings
 
-import common_embed
+from embedding_model_cohere import EmbeddingModelCohere
+from embedding_model_gemini import EmbeddingModelGemini
+from embedding_model_hugging_face import EmbeddingModelHuggingFace
+from embedding_model_local import EmbeddingModelLocal
+from embedding_model_mistral import EmbeddingModelMistral
+from embedding_model_together import EmbeddingModelTogether
 
 class VectorDatabase:
     def __init__(self, db_path: str):
@@ -15,10 +20,26 @@ class VectorDatabase:
         """
         self.db_path = db_path
 
+    def build_embedding_function(self, host: str|None, model_name: str) -> None:
+        """Build the embedding function."""
+        embedding_classes = [
+            EmbeddingModelCohere,
+            EmbeddingModelGemini,
+            EmbeddingModelHuggingFace,
+            EmbeddingModelLocal,
+            EmbeddingModelMistral,
+            EmbeddingModelTogether
+        ]
+        
+        for embedding_class in embedding_classes:
+            if embedding_class.__name__ == f"EmbeddingModel{host}":
+                return embedding_class.build_embedding_function(model_name)
+        raise ValueError(f"Invalid embedding model host: {host}")
+
     def setup(self, model_name: str, host: str|None) -> None:
         """Initialize ChromaDB."""
         client = chromadb.PersistentClient(path=self.db_path, settings=Settings(anonymized_telemetry=False))
-        embedding_function = common_embed.build_embedding_function(host, model_name)
+        embedding_function = self.build_embedding_function(host, model_name)
         self.collection = client.get_or_create_collection(name=f"docs_{model_name}", embedding_function=embedding_function)
 
     def add_chunks(self, chunks: List[str], metadatas: List[Metadata], ids: List[str]) -> None:

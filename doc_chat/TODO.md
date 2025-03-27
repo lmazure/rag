@@ -1,3 +1,4 @@
+- EMBED: avoid the duplication of the list of embedding model hosts
 - BUG: the scanned URL selected for ANSWER is not filled
 - FETCH when fetch is finished the selector of the chunker and the selector of the scanned URLs navigator should be updated
 - FETCH recursively fetch subpages
@@ -9,3 +10,4 @@
 https://tm-en.doc.squashtest.com/latest/
 https://www.tutorialspoint.com/unix/unix-vi-editor.htm
 https://www.tutorialspoint.com/watir/index.htm
+https://docs.oracle.com/cd/E19620-01/805-1608/6j1io9lhi/index.html

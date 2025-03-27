@@ -70,9 +70,9 @@ def chunk_content(scan_id: int) -> tuple[int, int]:
         logger.log('info', f"Chunked content of {scanned[1]} ({i+1}/{len(scanned_urls)})")
     return chunk_set_id, total
 
-def embed_chunks(chunk_set_id: int) -> tuple[int, int]:
-    """Embed the chunks of a cheunk set"""
-    cr.setup("all-MiniLM-L6-v2", None)
+def embed_chunks(chunk_set_id: int, model: str, host: str) -> tuple[int, int]:
+    """Embed the chunks of a chunk set"""
+    cr.setup(model, host)
     
     all_chunks = []
     all_metadatas = []
@@ -82,7 +82,7 @@ def embed_chunks(chunk_set_id: int) -> tuple[int, int]:
     chunk_ids = db.get_all_chunks(chunk_set_id)
 
     # create an embedding set
-    embedding_set_id = db.add_embedding_set(chunk_set_id, "default embedder")
+    embedding_set_id = db.add_embedding_set(chunk_set_id, host, model)
 
     # embed the chunks
     for chunk_id in chunk_ids:
@@ -340,66 +340,13 @@ def get_chunk_content():
         logger.log('error', f"/chunk_content - Failed to get chunk content: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get chunk content', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
-@app.route('/perform_embedding', methods=['POST'])
-def embed():
-    """
-    Split content into chunks.
-
-    Args:
-        chunk_set_id: The ID of the chunk set.
-
-    Returns:
-        A JSON response with a message indicating the number of chunks created.
-    """
-    chunk_set_id = request.args.get('chunk_set_id')
-    if not chunk_set_id:
-        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id is required'}), 400
-    try:
-        chunk_set_id = int(chunk_set_id)
-    except ValueError:
-        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id must be an integer'}), 400
-
-    try:
-        id, nb = embed_chunks(chunk_set_id)
-        return jsonify({"message": f"Created embedding set {id} containing {nb} embeddings"})
-    except Exception as e:
-        logger.log('error', f"/perform_embedding - Failed to embed chunks: {str(e)}\n{traceback.format_exc()}")
-        return jsonify({'error': 'Failed to embed chunks', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
-
-@app.route('/embedding_sets', methods=['GET'])
-def get_embedding_sets():
-    """
-    Get the list of embedding sets for a given chunk set.
-
-    Args:
-        chunk_set_id: The ID of the chunk set.
-
-    Returns:
-        A JSON response with a list of embedding sets.
-    """
-    chunk_set_id = request.args.get('chunk_set_id')
-    if not chunk_set_id:
-        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id is required'}), 400
-    try:
-        chunk_set_id = int(chunk_set_id)
-    except ValueError:
-        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id must be an integer'}), 400
-    
-    try:
-        embedding_sets = db.get_all_embedding_sets(chunk_set_id)
-        answer = [ { "id": embedding_set[0], "embedder_description": embedding_set[1], "created_at": embedding_set[2] } for embedding_set in embedding_sets ]
-        return jsonify(answer)
-    except Exception as e:
-        logger.log('error', f"/embedding_sets - Failed to get embedding sets: {str(e)}\n{traceback.format_exc()}")
-        return jsonify({'error': 'Failed to get embedding sets', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
-
 @app.route('/embedding_models', methods=['GET'])
 def get_embedding_models():
     """
     Get a list of all available embedding models.
 
     Returns:
-        A JSON array with information about each model including host, model name, and URL.
+        A JSON array with information about each embedding model including host, model name, and URL.
     """
     try:
         embedding_models = []
@@ -431,6 +378,67 @@ def get_embedding_models():
         logger.log('error', f"/embedding_models - Failed to get embedding models: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to get embedding models', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
+@app.route('/perform_embedding', methods=['POST'])
+def embed():
+    """
+    Split content into chunks.
+
+    Args:
+        chunk_set_id: The ID of the chunk set.
+        host: The host of the embedding model.
+        model: The model of the embedding model.
+
+    Returns:
+        A JSON response with a message indicating the number of chunks created.
+    """
+    chunk_set_id = request.args.get('chunk_set_id')
+    if not chunk_set_id:
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id is required'}), 400
+    try:
+        chunk_set_id = int(chunk_set_id)
+    except ValueError:
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id must be an integer'}), 400
+    host = request.args.get('host')
+    if not host:
+        return jsonify({'error': 'bad request', 'errorDetails': 'host is required'}), 400
+    model = request.args.get('model')
+    if not model:
+        return jsonify({'error': 'bad request', 'errorDetails': 'model is required'}), 400
+
+    try:
+        id, nb = embed_chunks(chunk_set_id, model, host)
+        return jsonify({"message": f"Created embedding set {id} containing {nb} embeddings"})
+    except Exception as e:
+        logger.log('error', f"/perform_embedding - Failed to embed chunks: {str(e)}\n{traceback.format_exc()}")
+        return jsonify({'error': 'Failed to embed chunks', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+
+@app.route('/embedding_sets', methods=['GET'])
+def get_embedding_sets():
+    """
+    Get the list of embedding sets for a given chunk set.
+
+    Args:
+        chunk_set_id: The ID of the chunk set.
+
+    Returns:
+        A JSON response with a list of embedding sets.
+    """
+    chunk_set_id = request.args.get('chunk_set_id')
+    if not chunk_set_id:
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id is required'}), 400
+    try:
+        chunk_set_id = int(chunk_set_id)
+    except ValueError:
+        return jsonify({'error': 'bad request', 'errorDetails': 'chunk_set_id must be an integer'}), 400
+    
+    try:
+        embedding_sets = db.get_all_embedding_sets(chunk_set_id)
+        answer = [ { "id": embedding_set[0], "host": embedding_set[1], "model": embedding_set[2], "created_at": embedding_set[3] } for embedding_set in embedding_sets ]
+        return jsonify(answer)
+    except Exception as e:
+        logger.log('error', f"/embedding_sets - Failed to get embedding sets: {str(e)}\n{traceback.format_exc()}")
+        return jsonify({'error': 'Failed to get embedding sets', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+
 @app.route('/embeddings', methods=['GET'])
 def get_embeddings():
     """
@@ -451,7 +459,8 @@ def get_embeddings():
         return jsonify({'error': 'bad request', 'errorDetails': 'embedding_set_id must be an integer'}), 400
 
     try:
-        cr.setup("all-MiniLM-L6-v2", None)
+        embedding_set = db.get_embedding_set(embedding_set_id)
+        cr.setup(embedding_set[2], embedding_set[1])
         embeddings = cr.get_all_embeddings(embedding_set_id)
         return jsonify(embeddings)
     except Exception as e:
@@ -487,7 +496,8 @@ def query():
         return jsonify({'error': 'bad request', 'errorDetails': 'embedding_set_id must be an integer'}), 400
 
     try:
-        cr.setup("all-MiniLM-L6-v2", None)
+        embedding_set = db.get_embedding_set(embedding_set_id)
+        cr.setup(embedding_set[2], embedding_set[1])
         results = cr.query(user_query, embedding_set_id)
 
         context = "\n".join(results['documents'][0])

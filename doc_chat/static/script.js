@@ -291,7 +291,7 @@ async function populateEmbeddingSetSelector(chunkSetSelector, embeddingSetSelect
         const embeddingSets = await response.json();
         embeddingSets.forEach(embeddingSet => {
             // Add to embedding set selector
-            addOptionToSelect(embeddingSetSelector, embeddingSet.id, `Embedding Set ${embeddingSet.id} - ${embeddingSet.embedder_description} - ${embeddingSet.created_at}`);
+            addOptionToSelect(embeddingSetSelector, embeddingSet.id, `Embedding Set ${embeddingSet.id} - ${embeddingSet.host} - ${embeddingSet.model} - ${embeddingSet.created_at}`);
         });
     } catch (error) {
         handleError('Error fetching embedding sets', error.message, error.stack);
@@ -550,7 +550,7 @@ domElements.embdedBtn.addEventListener('click', async () => {
         const selectedModel = JSON.parse(embeddingModelValue);
         console.log('Selected embedding model:', selectedModel);
         
-        const response = await fetch(`/perform_embedding?chunk_set_id=${chunkSetId}`, {
+        const response = await fetch(`/perform_embedding?chunk_set_id=${chunkSetId}&host=${selectedModel.host}&model=${selectedModel.model}`, {
             method: 'POST'
         });
         if (!response.ok) {

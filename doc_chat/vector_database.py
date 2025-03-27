@@ -33,7 +33,8 @@ class VectorDatabase:
         
         for embedding_class in embedding_classes:
             if embedding_class.__name__ == f"EmbeddingModel{host}":
-                return embedding_class.build_embedding_function(model_name)
+                embedding_class_instance = embedding_class(model_name)
+                return embedding_class_instance.build_embedding_function()
         raise ValueError(f"Invalid embedding model host: {host}")
 
     def setup(self, model_name: str, host: str|None) -> None:

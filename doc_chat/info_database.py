@@ -76,7 +76,8 @@ class InfoDatabase:
             CREATE TABLE IF NOT EXISTS embedding_sets (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 chunk_set_id INTEGER NOT NULL,
-                embedder_description TEXT NOT NULL,
+                host TEXT NOT NULL,
+                model TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (chunk_set_id) REFERENCES chunk_sets (id)
             )
@@ -371,13 +372,14 @@ class InfoDatabase:
         
         return [chunk[0] for chunk in chunks_data]
 
-    def add_embedding_set(self, chunk_set_id: int, embedder_description: str) -> int:
+    def add_embedding_set(self, chunk_set_id: int, host: str, model: str) -> int:
         """
         Add an embedding set.
 
         Args:
             chunk_set_id: The ID of the chunk set.
-            embedder_description: The description of the embedder.
+            host: The host of the embedding model.
+            model: The model of the embedding model.
 
         Returns:
             The ID of the inserted embedding set.
@@ -386,9 +388,9 @@ class InfoDatabase:
         cursor = conn.cursor()
         
         cursor.execute('''
-            INSERT INTO embedding_sets (chunk_set_id, embedder_description) 
-            VALUES (?, ?)
-        ''', (chunk_set_id, embedder_description))
+            INSERT INTO embedding_sets (chunk_set_id, host, model) 
+            VALUES (?, ?, ?)
+        ''', (chunk_set_id, host, model))
         
         id = cursor.lastrowid
         conn.commit()
@@ -396,6 +398,26 @@ class InfoDatabase:
         conn.close()
         
         return id
+    def get_embedding_set(self, embedding_set_id: int) -> Tuple[int, str, str]:
+        """
+        Get an embedding set.
+
+        Args:
+            embedding_set_id: The ID of the embedding set.
+
+        Returns:
+            A tuple of (id, host, model).
+        """
+        conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT id, host, model FROM embedding_sets WHERE id = ?', (embedding_set_id,))
+        embedding_set_data = cursor.fetchone()
+        conn.close()
+        
+        if embedding_set_data:
+            return embedding_set_data
+        raise Exception(f"Embedding set {embedding_set_id} not found")
 
     def get_all_embedding_sets(self, chunk_set_id: int) -> List[Tuple[int, str, str]]:
         """
@@ -410,7 +432,7 @@ class InfoDatabase:
         conn = sqlite3.connect(f"{self.db_path}/{self.database_name}")
         cursor = conn.cursor()
 
-        cursor.execute('SELECT id, embedder_description, created_at FROM embedding_sets WHERE chunk_set_id = ?', (chunk_set_id,))
+        cursor.execute('SELECT id, host, model, created_at FROM embedding_sets WHERE chunk_set_id = ?', (chunk_set_id,))
         embedding_sets_data = cursor.fetchall()
         conn.close()
         

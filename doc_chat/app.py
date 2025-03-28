@@ -51,8 +51,8 @@ def build_embedding_function(host: str, model_name: str) -> EmbeddingFunction[Do
             return embedding_class_instance.build_embedding_function()
     raise ValueError(f"Invalid embedding model host: {host}")
 
-def build_collection_name(host: str, model_name: str) -> str:
-    return f"docs_{model_name}"
+def build_vector_collection_name(embedding_set_id: int) -> str:
+    return f"docs_{embedding_set_id}"
 
 def fetch_content(url: str, reaper: SiteReaper) -> int:
     """Fetch content from URL."""
@@ -94,8 +94,11 @@ def chunk_content(scan_id: int) -> tuple[int, int]:
 
 def embed_chunks(chunk_set_id: int, model: str, host: str) -> tuple[int, int]:
     """Embed the chunks of a chunk set"""
+    # create an embedding set
+    embedding_set_id = db.add_embedding_set(chunk_set_id, host, model)
+
     embedding_function = build_embedding_function(host, model)
-    collection_name = build_collection_name(host, model)
+    collection_name = build_vector_collection_name(embedding_set_id)
     cr.setup(embedding_function, collection_name)
     
     all_chunks = []
@@ -104,9 +107,6 @@ def embed_chunks(chunk_set_id: int, model: str, host: str) -> tuple[int, int]:
 
     # retrieve the chunks
     chunk_ids = db.get_all_chunks(chunk_set_id)
-
-    # create an embedding set
-    embedding_set_id = db.add_embedding_set(chunk_set_id, host, model)
 
     # embed the chunks
     for chunk_id in chunk_ids:
@@ -476,7 +476,7 @@ def get_embeddings():
     try:
         embedding_set = db.get_embedding_set(embedding_set_id)
         embedding_function = build_embedding_function(embedding_set[1], embedding_set[2])
-        collection_name = build_collection_name(embedding_set[1], embedding_set[2])
+        collection_name = build_vector_collection_name(embedding_set_id)
         cr.setup(embedding_function, collection_name)
         embeddings = cr.get_all_embeddings(embedding_set_id)
         return jsonify(embeddings)
@@ -515,7 +515,7 @@ def query():
     try:
         embedding_set = db.get_embedding_set(embedding_set_id)
         embedding_function = build_embedding_function(embedding_set[1], embedding_set[2])
-        collection_name = build_collection_name(embedding_set[1], embedding_set[2])
+        collection_name = build_vector_collection_name(embedding_set_id)
         cr.setup(embedding_function, collection_name)
         results = cr.query(user_query, embedding_set_id)
 

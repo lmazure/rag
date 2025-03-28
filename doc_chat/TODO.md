@@ -1,4 +1,9 @@
-- EMBED: avoid the duplication of the list of embedding model hosts
+- EMBED test embedding local
+- EMBED test embedding together
+- EMBED test embedding huggingface
+- EMBED test embedding cohere
+- EMBED test embedding gemini
+- EMBED test embedding mistral
 - BUG: the scanned URL selected for ANSWER is not filled
 - FETCH when fetch is finished the selector of the chunker and the selector of the scanned URLs navigator should be updated
 - FETCH recursively fetch subpages

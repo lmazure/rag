@@ -19,11 +19,21 @@ from embedding_model_hugging_face import EmbeddingModelHuggingFace
 from embedding_model_local import EmbeddingModelLocal
 from embedding_model_mistral import EmbeddingModelMistral
 from embedding_model_together import EmbeddingModelTogether
+from chromadb.api.types import Documents, EmbeddingFunction
 
 load_dotenv()
 
 MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
 port = 5000
+
+embedding_classes = [
+    EmbeddingModelCohere,
+    EmbeddingModelGemini,
+    EmbeddingModelHuggingFace,
+    EmbeddingModelLocal,
+    EmbeddingModelMistral,
+    EmbeddingModelTogether
+]
 
 db_path = "data"
 db = InfoDatabase(db_path)
@@ -31,6 +41,18 @@ cr = VectorDatabase(db_path)
 logger = Logger(db_path)
 
 app = Flask(__name__)
+
+
+def build_embedding_function(host: str, model_name: str) -> EmbeddingFunction[Documents]:
+    """Build the embedding function."""
+    for embedding_class in embedding_classes:
+        if embedding_class.__name__ == f"EmbeddingModel{host}":
+            embedding_class_instance = embedding_class(model_name)
+            return embedding_class_instance.build_embedding_function()
+    raise ValueError(f"Invalid embedding model host: {host}")
+
+def build_collection_name(host: str, model_name: str) -> str:
+    return f"docs_{model_name}"
 
 def fetch_content(url: str, reaper: SiteReaper) -> int:
     """Fetch content from URL."""
@@ -72,7 +94,9 @@ def chunk_content(scan_id: int) -> tuple[int, int]:
 
 def embed_chunks(chunk_set_id: int, model: str, host: str) -> tuple[int, int]:
     """Embed the chunks of a chunk set"""
-    cr.setup(model, host)
+    embedding_function = build_embedding_function(host, model)
+    collection_name = build_collection_name(host, model)
+    cr.setup(embedding_function, collection_name)
     
     all_chunks = []
     all_metadatas = []
@@ -352,15 +376,6 @@ def get_embedding_models():
         embedding_models = []
         
         # Get models from each embedding model class
-        embedding_classes = [
-            EmbeddingModelCohere,
-            EmbeddingModelGemini,
-            EmbeddingModelHuggingFace,
-            EmbeddingModelLocal,
-            EmbeddingModelMistral,
-            EmbeddingModelTogether
-        ]
-        
         for embedding_class in embedding_classes:
             class_name = embedding_class.__name__
             host = class_name.replace("EmbeddingModel", "")
@@ -460,7 +475,9 @@ def get_embeddings():
 
     try:
         embedding_set = db.get_embedding_set(embedding_set_id)
-        cr.setup(embedding_set[2], embedding_set[1])
+        embedding_function = build_embedding_function(embedding_set[1], embedding_set[2])
+        collection_name = build_collection_name(embedding_set[1], embedding_set[2])
+        cr.setup(embedding_function, collection_name)
         embeddings = cr.get_all_embeddings(embedding_set_id)
         return jsonify(embeddings)
     except Exception as e:
@@ -497,7 +514,9 @@ def query():
 
     try:
         embedding_set = db.get_embedding_set(embedding_set_id)
-        cr.setup(embedding_set[2], embedding_set[1])
+        embedding_function = build_embedding_function(embedding_set[1], embedding_set[2])
+        collection_name = build_collection_name(embedding_set[1], embedding_set[2])
+        cr.setup(embedding_function, collection_name)
         results = cr.query(user_query, embedding_set_id)
 
         context = "\n".join(results['documents'][0])

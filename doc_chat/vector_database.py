@@ -2,13 +2,7 @@ from typing import List
 import chromadb
 from chromadb.api.types import Metadata, QueryResult
 from chromadb.config import Settings
-
-from embedding_model_cohere import EmbeddingModelCohere
-from embedding_model_gemini import EmbeddingModelGemini
-from embedding_model_hugging_face import EmbeddingModelHuggingFace
-from embedding_model_local import EmbeddingModelLocal
-from embedding_model_mistral import EmbeddingModelMistral
-from embedding_model_together import EmbeddingModelTogether
+from chromadb.api.types import Documents, EmbeddingFunction
 
 class VectorDatabase:
     def __init__(self, db_path: str):
@@ -20,28 +14,11 @@ class VectorDatabase:
         """
         self.db_path = db_path
 
-    def build_embedding_function(self, host: str|None, model_name: str) -> None:
-        """Build the embedding function."""
-        embedding_classes = [
-            EmbeddingModelCohere,
-            EmbeddingModelGemini,
-            EmbeddingModelHuggingFace,
-            EmbeddingModelLocal,
-            EmbeddingModelMistral,
-            EmbeddingModelTogether
-        ]
-        
-        for embedding_class in embedding_classes:
-            if embedding_class.__name__ == f"EmbeddingModel{host}":
-                embedding_class_instance = embedding_class(model_name)
-                return embedding_class_instance.build_embedding_function()
-        raise ValueError(f"Invalid embedding model host: {host}")
 
-    def setup(self, model_name: str, host: str|None) -> None:
+    def setup(self, embedding_function: EmbeddingFunction[Documents], collection_name: str) -> None:
         """Initialize ChromaDB."""
         client = chromadb.PersistentClient(path=self.db_path, settings=Settings(anonymized_telemetry=False))
-        embedding_function = self.build_embedding_function(host, model_name)
-        self.collection = client.get_or_create_collection(name=f"docs_{model_name}", embedding_function=embedding_function)
+        self.collection = client.get_or_create_collection(name=collection_name, embedding_function=embedding_function)
 
     def add_chunks(self, chunks: List[str], metadatas: List[Metadata], ids: List[str]) -> None:
         """Add a chunk to the database."""

@@ -380,18 +380,6 @@ async function populateScanSelectors() {
 document.addEventListener('DOMContentLoaded', () => {
     populateScanSelectors();
     populateEmbeddingModelSelector();
-    
-    // Add event listener for embedding model info button
-    domElements.embeddingModelInfoBtn.addEventListener('click', () => {
-        const selectedModelValue = domElements.embeddingModelSelectorForEmbedding.value;
-        
-        if (selectedModelValue === '0') {
-            return;
-        }
-        
-        const modelData = JSON.parse(selectedModelValue);
-        openNewTab(modelData.url)
-    });
 });
 
 domElements.scanSelectorForDisplay.addEventListener('input', async () => {
@@ -544,7 +532,19 @@ async function populateEmbeddingModelSelector() {
     }
 }
 
-// embed documentation
+// Add event listener for embedding model info button
+domElements.embeddingModelInfoBtn.addEventListener('click', () => {
+    const selectedModelValue = domElements.embeddingModelSelectorForEmbedding.value;
+    
+    if (selectedModelValue === '0') {
+        return;
+    }
+    
+    const modelData = JSON.parse(selectedModelValue);
+    openNewTab(modelData.url)
+});
+
+// Embed documentation
 domElements.embdedBtn.addEventListener('click', async () => {
     const chunkSetId = domElements.chunkSetSelectorForEmbedding.value;
     const embeddingModelValue = domElements.embeddingModelSelectorForEmbedding.value;

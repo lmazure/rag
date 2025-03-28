@@ -1,4 +1,3 @@
-- BUG when trying to embed with HF sentence-transformers/all-MiniLM-L6-v2
 - EMBED test embedding local
 - EMBED test embedding together
 - EMBED test embedding huggingface

@@ -1,3 +1,13 @@
+// utility function to open a new tab
+function openNewTab(url) {
+    const newTab = window.open(url, '_blank');
+    if (newTab) {
+        newTab.focus();
+    } else {
+        console.warn('Unable to open new tab. Pop-up blocker might be enabled.');
+    }
+}
+
 // Utility function to clear select options except the first one
 function clearSelectOptions(selectElement) {
     while (selectElement.options.length > 1) {
@@ -146,7 +156,8 @@ const domElements = {
     // Embed section
     scanSelectorForEmbedding: document.getElementById('scanSelectorForEmbedding'),
     chunkSetSelectorForEmbedding: document.getElementById('chunkSetSelectorForEmbedding'),
-    embeddingModelSelector: document.getElementById('embeddingModelSelector'),
+    embeddingModelSelectorForEmbedding: document.getElementById('embeddingModelSelectorForEmbedding'),
+    embeddingModelInfoBtn: document.getElementById('embeddingModelInfoBtn'),
     embdedBtn: document.getElementById('embedBtn'),
     embedStatus: document.getElementById('embedStatus'),
     
@@ -369,6 +380,18 @@ async function populateScanSelectors() {
 document.addEventListener('DOMContentLoaded', () => {
     populateScanSelectors();
     populateEmbeddingModelSelector();
+    
+    // Add event listener for embedding model info button
+    domElements.embeddingModelInfoBtn.addEventListener('click', () => {
+        const selectedModelValue = domElements.embeddingModelSelectorForEmbedding.value;
+        
+        if (selectedModelValue === '0') {
+            return;
+        }
+        
+        const modelData = JSON.parse(selectedModelValue);
+        openNewTab(modelData.url)
+    });
 });
 
 domElements.scanSelectorForDisplay.addEventListener('input', async () => {
@@ -410,13 +433,7 @@ domElements.displayScannedUrlBtn.addEventListener('click', () => {
         return;
     }
 
-    const newTab = window.open(scanned_url, '_blank');
-    if (newTab) {
-        newTab.focus();
-    } else {
-        console.warn('Unable to open new tab. Pop-up blocker might be enabled.');
-    }
-
+    openNewTab(scanned_url)
 })
 
 // chunk content of a scan
@@ -505,7 +522,7 @@ domElements.scanSelectorForEmbedding.addEventListener('input', async () => {
 // Function to populate the embedding model selector
 async function populateEmbeddingModelSelector() {
     // Clear existing options except the default one
-    clearSelectOptions(domElements.embeddingModelSelector);
+    clearSelectOptions(domElements.embeddingModelSelectorForEmbedding);
     
     try {
         const response = await fetch('/embedding_models');
@@ -520,7 +537,7 @@ async function populateEmbeddingModelSelector() {
         models.forEach(model => {
             const displayText = `${model.host} - ${model.model}`;
             const value = JSON.stringify({ host: model.host, model: model.model, url: model.url });
-            addOptionToSelect(domElements.embeddingModelSelector, value, displayText);
+            addOptionToSelect(domElements.embeddingModelSelectorForEmbedding, value, displayText);
         });
     } catch (error) {
         handleError('Error fetching embedding models', error.message, error.stack);
@@ -530,7 +547,7 @@ async function populateEmbeddingModelSelector() {
 // embed documentation
 domElements.embdedBtn.addEventListener('click', async () => {
     const chunkSetId = domElements.chunkSetSelectorForEmbedding.value;
-    const embeddingModelValue = domElements.embeddingModelSelector.value;
+    const embeddingModelValue = domElements.embeddingModelSelectorForEmbedding.value;
     
     if (chunkSetId == 0) {
         return;

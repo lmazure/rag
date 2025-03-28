@@ -95,9 +95,12 @@
             </select>
         </div>
         <div class="mb-3">
-            <select id="embeddingModelSelector" class="form-select">
-                <option selected value="0">Choose an embedding model…</option>
-            </select>
+            <div class="input-group">
+                <select id="embeddingModelSelectorForEmbedding" class="form-select" style="width: 80%;">
+                    <option selected value="0">Choose an embedding model…</option>
+                </select>
+                <button id="embeddingModelInfoBtn" class="btn btn-info ms-2">Information</button>
+            </div>
         </div>
         <div class="mb-3">
             <button id="embedBtn" class="btn btn-primary">Embed Documentation</button>

@@ -3,9 +3,6 @@ import json
 import os
 from typing import Any, Optional
 
-from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
-from chromadb.utils.embedding_functions.sentence_transformer_embedding_function import SentenceTransformerEmbeddingFunction
-
 class EmbeddingModel:
     def __init__(self, host: Optional[str], model: str):
         self.host = host

@@ -4,6 +4,8 @@ A RAG application that allows users to ask questions about documentation using n
 
 ## Features
 
+🚧 to be updated 🚧 TBD
+
 - Automatically scrapes and ingests HTML documentation from Internet using Docling
 - Uses ChromaDB for vector storage
 - Implements RAG using Together AI's Meta-Llama-3-70B-Instruct-Lite model
@@ -36,7 +38,7 @@ A RAG application that allows users to ask questions about documentation using n
 
     There will be some warnings `Token indices sequence length is longer than the specified maximum sequence length for this model (518 > 512). Running this sequence through the model will result in indexing errors`. You can ignore them, see https://github.com/DS4SD/docling-core/issues/119.
 
-5. Open a web browser and navigate to `http://localhost:5000`
+5. Open a web browser and navigate to [`http://localhost:5000`](http://localhost:5000).
 
 ## Usage
 

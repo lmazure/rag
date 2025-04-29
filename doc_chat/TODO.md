@@ -1,16 +1,23 @@
+- transfer this in a dedicated Git repository
+
+- `host = class_name.replace("EmbeddingModel", "")` is dirty, the class should have an accessor returning the host
+
+- endpoints.md is out of date
+
 - EMBED test embedding local
 - EMBED test embedding together
 - EMBED test embedding huggingface
 - EMBED test embedding cohere
 - EMBED test embedding gemini
 - EMBED test embedding mistral
+- merge lists of embedding models Local and Huggingface
 - BUG: the scanned URL selected for ANSWER is not filled
 - FETCH when fetch is finished the selector of the chunker and the selector of the scanned URLs navigator should be updated
 - FETCH recursively fetch subpages
 - FETCH regexp fo filter scanend pages
 - repair Pytest tests
 - undisplay error popup when launching an action or an analysis
-- FETCH fetched https://mazure.fr/perso/cve.html is almost empty
+
 -------------
 https://tm-en.doc.squashtest.com/latest/
 https://www.tutorialspoint.com/unix/unix-vi-editor.htm

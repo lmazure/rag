@@ -23,6 +23,17 @@
             <div id="logsContent"></div>
         </div>
     </div>
+    
+    <!-- Info Dialog -->
+    <div id="infoDialog" class="info-dialog">
+        <div class="info-dialog-content">
+            <div class="info-dialog-header">
+                <h2 id="infoDialogTitle">Information</h2>
+                <span class="info-dialog-close">&times;</span>
+            </div>
+            <div id="infoDialogMessage" class="info-dialog-message"></div>
+        </div>
+    </div>
 
     <div class="container mt-5">
         <h1 class="mb-4">Documentation Chat</h1>
@@ -33,12 +44,10 @@
                 <input type="text" class="form-control" id="docUrl" placeholder="Enter documentation URL…">
             </div>
             <div class="input-group mb-3">
-                Reaper:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <select id="reaper" class="form-select">
-                    <option selected value="default">Default</option>
-                    <option value="mkdocs">MkDocs</option>
+                <select id="siteReaperSelectorForFetching" class="form-select" style="width: 80%;">
+                    <option selected value="0">Choose a site reaper…</option>
                 </select>
-            </div>
+                <button id="siteReaperInfoBtn" class="btn btn-info ms-2">Information</button>            </div>
             <button id="fetchBtn" class="btn btn-primary">Fetch Documentation</button>
             <span id="fetchStatus" class="ms-3"></span>
         </div>

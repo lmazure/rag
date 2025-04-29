@@ -129,9 +129,16 @@ const domElements = {
     logsClose: document.querySelector('.logs-close'),
     logsContent: document.getElementById('logsContent'),
     
+    // Info Dialog
+    infoDialog: document.getElementById('infoDialog'),
+    infoDialogClose: document.querySelector('.info-dialog-close'),
+    infoDialogTitle: document.getElementById('infoDialogTitle'),
+    infoDialogMessage: document.getElementById('infoDialogMessage'),
+    
     // Fetch section
     docUrl: document.getElementById('docUrl'),
-    reaper: document.getElementById('reaper'),
+    siteReaperSelectorForFetching: document.getElementById('siteReaperSelectorForFetching'),
+    siteReaperInfoBtn: document.getElementById('siteReaperInfoBtn'),
     fetchBtn: document.getElementById('fetchBtn'),
     fetchStatus: document.getElementById('fetchStatus'),
     
@@ -193,6 +200,9 @@ window.addEventListener('click', (event) => {
     if (event.target === domElements.logsModal) {
         domElements.logsModal.style.display = 'none';
         stopLogsRefresh();
+    }
+    if (event.target === domElements.infoDialog) {
+        domElements.infoDialog.style.display = 'none';
     }
 });
 
@@ -379,6 +389,7 @@ async function populateScanSelectors() {
 // load scans when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     populateScanSelectors();
+    populateSiteReaperSelector();
     populateEmbeddingModelSelector();
 });
 
@@ -507,6 +518,30 @@ domElements.scanSelectorForEmbedding.addEventListener('input', async () => {
     populateChunkSetSelector(domElements.scanSelectorForEmbedding, domElements.chunkSetSelectorForEmbedding);
 });
 
+// Event listener for the site reaper selector in the Fetch section
+async function populateSiteReaperSelector() {
+    // Clear existing options except the default one
+    clearSelectOptions(domElements.siteReaperSelectorForFetching);
+    
+    try {
+        const response = await fetch('/site_reapers');
+        if (!response.ok) {
+            const errorData = await response.json();
+            handleError('Error fetching site reapers', errorData.errorDetails, errorData.stackTrace);
+            return;
+        }
+        
+        const siteReapers = await response.json();
+        
+        siteReapers.forEach(siteReaper => {
+            const value = JSON.stringify({ name: siteReaper.name, description: siteReaper.description });
+            addOptionToSelect(domElements.siteReaperSelectorForFetching, value, siteReaper.name);
+        });
+    } catch (error) {
+        handleError('Error fetching site reapers', error.message, error.stack);
+    }
+}
+
 // Function to populate the embedding model selector
 async function populateEmbeddingModelSelector() {
     // Clear existing options except the default one
@@ -531,6 +566,35 @@ async function populateEmbeddingModelSelector() {
         handleError('Error fetching embedding models', error.message, error.stack);
     }
 }
+
+// Function to show the info dialog
+function showInfoDialog(title, message) {
+    domElements.infoDialogTitle.textContent = title;
+    domElements.infoDialogMessage.innerHTML = message;
+    domElements.infoDialog.style.display = 'block';
+}
+
+// Function to close the info dialog
+function closeInfoDialog() {
+    domElements.infoDialog.style.display = 'none';
+}
+
+// Event listener for info dialog close button
+domElements.infoDialogClose.addEventListener('click', closeInfoDialog);
+
+// Add event listener for site reaper info button
+domElements.siteReaperInfoBtn.addEventListener('click', () => {
+    const selectedSiteReaperValue = domElements.siteReaperSelectorForFetching.value;
+    
+    if (selectedSiteReaperValue === '0') {
+        return;
+    }
+    
+    const siteReaperData = JSON.parse(selectedSiteReaperValue);
+    
+    // Display siteReaperData.description in the info dialog
+    showInfoDialog('Site Reaper Information', siteReaperData.description);
+});
 
 // Add event listener for embedding model info button
 domElements.embeddingModelInfoBtn.addEventListener('click', () => {

@@ -141,7 +141,7 @@ The Doc Chat application provides a set of RESTful API endpoints for managing do
 
 ### Query
 
-- **URL**: `generate_answer`
+- **URL**: `/generate_answer`
 - **Method**: `POST`
 - **Description**: Performs a semantic search on the chunks and generates a response using Together AI
 - **Parameters**: None (data is sent in the request body)

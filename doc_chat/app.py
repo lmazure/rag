@@ -10,15 +10,20 @@ from markupsafe import escape
 
 from vector_database import VectorDatabase
 from info_database import InfoDatabase
+
 from site_reaper import SiteReaper
-from mkdocs_site_reaper import MkdocsSiteReaper
+from site_reaper_default import SiteReaperDefault
+from site_reaper_mkdocs import SiteReaperMkdocs
+
 from logger import Logger
+
 from embedding_model_cohere import EmbeddingModelCohere
 from embedding_model_gemini import EmbeddingModelGemini
 from embedding_model_hugging_face import EmbeddingModelHuggingFace
 from embedding_model_local import EmbeddingModelLocal
 from embedding_model_mistral import EmbeddingModelMistral
 from embedding_model_together import EmbeddingModelTogether
+
 from chromadb.api.types import Documents, EmbeddingFunction
 
 load_dotenv()
@@ -26,7 +31,12 @@ load_dotenv()
 MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
 port = 5000
 
-embedding_classes = [
+site_reaper_classes = [
+    SiteReaperDefault,
+    SiteReaperMkdocs
+]
+
+embedding_classes = [ # TODO should be renamed embedding_model_classes
     EmbeddingModelCohere,
     EmbeddingModelGemini,
     EmbeddingModelHuggingFace,
@@ -147,6 +157,29 @@ def home():
         logger.log('error', f"/ - Failed to render home page: {str(e)}\n{traceback.format_exc()}")
         return jsonify({'error': 'Failed to render home page', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
 
+@app.route('/site_reapers', methods=['GET'])
+def get_site_reapers():
+    """
+    Get a list of all available site reapers.
+
+    Returns:
+        A JSON array with information about each site reaper.
+    """
+    try:
+        site_reapers = []
+        
+        # Get site reapers from each site reaper class
+        for site_reaper_class in site_reaper_classes:
+            site_reapers.append({
+                "name": site_reaper_class.get_name(),
+                "description": site_reaper_class.get_description()
+            })
+        
+        return jsonify(site_reapers)
+    except Exception as e:
+        logger.log('error', f"/site_reapers - Failed to get site reapers: {str(e)}\n{traceback.format_exc()}")
+        return jsonify({'error': 'Failed to get site reapers', 'errorDetails': str(e), 'stackTrace': traceback.format_exc()}), 500
+
 @app.route('/perform_fetch', methods=['POST'])
 def fetch():
     """
@@ -166,9 +199,9 @@ def fetch():
         return jsonify({'error': 'bad request', 'errorDetails': 'reaper is required'}), 400
 
     if reaper_type == 'mkdocs':
-        reaper = MkdocsSiteReaper(root_url)
+        reaper = SiteReaperMkdocs(root_url)
     elif reaper_type == 'default':
-        reaper = SiteReaper(root_url)
+        reaper = DefaultSiteReaper(root_url)
     else:
         return jsonify({'error': 'bad request', 'errorDetails': 'Invalid reaper type'}), 400
 
@@ -379,7 +412,7 @@ def get_embedding_models():
         for embedding_class in embedding_classes:
             class_name = embedding_class.__name__
             host = class_name.replace("EmbeddingModel", "")
-            
+
             models = embedding_class.get_available_models()
             for model in models:
                 embedding_models.append({

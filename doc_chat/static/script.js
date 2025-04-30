@@ -142,7 +142,7 @@ const domElements = {
     fetchBtn: document.getElementById('fetchBtn'),
     fetchStatus: document.getElementById('fetchStatus'),
     
-    // Display scanned URL section
+    // Display Scanned URL section
     scanSelectorForDisplay: document.getElementById('scanSelectorForDisplay'),
     scannedUrlSelectorForDisplay: document.getElementById('scannedUrlSelectorForDisplay'),
     scannedUrlDisplay: document.getElementById('scannedUrlDisplay'),
@@ -321,7 +321,7 @@ async function populateEmbeddingSetSelector(chunkSetSelector, embeddingSetSelect
 
 domElements.fetchBtn.addEventListener('click', async () => {
     const docUrl = domElements.docUrl.value.trim();
-    const reaper = domElements.reaper.value;
+    const reaper = JSON.parse(domElements.siteReaperSelectorForFetching.value);
     
     if (!docUrl) {
         domElements.fetchStatus.textContent = 'Please enter a documentation URL';
@@ -332,7 +332,7 @@ domElements.fetchBtn.addEventListener('click', async () => {
     domElements.fetchStatus.textContent = 'fetching documentation…';
 
     try {
-        const response = await fetch(`/perform_fetch?root_url=${encodeURIComponent(docUrl)}&reaper=${reaper}`, {
+        const response = await fetch(`/perform_fetch?root_url=${encodeURIComponent(docUrl)}&reaper=${reaper.name}`, {
             method: 'POST'
         });
         if (!response.ok) {

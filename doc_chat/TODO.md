@@ -4,6 +4,8 @@
 
 - endpoints.md is out of date
 
+- fix all warnings/errors in Python code
+
 - EMBED test embedding local
 - EMBED test embedding together
 - EMBED test embedding huggingface

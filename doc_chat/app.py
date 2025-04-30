@@ -36,7 +36,7 @@ site_reaper_classes = [
     SiteReaperMkdocs
 ]
 
-embedding_classes = [ # TODO should be renamed embedding_model_classes
+embedding_model_classes = [
     EmbeddingModelCohere,
     EmbeddingModelGemini,
     EmbeddingModelHuggingFace,
@@ -55,10 +55,10 @@ app = Flask(__name__)
 
 def build_embedding_function(host: str, model_name: str) -> EmbeddingFunction[Documents]:
     """Build the embedding function."""
-    for embedding_class in embedding_classes:
-        if embedding_class.__name__ == f"EmbeddingModel{host}":
-            embedding_class_instance = embedding_class(model_name)
-            return embedding_class_instance.build_embedding_function()
+    for embedding_model_class in embedding_model_classes:
+        if embedding_model_class.__name__ == f"EmbeddingModel{host}":
+            embedding_model_class_instance = embedding_model_class(model_name)
+            return embedding_model_class_instance.build_embedding_function()
     raise ValueError(f"Invalid embedding model host: {host}")
 
 def build_vector_collection_name(embedding_set_id: int) -> str:
@@ -198,15 +198,18 @@ def fetch():
     if not reaper_type:
         return jsonify({'error': 'bad request', 'errorDetails': 'reaper is required'}), 400
 
-    if reaper_type == 'mkdocs':
-        reaper = SiteReaperMkdocs(root_url)
-    elif reaper_type == 'default':
-        reaper = DefaultSiteReaper(root_url)
-    else:
-        return jsonify({'error': 'bad request', 'errorDetails': 'Invalid reaper type'}), 400
-
     try:
-        nb = fetch_content(root_url, reaper)
+        site_reaper = None
+
+        for site_reaper_class in site_reaper_classes:
+            if site_reaper_class.get_name() == reaper_type:
+                site_reaper = site_reaper_class(root_url)
+                break
+
+        if not site_reaper:
+            return jsonify({'error': 'bad request', 'errorDetails': 'Unknown reaper'}), 400
+
+        nb = fetch_content(root_url, site_reaper)
         return jsonify({"message": f"Fetched {nb} URLs"})
     except Exception as e:
         logger.log('error', f"/perform_fetch - Failed to fetch documentation: {str(e)}\n{traceback.format_exc()}")
@@ -409,11 +412,11 @@ def get_embedding_models():
         embedding_models = []
         
         # Get models from each embedding model class
-        for embedding_class in embedding_classes:
-            class_name = embedding_class.__name__
+        for embedding_model_class in embedding_model_classes:
+            class_name = embedding_model_class.__name__
             host = class_name.replace("EmbeddingModel", "")
 
-            models = embedding_class.get_available_models()
+            models = embedding_model_class.get_available_models()
             for model in models:
                 embedding_models.append({
                     "host": host,

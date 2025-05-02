@@ -4,8 +4,10 @@ from embedding_model import EmbeddingModel
 
 class EmbeddingModelLocal(EmbeddingModel):
 
+    host = "Local"
+
     def __init__(self, model: str):
-        super().__init__("Local", model)
+        super().__init__(model)
 
     def build_embedding_function(self) -> EmbeddingFunction:
         return SentenceTransformerEmbeddingFunction(model_name=self.get_model())

@@ -56,7 +56,7 @@ app = Flask(__name__)
 def build_embedding_function(host: str, model_name: str) -> EmbeddingFunction[Documents]:
     """Build the embedding function."""
     for embedding_model_class in embedding_model_classes:
-        if embedding_model_class.__name__ == f"EmbeddingModel{host}":
+        if embedding_model_class.get_host() == host:
             embedding_model_class_instance = embedding_model_class(model_name)
             return embedding_model_class_instance.build_embedding_function()
     raise ValueError(f"Invalid embedding model host: {host}")
@@ -413,9 +413,7 @@ def get_embedding_models():
         
         # Get models from each embedding model class
         for embedding_model_class in embedding_model_classes:
-            class_name = embedding_model_class.__name__
-            host = class_name.replace("EmbeddingModel", "")
-
+            host = embedding_model_class.get_host()
             models = embedding_model_class.get_available_models()
             for model in models:
                 embedding_models.append({

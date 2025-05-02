@@ -2,8 +2,11 @@ from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
 from embedding_model import EmbeddingModel
 
 class EmbeddingModelCohere(EmbeddingModel):
+
+    host = "Cohere"
+
     def __init__(self, model: str):
-        super().__init__("Cohere", model)
+        super().__init__(model)
 
     def build_embedding_function(self) -> EmbeddingFunction:
         return self.CohereEmbeddingFunction(self)

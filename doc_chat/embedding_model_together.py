@@ -3,8 +3,11 @@ from embedding_model import EmbeddingModel
 
 
 class EmbeddingModelTogether(EmbeddingModel):
+
+    host = "Together"
+
     def __init__(self, model: str):
-        super().__init__("Together", model)
+        super().__init__(model)
 
     def build_embedding_function(self) -> EmbeddingFunction:
         return self.TogetherEmbeddingFunction(self)

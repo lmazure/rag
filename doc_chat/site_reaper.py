@@ -5,6 +5,18 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
 class SiteReaper:
+
+    name = ""
+    description = ""
+
+    @classmethod
+    def get_name(cls) -> str:
+        return cls.name
+
+    @classmethod
+    def get_description(cls) -> str:
+        return cls.description
+
     def __init__(self, base_url: str):
         self.base_url = base_url
 

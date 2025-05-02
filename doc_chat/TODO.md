@@ -1,10 +1,10 @@
 - transfer this in a dedicated Git repository
 
-- `host = class_name.replace("EmbeddingModel", "")` is dirty, the class should have an accessor returning the host
-
 - endpoints.md is out of date
 
 - fix all warnings/errors in Python code
+
+- mettre à jour les dépendances
 
 - EMBED test embedding local
 - EMBED test embedding together

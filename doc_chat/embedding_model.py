@@ -4,12 +4,15 @@ import os
 from typing import Any, Optional
 
 class EmbeddingModel:
-    def __init__(self, host: Optional[str], model: str):
-        self.host = host
+
+    host = ""
+
+    def __init__(self, model: str):
         self.model = model
 
-    def get_host(self) -> Optional[str]:
-        return self.host
+    @classmethod
+    def get_host(cls) -> Optional[str]:
+        return cls.host
 
     def get_model(self) -> str:
         return self.model
